@@ -70,7 +70,6 @@ public class IntakeIOCTRE implements IntakeIO {
             leaderStatorCurrent,
             leaderSupplyCurrent);
 
-
     inputs.leaderConnected = leaderDebounce.calculate(leaderStatus.isOK());
     inputs.position = leaderPosition.getValue().div(GEAR_RATIO);
     inputs.velocity = leaderVelocity.getValue().div(GEAR_RATIO);
