@@ -16,11 +16,23 @@ import edu.wpi.first.wpilibj2.command.sysid.SysIdRoutine;
 import edu.wpi.first.wpilibj2.command.sysid.SysIdRoutine.Direction;
 import frc.robot.commands.DriveCommands;
 import frc.robot.generated.TunerConstants;
+import frc.robot.subsystems.arm_extension.ArmExtension;
+import frc.robot.subsystems.arm_extension.ArmExtensionIO;
+import frc.robot.subsystems.arm_extension.ArmExtensionIOCTRE;
+import frc.robot.subsystems.arm_extension.ArmExtensionIOSIM;
+import frc.robot.subsystems.arm_joint.ArmJoint;
+import frc.robot.subsystems.arm_joint.ArmJointIO;
+import frc.robot.subsystems.arm_joint.ArmJointIOCTRE;
+import frc.robot.subsystems.arm_joint.ArmJointIOSIM;
 import frc.robot.subsystems.drive.Drive;
 import frc.robot.subsystems.drive.DriveIO;
 import frc.robot.subsystems.drive.DriveIOCTRE;
 import frc.robot.subsystems.drive.requests.ProfiledFieldCentricFacingAngle;
 import frc.robot.subsystems.drive.requests.SwerveSetpointGen;
+import frc.robot.subsystems.intake.Intake;
+import frc.robot.subsystems.intake.IntakeIO;
+import frc.robot.subsystems.intake.IntakeIOCTRE;
+import frc.robot.subsystems.intake.IntakeIOSIM;
 import frc.robot.subsystems.vision.Vision;
 import frc.robot.subsystems.vision.VisionIO;
 import frc.robot.subsystems.vision.VisionIOLimelight;
@@ -37,6 +49,10 @@ public class RobotContainer {
   private final LoggedDashboardChooser<Command> autoChooser;
 
   public final Drive drivetrain;
+  public final Intake intake;
+  public final ArmJoint armJoint;
+  public final ArmExtension armExtension;
+
   // CTRE Default Drive Request
   private final SwerveRequest.FieldCentric drive =
       new SwerveRequest.FieldCentric()
@@ -61,6 +77,10 @@ public class RobotContainer {
             new VisionIOLimelight("limelight-fr", drivetrain::getVisionParameters),
             new VisionIOLimelight("limelight-bl", drivetrain::getVisionParameters),
             new VisionIOLimelight("limelight-br", drivetrain::getVisionParameters));
+
+        intake = new Intake(new IntakeIOCTRE());
+        armJoint = new ArmJoint(new ArmJointIOCTRE());
+        armExtension = new ArmExtension(new ArmExtensionIOCTRE());
         break;
 
       case SIM:
@@ -93,6 +113,10 @@ public class RobotContainer {
                     new Translation3d(0.0, -0.2, 0.8),
                     new Rotation3d(0, Math.toRadians(20), Math.toRadians(-90))),
                 drivetrain::getVisionParameters));
+
+        intake = new Intake(new IntakeIOSIM());
+        armJoint = new ArmJoint(new ArmJointIOSIM());
+        armExtension = new ArmExtension(new ArmExtensionIOSIM());
         break;
 
       default:
@@ -105,6 +129,10 @@ public class RobotContainer {
             new VisionIO() {},
             new VisionIO() {},
             new VisionIO() {});
+
+        intake = new Intake(new IntakeIO() {});
+        armJoint = new ArmJoint(new ArmJointIO() {});
+        armExtension = new ArmExtension(new ArmExtensionIO() {});
         break;
     }
 
