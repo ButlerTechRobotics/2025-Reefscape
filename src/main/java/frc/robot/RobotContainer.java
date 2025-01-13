@@ -24,15 +24,19 @@ import frc.robot.subsystems.arm_joint.ArmJoint;
 import frc.robot.subsystems.arm_joint.ArmJointIO;
 import frc.robot.subsystems.arm_joint.ArmJointIOCTRE;
 import frc.robot.subsystems.arm_joint.ArmJointIOSIM;
+import frc.robot.subsystems.claw.Claw;
+import frc.robot.subsystems.claw.ClawIO;
+import frc.robot.subsystems.claw.ClawIOCTRE;
+import frc.robot.subsystems.claw.ClawIOSIM;
+import frc.robot.subsystems.claw_joint.ClawJoint;
+import frc.robot.subsystems.claw_joint.ClawJointIO;
+import frc.robot.subsystems.claw_joint.ClawJointIOCTRE;
+import frc.robot.subsystems.claw_joint.ClawJointIOSIM;
 import frc.robot.subsystems.drive.Drive;
 import frc.robot.subsystems.drive.DriveIO;
 import frc.robot.subsystems.drive.DriveIOCTRE;
 import frc.robot.subsystems.drive.requests.ProfiledFieldCentricFacingAngle;
 import frc.robot.subsystems.drive.requests.SwerveSetpointGen;
-import frc.robot.subsystems.intake.Intake;
-import frc.robot.subsystems.intake.IntakeIO;
-import frc.robot.subsystems.intake.IntakeIOCTRE;
-import frc.robot.subsystems.intake.IntakeIOSIM;
 import frc.robot.subsystems.vision.Vision;
 import frc.robot.subsystems.vision.VisionIO;
 import frc.robot.subsystems.vision.VisionIOLimelight;
@@ -49,7 +53,8 @@ public class RobotContainer {
   private final LoggedDashboardChooser<Command> autoChooser;
 
   public final Drive drivetrain;
-  public final Intake intake;
+  public final Claw claw;
+  public final ClawJoint clawJoint;
   public final ArmJoint armJoint;
   public final ArmExtension armExtension;
 
@@ -78,7 +83,8 @@ public class RobotContainer {
             new VisionIOLimelight("limelight-bl", drivetrain::getVisionParameters),
             new VisionIOLimelight("limelight-br", drivetrain::getVisionParameters));
 
-        intake = new Intake(new IntakeIOCTRE());
+        claw = new Claw(new ClawIOCTRE());
+        clawJoint = new ClawJoint(new ClawJointIOCTRE());
         armJoint = new ArmJoint(new ArmJointIOCTRE());
         armExtension = new ArmExtension(new ArmExtensionIOCTRE());
         break;
@@ -114,7 +120,8 @@ public class RobotContainer {
                     new Rotation3d(0, Math.toRadians(20), Math.toRadians(-90))),
                 drivetrain::getVisionParameters));
 
-        intake = new Intake(new IntakeIOSIM());
+        claw = new Claw(new ClawIOSIM());
+        clawJoint = new ClawJoint(new ClawJointIOSIM());
         armJoint = new ArmJoint(new ArmJointIOSIM());
         armExtension = new ArmExtension(new ArmExtensionIOSIM());
         break;
@@ -130,7 +137,8 @@ public class RobotContainer {
             new VisionIO() {},
             new VisionIO() {});
 
-        intake = new Intake(new IntakeIO() {});
+        claw = new Claw(new ClawIO() {});
+        clawJoint = new ClawJoint(new ClawJointIO() {});
         armJoint = new ArmJoint(new ArmJointIO() {});
         armExtension = new ArmExtension(new ArmExtensionIO() {});
         break;
