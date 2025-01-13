@@ -77,7 +77,7 @@ public class ArmJoint extends SubsystemBase {
   public void periodic() {
     // Update and log inputs from hardware
     io.updateInputs(inputs);
-    Logger.processInputs("Arm", inputs);
+    Logger.processInputs("Arm-Joint", inputs);
 
     // Update motor connection status alerts
     leaderMotorAlert.set(!inputs.leaderConnected);

@@ -39,11 +39,11 @@ public class ArmExtension extends SubsystemBase {
 
   // Alerts for motor connection status
   private final Alert leaderMotorAlert =
-      new Alert("Extension leader motor isn't connected", AlertType.kError);
+      new Alert("Arm-Extension leader motor isn't connected", AlertType.kError);
   private final Alert followerMotorAlert =
-      new Alert("Extension follower motor isn't connected", AlertType.kError);
+      new Alert("Arm-Extension follower motor isn't connected", AlertType.kError);
   private final Alert encoderAlert =
-      new Alert("Extension encoder isn't connected", AlertType.kError);
+      new Alert("Arm-Extension encoder isn't connected", AlertType.kError);
 
   // System identification routine configuration
   private final SysIdRoutine sysId =
@@ -78,7 +78,7 @@ public class ArmExtension extends SubsystemBase {
   public void periodic() {
     // Update and log inputs from hardware
     io.updateInputs(inputs);
-    Logger.processInputs("Extension", inputs);
+    Logger.processInputs("Arm-Extension", inputs);
 
     // Update motor connection status alerts
     leaderMotorAlert.set(!inputs.leaderConnected);
