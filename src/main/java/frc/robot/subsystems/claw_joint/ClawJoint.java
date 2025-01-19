@@ -1,23 +1,32 @@
+// Copyright FRC 5712
+// This program is free software; you can redistribute it and/or
+// modify it under the terms of the GNU General Public License
+// version 3 as published by the Free Software Foundation or
+// available in the root directory of this project.
+//
+// This program is distributed in the hope that it will be useful,
+// but WITHOUT ANY WARRANTY; without even the implied warranty of
+// MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE. See the
+// GNU General Public License for more details.
+
 package frc.robot.subsystems.claw_joint;
 
 import static edu.wpi.first.units.Units.*;
 
 import edu.wpi.first.units.measure.Angle;
-import edu.wpi.first.units.measure.Voltage;
 import edu.wpi.first.wpilibj.Alert;
 import edu.wpi.first.wpilibj.Alert.AlertType;
 import edu.wpi.first.wpilibj2.command.Command;
 import edu.wpi.first.wpilibj2.command.Commands;
 import edu.wpi.first.wpilibj2.command.SelectCommand;
 import edu.wpi.first.wpilibj2.command.SubsystemBase;
-import edu.wpi.first.wpilibj2.command.sysid.SysIdRoutine;
 import java.util.Map;
 import org.littletonrobotics.junction.AutoLogOutput;
 import org.littletonrobotics.junction.Logger;
 
 /**
- * The ClawJoint subsystem controls a motor-driven claw mechanism for game piece manipulation. It
- * supports multiple positions for different game actions and provides both open-loop and
+ * The ClawJoint subsystem controls a dual-motor claw joint mechanism for game piece manipulation.
+ * It supports multiple positions for different game actions and provides both open-loop and
  * closed-loop control options.
  */
 public class ClawJoint extends SubsystemBase {
@@ -25,34 +34,19 @@ public class ClawJoint extends SubsystemBase {
   private final ClawJointIO io;
   private final ClawJointIOInputsAutoLogged inputs;
 
+  // Current claw joint position mode
+  private ClawJointPosition currentMode = ClawJointPosition.INTAKE;
+
   // Alerts for motor connection status
-  private final Alert motorAlert = new Alert("Claw-Joint motor isn't connected", AlertType.kError);
-  private final Alert encoderAlert = new Alert("Claw-Joint encoder isn't connected", AlertType.kError);
-
-  // System identification routine configuration
-  private final SysIdRoutine sysId =
-      new SysIdRoutine(
-          new SysIdRoutine.Config(
-              null, // Use default ramp rate (1 V/s)
-              Volts.of(2), // Reduced voltage for claw to prevent damage
-              null, // Use default timeout (10 s)
-              // Log state with Phoenix SignalLogger class
-              state -> Logger.recordOutput("state", state.toString())),
-          new SysIdRoutine.Mechanism(
-              output -> {
-                this.runVoltage(output);
-                Logger.recordOutput("Claw-Joint_Position", output.in(Volts));
-              },
-              null,
-              this));
-
-  // Current claw position mode
-  private ClawPosition currentMode = ClawPosition.STOWED;
+  private final Alert leaderMotorAlert =
+      new Alert("Claw-Joint leader motor isn't connected", AlertType.kError);
+  private final Alert encoderAlert =
+      new Alert("Claw-Joint encoder isn't connected", AlertType.kError);
 
   /**
-   * Creates a new Claw subsystem with the specified hardware interface.
+   * Creates a new ClawJoint subsystem with the specified hardware interface.
    *
-   * @param io The hardware interface implementation for the claw
+   * @param io The hardware interface implementation for the claw joint
    */
   public ClawJoint(ClawJointIO io) {
     this.io = io;
@@ -66,55 +60,26 @@ public class ClawJoint extends SubsystemBase {
     Logger.processInputs("Claw-Joint", inputs);
 
     // Update motor connection status alerts
-    motorAlert.set(!inputs.leaderConnected);
+    leaderMotorAlert.set(!inputs.leaderConnected);
     encoderAlert.set(!inputs.encoderConnected);
   }
 
   /**
-   * Runs the claw in open-loop mode at the specified voltage.
-   *
-   * @param volts The voltage to apply to the motor
-   */
-  public void runVoltage(Voltage volts) {
-    io.setVoltage(volts);
-  }
-
-  /**
-   * Runs the claw in closed-loop position mode to the specified angle.
+   * Runs the claw joint in closed-loop position mode to the specified angle.
    *
    * @param position The target angle position
    */
-  public void setPosition(Angle position) {
+  private void setPosition(Angle position) {
     io.setPosition(position);
   }
 
-  /** Stops the claw motor. */
-  public void stop() {
+  /** Stops the claw joint motors. */
+  private void stop() {
     io.stop();
   }
 
   /**
-   * Returns a command to run a quasistatic system identification test.
-   *
-   * @param direction The direction to run the test
-   * @return The command to run the test
-   */
-  public Command sysIdQuasistatic(SysIdRoutine.Direction direction) {
-    return sysId.quasistatic(direction);
-  }
-
-  /**
-   * Returns a command to run a dynamic system identification test.
-   *
-   * @param direction The direction to run the test
-   * @return The command to run the test
-   */
-  public Command sysIdDynamic(SysIdRoutine.Direction direction) {
-    return sysId.dynamic(direction);
-  }
-
-  /**
-   * Returns the current position of the claw.
+   * Returns the current position of the claw joint.
    *
    * @return The current angular position
    */
@@ -123,45 +88,43 @@ public class ClawJoint extends SubsystemBase {
     return inputs.encoderPosition;
   }
 
-  /** Enumeration of available claw positions with their corresponding target angles. */
-  public enum ClawPosition {
-    STOWED(Degrees.of(0)), // Stowed position
-    FLOOR_INTAKE(Degrees.of(0)), // Position for floor intake
-    STATION_INTAKE(Degrees.of(45)), // Position for station intake
-    L1(Degrees.of(30)), // Position for gripping at level 1
-    L2(Degrees.of(15)), // Position for gripping at level 2
-    L3(Degrees.of(15)), // Position for gripping at level 3
-    L4(Degrees.of(15)); // Position for gripping at level 4
-
+  /** Enumeration of available claw joint positions with their corresponding target angles. */
+  private enum ClawJointPosition {
+    STOP(Degrees.of(0)), // Stop the claw joint
+    INTAKE(Degrees.of(0)), // Claw joint tucked in
+    L1(Degrees.of(90)), // Position for scoring in L1
+    L2(Degrees.of(135)), // Position for scoring in L2
+    L3(Degrees.of(135)), // Position for scoring in L3
+    L4(Degrees.of(180)); // Position for scoring in L4
 
     private final Angle targetAngle;
     private final Angle angleTolerance;
 
-    ClawPosition(Angle targetAngle, Angle angleTolerance) {
+    ClawJointPosition(Angle targetAngle, Angle angleTolerance) {
       this.targetAngle = targetAngle;
       this.angleTolerance = angleTolerance;
     }
 
-    ClawPosition(Angle targetAngle) {
-      this(targetAngle, Degrees.of(1)); // 1 degree default tolerance for claw
+    ClawJointPosition(Angle targetAngle) {
+      this(targetAngle, Degrees.of(2)); // 2 degree default tolerance
     }
   }
 
   /**
-   * Gets the current claw position mode.
+   * Gets the current claw joint position mode.
    *
-   * @return The current ClawPosition
+   * @return The current ClawJointPosition
    */
-  public ClawPosition getMode() {
+  public ClawJointPosition getMode() {
     return currentMode;
   }
 
   /**
-   * Sets a new claw position and schedules the corresponding command.
+   * Sets a new claw joint position and schedules the corresponding command.
    *
-   * @param position The desired ClawPosition
+   * @param position The desired ClawJointPosition
    */
-  public void setClawPosition(ClawPosition position) {
+  private void setClawJointPosition(ClawJointPosition position) {
     currentCommand.cancel();
     currentMode = position;
     currentCommand.schedule();
@@ -171,127 +134,105 @@ public class ClawJoint extends SubsystemBase {
   private final Command currentCommand =
       new SelectCommand<>(
           Map.of(
-              ClawPosition.STOWED,
-              Commands.runOnce(this::stop)
-                  .alongWith(Commands.run(() -> checkAtTarget(ClawPosition.STOWED)))
-                  .withName("Stow Claw"),
-              ClawPosition.FLOOR_INTAKE,
-              createPositionCommand(ClawPosition.FLOOR_INTAKE),
-              ClawPosition.STATION_INTAKE,
-              createPositionCommand(ClawPosition.STATION_INTAKE),
-              ClawPosition.L1,
-              createPositionCommand(ClawPosition.L1),
-              ClawPosition.L2,
-              createPositionCommand(ClawPosition.L2),
-              ClawPosition.L3,
-              createPositionCommand(ClawPosition.L3),
-              ClawPosition.L4,
-              createPositionCommand(ClawPosition.L4)),
+              ClawJointPosition.STOP,
+              Commands.runOnce(this::stop).withName("Stop ClawJoint"),
+              ClawJointPosition.INTAKE,
+              createPositionCommand(ClawJointPosition.INTAKE),
+              ClawJointPosition.L1,
+              createPositionCommand(ClawJointPosition.L1),
+              ClawJointPosition.L2,
+              createPositionCommand(ClawJointPosition.L2),
+              ClawJointPosition.L3,
+              createPositionCommand(ClawJointPosition.L3),
+              ClawJointPosition.L4,
+              createPositionCommand(ClawJointPosition.L4)),
           this::getMode);
 
   /**
-   * Creates a command for a specific claw position that moves the claw and checks the target
-   * position.
+   * Creates a command for a specific claw joint position that moves the claw joint and checks the
+   * target position.
    *
-   * @param position The claw position to create a command for
-   * @return A command that implements the claw movement
+   * @param position The claw joint position to create a command for
+   * @return A command that implements the claw joint movement
    */
-  private Command createPositionCommand(ClawPosition position) {
-    return Commands.parallel(
-        Commands.runOnce(() -> setPosition(position.targetAngle))
-            .withName("Move to " + position.toString()),
-        Commands.run(() -> checkAtTarget(position))
-            .withName("Check " + position.toString() + " Target"));
+  private Command createPositionCommand(ClawJointPosition position) {
+    return Commands.runOnce(() -> setPosition(position.targetAngle))
+        .withName("Move to " + position.toString());
   }
 
   /**
-   * Checks if the claw is at its target position.
+   * Checks if the claw joint is at its target position.
    *
    * @return true if at target position, false otherwise
    */
   @AutoLogOutput
-  private boolean isAtTarget() {
-    if (currentMode == ClawPosition.STOWED) return true;
+  public boolean isAtTarget() {
+    if (currentMode == ClawJointPosition.STOP) return true;
     return getPosition().isNear(currentMode.targetAngle, currentMode.angleTolerance);
   }
 
   /**
-   * Logs whether the claw is at its target position for a given mode.
+   * Logs target angle for given mode.
    *
-   * @param position The position to check against
+   * @return The target angle for the current mode
    */
-  private void checkAtTarget(ClawPosition position) {
-    boolean atTarget = isAtTarget();
-    Logger.recordOutput("Claw/AtTarget", atTarget);
-    Logger.recordOutput("Claw/TargetAngle", position.targetAngle);
+  @AutoLogOutput
+  private Angle targetAngle() {
+    return currentMode.targetAngle;
   }
 
   /**
-   * Creates a command to set the claw to a specific position.
+   * Creates a command to set the claw joint to a specific position.
    *
-   * @param position The desired claw position
+   * @param position The desired claw joint position
    * @return Command to set the position
    */
-  public Command setPositionCommand(ClawPosition position) {
-    return Commands.runOnce(() -> setClawPosition(position))
-        .withName("SetClawPosition(" + position.toString() + ")");
+  private Command setPositionCommand(ClawJointPosition position) {
+    return Commands.runOnce(() -> setClawJointPosition(position))
+        .withName("SetClawJointPosition(" + position.toString() + ")");
   }
 
   /** Factory methods for common position commands */
 
   /**
-   * @return Command to set claw to stowed position
+   * @return Command to move the claw joint to L1 scoring position
    */
-  public Command stow() {
-    return setPositionCommand(ClawPosition.STOWED);
+  public final Command L1() {
+    return setPositionCommand(ClawJointPosition.L1);
   }
 
   /**
-   * @return Command to set claw to floor intake position
+   * @return Command to move the claw joint to L2 scoring position
    */
-  public Command floorIntake() {
-    return setPositionCommand(ClawPosition.FLOOR_INTAKE);
+  public final Command L2() {
+    return setPositionCommand(ClawJointPosition.L2);
   }
 
   /**
-   * @return Command to set claw to station intake position
+   * @return Command to move the claw joint to L3 position
    */
-  public Command stationIntake() {
-    return setPositionCommand(ClawPosition.STATION_INTAKE);
+  public final Command L3() {
+    return setPositionCommand(ClawJointPosition.L3);
   }
 
   /**
-   * @return Command to set claw to l1 scoring position
+   * @return Command to move the claw joint to L4 position
    */
-  public Command l1() {
-    return setPositionCommand(ClawPosition.L1);
-  }
-
-   /**
-   * @return Command to set claw to l2 scoring position
-   */
-  public Command l2() {
-    return setPositionCommand(ClawPosition.L2);
-  }
-
-   /**
-   * @return Command to set claw to l3 scoring position
-   */
-  public Command l3() {
-    return setPositionCommand(ClawPosition.L3);
-  }
-
-   /**
-   * @return Command to set claw to l4 scoring position
-   */
-  public Command l4() {
-    return setPositionCommand(ClawPosition.L4);
+  public final Command L4() {
+    return setPositionCommand(ClawJointPosition.L4);
   }
 
   /**
-   * @return Command to stop the claw
+   * @return Command to intake the claw joint
    */
-  public Command stopCommand() {
-    return setPositionCommand(ClawPosition.STOWED);
+  public final Command intake() {
+    return setPositionCommand(ClawJointPosition.INTAKE);
+  }
+
+  /**
+   * @return Command to stop the claw joint
+   */
+  public final Command stopCommand() {
+    return setPositionCommand(ClawJointPosition.STOP);
   }
 }

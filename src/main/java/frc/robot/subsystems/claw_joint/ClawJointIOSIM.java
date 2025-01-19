@@ -22,7 +22,7 @@ public class ClawJointIOSIM extends ClawJointIOCTRE {
     LinearSystem<N2, N1, N2> linearSystem =
         LinearSystemId.createSingleJointedArmSystem(motor, 0.00032, GEAR_RATIO);
     motorSimModel =
-        new SingleJointedArmSim(linearSystem, motor, GEAR_RATIO, 1, -0.785398, 1.5708, true, 0, 1);
+        new SingleJointedArmSim(linearSystem, motor, GEAR_RATIO, 1, -0.785398, 1.5708, true, 0);
   }
 
   @Override

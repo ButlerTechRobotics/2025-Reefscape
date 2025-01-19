@@ -16,14 +16,10 @@ import edu.wpi.first.wpilibj2.command.sysid.SysIdRoutine;
 import edu.wpi.first.wpilibj2.command.sysid.SysIdRoutine.Direction;
 import frc.robot.commands.DriveCommands;
 import frc.robot.generated.TunerConstants;
-import frc.robot.subsystems.arm_extension.ArmExtension;
-import frc.robot.subsystems.arm_extension.ArmExtensionIO;
-import frc.robot.subsystems.arm_extension.ArmExtensionIOCTRE;
-import frc.robot.subsystems.arm_extension.ArmExtensionIOSIM;
-import frc.robot.subsystems.arm_joint.ArmJoint;
-import frc.robot.subsystems.arm_joint.ArmJointIO;
-import frc.robot.subsystems.arm_joint.ArmJointIOCTRE;
-import frc.robot.subsystems.arm_joint.ArmJointIOSIM;
+import frc.robot.subsystems.arm.Arm;
+import frc.robot.subsystems.arm.ArmIO;
+import frc.robot.subsystems.arm.ArmIOCTRE;
+import frc.robot.subsystems.arm.ArmIOSIM;
 import frc.robot.subsystems.claw.Claw;
 import frc.robot.subsystems.claw.ClawIO;
 import frc.robot.subsystems.claw.ClawIOCTRE;
@@ -55,8 +51,7 @@ public class RobotContainer {
   public final Drive drivetrain;
   public final Claw claw;
   public final ClawJoint clawJoint;
-  public final ArmJoint armJoint;
-  public final ArmExtension armExtension;
+  public final Arm arm;
 
   // CTRE Default Drive Request
   private final SwerveRequest.FieldCentric drive =
@@ -85,8 +80,7 @@ public class RobotContainer {
 
         claw = new Claw(new ClawIOCTRE());
         clawJoint = new ClawJoint(new ClawJointIOCTRE());
-        armJoint = new ArmJoint(new ArmJointIOCTRE());
-        armExtension = new ArmExtension(new ArmExtensionIOCTRE());
+        arm = new Arm(new ArmIOCTRE());
         break;
 
       case SIM:
@@ -122,8 +116,7 @@ public class RobotContainer {
 
         claw = new Claw(new ClawIOSIM());
         clawJoint = new ClawJoint(new ClawJointIOSIM());
-        armJoint = new ArmJoint(new ArmJointIOSIM());
-        armExtension = new ArmExtension(new ArmExtensionIOSIM());
+        arm = new Arm(new ArmIOSIM());
         break;
 
       default:
@@ -139,8 +132,7 @@ public class RobotContainer {
 
         claw = new Claw(new ClawIO() {});
         clawJoint = new ClawJoint(new ClawJointIO() {});
-        armJoint = new ArmJoint(new ArmJointIO() {});
-        armExtension = new ArmExtension(new ArmExtensionIO() {});
+        arm = new Arm(new ArmIO() {});
         break;
     }
 
@@ -257,6 +249,11 @@ public class RobotContainer {
 
     // reset the field-centric heading on left bumper press
     // joystick.leftBumper().onTrue(drivetrain.runOnce(drivetrain::seedFieldCentric));
+
+    joystick.povDown().whileTrue(arm.intake());
+    joystick.povLeft().whileTrue(arm.L1());
+    joystick.povRight().whileTrue(arm.L2());
+    joystick.povUp().whileTrue(arm.L3());
   }
 
   public Command getAutonomousCommand() {

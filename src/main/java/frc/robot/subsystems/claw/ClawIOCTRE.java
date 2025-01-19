@@ -80,7 +80,6 @@ public class ClawIOCTRE implements ClawIO {
             leaderStatorCurrent,
             leaderSupplyCurrent);
 
-
     var encoderStatus = BaseStatusSignal.refreshAll(encoderPosition, encoderVelocity);
 
     inputs.leaderConnected = leaderDebounce.calculate(leaderStatus.isOK());

@@ -126,7 +126,6 @@ public class Claw extends SubsystemBase {
     ClawMode(Voltage voltage) {
       this.voltage = voltage;
     }
-
   }
 
   /**
@@ -154,8 +153,7 @@ public class Claw extends SubsystemBase {
       new SelectCommand<>(
           Map.of(
               ClawMode.NONE,
-              Commands.runOnce(this::stop)
-                  .withName("Stop Claw"),
+              Commands.runOnce(this::stop).withName("Stop Claw"),
               ClawMode.FLOOR_INTAKE,
               createPositionCommand(ClawMode.FLOOR_INTAKE),
               ClawMode.STATION_INTAKE,
