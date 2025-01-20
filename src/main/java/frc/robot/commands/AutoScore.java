@@ -6,6 +6,7 @@ import com.pathplanner.lib.path.PathPlannerPath;
 import edu.wpi.first.math.geometry.Pose2d;
 import edu.wpi.first.math.util.Units;
 import edu.wpi.first.wpilibj2.command.Command;
+import edu.wpi.first.wpilibj2.command.Commands;
 import frc.robot.subsystems.arm.Arm;
 import frc.robot.subsystems.claw.Claw;
 import frc.robot.subsystems.drive.Drive;
@@ -72,12 +73,16 @@ public class AutoScore extends Command {
   }
 
   private Command getPathCommand(Pose2d closestPose, Side side) {
-    String pathName = getPathName(closestPose, side);
-    PathPlannerPath path = PathPlannerPath.fromPathFile(pathName);
-    PathConstraints constraints = new PathConstraints(
-        3.0, 4.0,
-        Units.degreesToRadians(540), Units.degreesToRadians(720));
-    return AutoBuilder.pathfindThenFollowPath(path, constraints);
+    try {
+      String pathName = getPathName(closestPose, side);
+      PathPlannerPath path = PathPlannerPath.fromPathFile(pathName);
+      PathConstraints constraints =
+          new PathConstraints(3.0, 4.0, Units.degreesToRadians(540), Units.degreesToRadians(720));
+      return AutoBuilder.pathfindThenFollowPath(path, constraints);
+    } catch (Exception e) {
+      System.out.println("Path not found");
+      return Commands.none();
+    }
   }
 
   private String getPathName(Pose2d closestPose, Side side) {
