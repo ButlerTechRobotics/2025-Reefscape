@@ -5,10 +5,15 @@
 // license that can be found in the LICENSE file at
 // the root directory of this project.
 
-package frc.robot.utils ;
+package frc.robot.utils;
 
+import static edu.wpi.first.apriltag.AprilTagFields.k2024Crescendo;
+
+import edu.wpi.first.apriltag.AprilTagFieldLayout;
 import edu.wpi.first.math.geometry.*;
 import edu.wpi.first.math.util.Units;
+
+import java.io.IOException;
 import java.util.ArrayList;
 import java.util.HashMap;
 import java.util.List;
@@ -168,5 +173,16 @@ public class FieldConstants {
 
     public final double height;
     public final double pitch;
+  }
+
+  public static double aprilTagWidth = Units.inchesToMeters(6.50);
+  public static AprilTagFieldLayout aprilTags;
+
+  static {
+    try {
+      aprilTags = AprilTagFieldLayout.loadFromResource(k2024Crescendo.m_resourceFile);
+    } catch (IOException e) {
+      throw new RuntimeException(e);
+    }
   }
 }
