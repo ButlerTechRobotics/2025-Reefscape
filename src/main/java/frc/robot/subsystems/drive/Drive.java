@@ -283,6 +283,22 @@ public class Drive extends SubsystemBase {
     return inputs.pose;
   }
 
+  public Pose2d findClosestPose(Pose2d[] poses) {
+    Pose2d currentPose = getPose();
+    double minDistance = Double.MAX_VALUE;
+    Pose2d closestPose = null;
+
+    for (Pose2d pose : poses) {
+      double distance = currentPose.getTranslation().getDistance(pose.getTranslation());
+      if (distance < minDistance) {
+        minDistance = distance;
+        closestPose = pose;
+      }
+    }
+
+    return closestPose;
+  }
+
   public Rotation2d getRotation() {
     return getPose().getRotation();
   }
