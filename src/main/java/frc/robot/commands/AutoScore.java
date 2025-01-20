@@ -6,14 +6,13 @@ import com.pathplanner.lib.path.PathPlannerPath;
 import edu.wpi.first.math.geometry.Pose2d;
 import edu.wpi.first.math.util.Units;
 import edu.wpi.first.wpilibj2.command.Command;
-import edu.wpi.first.wpilibj2.command.Commands;
 import frc.robot.subsystems.arm.Arm;
 import frc.robot.subsystems.claw.Claw;
 import frc.robot.subsystems.drive.Drive;
 import frc.robot.utils.FieldConstants.Reef;
 
 public class AutoScore extends Command {
-  Drive drive;
+  Drive drivetrain;
   Claw claw;
   Arm arm;
   Side side;
@@ -35,8 +34,8 @@ public class AutoScore extends Command {
     RIGHT
   }
 
-  public AutoScore(Drive drive, Claw claw, Arm arm, Side side, ArmMode armMode) {
-    this.drive = drive;
+  public AutoScore(Drive drivetrain, Claw claw, Arm arm, Side side, ArmMode armMode) {
+    this.drivetrain = drivetrain;
     this.claw = claw;
     this.arm = arm;
     this.side = side;
@@ -47,54 +46,74 @@ public class AutoScore extends Command {
 
   @Override
   public void initialize() {
-    Pose2d closestPose = drive.findClosestPose(Reef.centerFaces);
-    System.out.println("Closest Pose: " + closestPose);
+    Pose2d closestPose = drivetrain.findClosestPose(Reef.centerFaces);
+    int closestPoseIndex =
+        getClosestPoseIndex(closestPose, Reef.centerFaces) + 1; // Convert to 1-based index
+    System.out.println("Closest Pose: " + closestPose + ", Index: " + closestPoseIndex);
 
-    pathCommand = getPathCommand(closestPose, side);
-    pathCommand.schedule();
+    pathCommand = getPathCommand(closestPoseIndex, side);
+    if (pathCommand != null) {
+      pathCommand.schedule();
+    } else {
+      System.out.println("Path command is null");
+    }
 
     switch (armMode) {
       case STOP:
-        arm.stopCommand();
+        arm.stopCommand().schedule();
         break;
       case INTAKE:
-        arm.intake();
+        arm.intake().schedule();
         break;
       case L1:
-        arm.L1();
+        arm.L1().schedule();
         break;
       case L2:
-        arm.L2();
+        arm.L2().schedule();
         break;
       case L3:
-        arm.L3();
+        arm.L3().schedule();
+        break;
+      case L4:
+        arm.L4().schedule();
         break;
     }
   }
 
-  private Command getPathCommand(Pose2d closestPose, Side side) {
+  private Command getPathCommand(int closestPoseIndex, Side side) {
     try {
-      String pathName = getPathName(closestPose, side);
+      String pathName = getPathName(closestPoseIndex, side);
+      System.out.println("Trying to run path: " + pathName);
       PathPlannerPath path = PathPlannerPath.fromPathFile(pathName);
       PathConstraints constraints =
           new PathConstraints(3.0, 4.0, Units.degreesToRadians(540), Units.degreesToRadians(720));
+      System.out.println("Path constraints: " + constraints);
       return AutoBuilder.pathfindThenFollowPath(path, constraints);
     } catch (Exception e) {
-      System.out.println("Path not found");
-      return Commands.none();
+      System.out.println("Path not found: " + e.getMessage());
+      return null;
     }
   }
 
-  private String getPathName(Pose2d closestPose, Side side) {
-    // Implement logic to determine the path name based on the closest pose and side
+  private String getPathName(int closestPoseIndex, Side side) {
+    // Implement logic to determine the path name based on the closest pose index and side
     // For example:
     if (side == Side.LEFT) {
-      return "Left";
+      return "Left_" + closestPoseIndex;
     } else if (side == Side.CENTER) {
-      return "Center";
+      return "Center_" + closestPoseIndex;
     } else {
-      return "Right";
+      return "Right_" + closestPoseIndex;
     }
+  }
+
+  private int getClosestPoseIndex(Pose2d closestPose, Pose2d[] poses) {
+    for (int i = 0; i < poses.length; i++) {
+      if (poses[i].equals(closestPose)) {
+        return i;
+      }
+    }
+    return -1; // Should not happen if closestPose is guaranteed to be in poses
   }
 
   @Override

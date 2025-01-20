@@ -3,7 +3,6 @@ package frc.robot;
 import com.ctre.phoenix6.swerve.SwerveModule.DriveRequestType;
 import com.ctre.phoenix6.swerve.SwerveRequest;
 import com.pathplanner.lib.auto.AutoBuilder;
-import edu.wpi.first.math.geometry.Pose2d;
 import edu.wpi.first.math.geometry.Rotation2d;
 import edu.wpi.first.math.geometry.Rotation3d;
 import edu.wpi.first.math.geometry.Transform3d;
@@ -11,9 +10,8 @@ import edu.wpi.first.math.geometry.Translation3d;
 import edu.wpi.first.math.trajectory.TrapezoidProfile;
 import edu.wpi.first.units.measure.LinearVelocity;
 import edu.wpi.first.wpilibj2.command.Command;
-import edu.wpi.first.wpilibj2.command.Commands;
 import edu.wpi.first.wpilibj2.command.sysid.SysIdRoutine;
-import edu.wpi.first.wpilibj2.command.sysid.SysIdRoutine.Direction;
+import frc.robot.commands.AutoScore;
 import frc.robot.commands.DriveCommands;
 import frc.robot.generated.TunerConstants;
 import frc.robot.subsystems.arm.Arm;
@@ -170,14 +168,14 @@ public class RobotContainer {
                                 .customRight()
                                 .getX())))); // Drive counterclockwise with negative X (left)
 
-    joystick.a().onTrue(Commands.runOnce(() -> drivetrain.resetPose(Pose2d.kZero)));
-    joystick
-        .b()
-        .whileTrue(
-            drivetrain.applyRequest(
-                () ->
-                    point.withModuleDirection(
-                        new Rotation2d(-joystick.getLeftY(), -joystick.getLeftX()))));
+    // joystick.a().onTrue(Commands.runOnce(() -> drivetrain.resetPose(Pose2d.kZero)));
+    // joystick
+    //     .b()
+    //     .whileTrue(
+    //         drivetrain.applyRequest(
+    //             () ->
+    //                 point.withModuleDirection(
+    //                     new Rotation2d(-joystick.getLeftY(), -joystick.getLeftX()))));
 
     // Custom Swerve Request that use PathPlanner Setpoint Generator. Tuning NEEDED. Instructions
     // can be found here
@@ -190,18 +188,20 @@ public class RobotContainer {
             .withDeadband(MaxSpeed.times(0.1))
             .withRotationalDeadband(Constants.MaxAngularRate.times(0.1))
             .withDriveRequestType(DriveRequestType.OpenLoopVoltage);
-    joystick
-        .x()
-        .whileTrue(
-            drivetrain.applyRequest(
-                () ->
-                    setpointGen
-                        .withVelocityX(
-                            MaxSpeed.times(
-                                -joystick.getLeftY())) // Drive forward with negative Y (forward)
-                        .withVelocityY(MaxSpeed.times(-joystick.getLeftX()))
-                        .withRotationalRate(Constants.MaxAngularRate.times(-joystick.getRightX()))
-                        .withOperatorForwardDirection(drivetrain.getOperatorForwardDirection())));
+    // joystick
+    //     .x()
+    //     .whileTrue(
+    //         drivetrain.applyRequest(
+    //             () ->
+    //                 setpointGen
+    //                     .withVelocityX(
+    //                         MaxSpeed.times(
+    //                             -joystick.getLeftY())) // Drive forward with negative Y (forward)
+    //                     .withVelocityY(MaxSpeed.times(-joystick.getLeftX()))
+    //
+    // .withRotationalRate(Constants.MaxAngularRate.times(-joystick.getRightX()))
+    //
+    // .withOperatorForwardDirection(drivetrain.getOperatorForwardDirection())));
 
     // Custom Swerve Request that use ProfiledFieldCentricFacingAngle. Allows you to face specific
     // direction while driving
@@ -234,10 +234,10 @@ public class RobotContainer {
 
     // Run SysId routines when holding back/start and X/Y.
     // Note that each routine should be run exactly once in a single log.
-    joystick.back().and(joystick.y()).whileTrue(drivetrain.sysIdDynamic(Direction.kForward));
-    joystick.back().and(joystick.x()).whileTrue(drivetrain.sysIdDynamic(Direction.kReverse));
-    joystick.start().and(joystick.y()).whileTrue(drivetrain.sysIdQuasistatic(Direction.kForward));
-    joystick.start().and(joystick.x()).whileTrue(drivetrain.sysIdQuasistatic(Direction.kReverse));
+    // joystick.back().and(joystick.y()).whileTrue(drivetrain.sysIdDynamic(Direction.kForward));
+    // joystick.back().and(joystick.x()).whileTrue(drivetrain.sysIdDynamic(Direction.kReverse));
+    // joystick.start().and(joystick.y()).whileTrue(drivetrain.sysIdQuasistatic(Direction.kForward));
+    // joystick.start().and(joystick.x()).whileTrue(drivetrain.sysIdQuasistatic(Direction.kReverse));
 
     // reset the field-centric heading on left bumper press
     // joystick.leftBumper().onTrue(drivetrain.runOnce(drivetrain::seedFieldCentric));
@@ -246,6 +246,16 @@ public class RobotContainer {
     joystick.povLeft().whileTrue(arm.L1());
     joystick.povRight().whileTrue(arm.L2());
     joystick.povUp().whileTrue(arm.L3());
+
+    joystick
+        .leftBumper()
+        .and(joystick.a())
+        .whileTrue(new AutoScore(drivetrain, claw, arm, AutoScore.Side.LEFT, AutoScore.ArmMode.L1));
+    joystick
+        .rightBumper()
+        .and(joystick.a())
+        .whileTrue(
+            new AutoScore(drivetrain, claw, arm, AutoScore.Side.RIGHT, AutoScore.ArmMode.L1));
   }
 
   public Command getAutonomousCommand() {
