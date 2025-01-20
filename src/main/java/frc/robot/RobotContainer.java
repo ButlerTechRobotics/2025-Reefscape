@@ -24,10 +24,6 @@ import frc.robot.subsystems.claw.Claw;
 import frc.robot.subsystems.claw.ClawIO;
 import frc.robot.subsystems.claw.ClawIOCTRE;
 import frc.robot.subsystems.claw.ClawIOSIM;
-import frc.robot.subsystems.claw_joint.ClawJoint;
-import frc.robot.subsystems.claw_joint.ClawJointIO;
-import frc.robot.subsystems.claw_joint.ClawJointIOCTRE;
-import frc.robot.subsystems.claw_joint.ClawJointIOSIM;
 import frc.robot.subsystems.drive.Drive;
 import frc.robot.subsystems.drive.DriveIO;
 import frc.robot.subsystems.drive.DriveIOCTRE;
@@ -50,7 +46,6 @@ public class RobotContainer {
 
   public final Drive drivetrain;
   public final Claw claw;
-  public final ClawJoint clawJoint;
   public final Arm arm;
 
   // CTRE Default Drive Request
@@ -79,7 +74,6 @@ public class RobotContainer {
             new VisionIOLimelight("limelight-br", drivetrain::getVisionParameters));
 
         claw = new Claw(new ClawIOCTRE());
-        clawJoint = new ClawJoint(new ClawJointIOCTRE());
         arm = new Arm(new ArmIOCTRE());
         break;
 
@@ -115,7 +109,6 @@ public class RobotContainer {
                 drivetrain::getVisionParameters));
 
         claw = new Claw(new ClawIOSIM());
-        clawJoint = new ClawJoint(new ClawJointIOSIM());
         arm = new Arm(new ArmIOSIM());
         break;
 
@@ -131,7 +124,6 @@ public class RobotContainer {
             new VisionIO() {});
 
         claw = new Claw(new ClawIO() {});
-        clawJoint = new ClawJoint(new ClawJointIO() {});
         arm = new Arm(new ArmIO() {});
         break;
     }
