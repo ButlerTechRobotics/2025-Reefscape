@@ -18,20 +18,38 @@ import edu.wpi.first.wpilibj.simulation.SingleJointedArmSim;
 
 public class ArmIOSIM extends ArmIOCTRE {
 
-  private final SingleJointedArmSim armJointSimModel;
+  private final SingleJointedArmSim armShoulderSimModel;
+  private final SingleJointedArmSim armWristSimModel;
   private final ElevatorSim armExtensionSimModel;
-  private final TalonFXSimState armJointLeaderSim;
+  private final TalonFXSimState armShoulderLeaderSim;
+  private final TalonFXSimState armWristLeaderSim;
   private final TalonFXSimState armExtensionLeaderSim;
 
   public ArmIOSIM() {
-    // Arm Joint Simulation
-    DCMotor armJointMotor = DCMotor.getKrakenX60Foc(2);
-    LinearSystem<N2, N1, N2> armJointLinearSystem =
-        LinearSystemId.createSingleJointedArmSystem(armJointMotor, 0.00032, JOINT_GEAR_RATIO);
-    armJointSimModel =
+    // Arm Shoulder Simulation
+    DCMotor armShoulderMotor = DCMotor.getKrakenX60Foc(2);
+    LinearSystem<N2, N1, N2> armShoulderLinearSystem =
+        LinearSystemId.createSingleJointedArmSystem(armShoulderMotor, 0.00032, SHOULDER_GEAR_RATIO);
+    armShoulderSimModel =
         new SingleJointedArmSim(
-            armJointLinearSystem, armJointMotor, JOINT_GEAR_RATIO, 1, -0.785398, 1.5708, true, 0);
-    armJointLeaderSim = jointLeader.getSimState();
+            armShoulderLinearSystem,
+            armShoulderMotor,
+            SHOULDER_GEAR_RATIO,
+            1,
+            -0.785398,
+            1.5708,
+            true,
+            0);
+    armShoulderLeaderSim = shoulderLeader.getSimState();
+
+    // Arm Wrist Simulation
+    DCMotor armWristMotor = DCMotor.getKrakenX60Foc(1);
+    LinearSystem<N2, N1, N2> armWristLinearSystem =
+        LinearSystemId.createSingleJointedArmSystem(armWristMotor, 0.00032, WRIST_GEAR_RATIO);
+    armWristSimModel =
+        new SingleJointedArmSim(
+            armWristLinearSystem, armWristMotor, WRIST_GEAR_RATIO, 1, -0.785398, 1.5708, true, 0);
+    armWristLeaderSim = wristLeader.getSimState();
 
     // Configure dual Kraken X60 FOC motors
     DCMotor armExtensionMotor = DCMotor.getKrakenX60Foc(2);
@@ -55,13 +73,21 @@ public class ArmIOSIM extends ArmIOCTRE {
   }
 
   public void updateInputs(ArmIOInputs inputs) {
-    // Arm Joint Updates
-    armJointLeaderSim.setSupplyVoltage(RobotController.getBatteryVoltage());
-    var armJointMotorVoltage = armJointLeaderSim.getMotorVoltage();
-    armJointSimModel.setInputVoltage(armJointMotorVoltage);
-    armJointSimModel.update(0.020); // Assume 20 ms loop time
-    armJointLeaderSim.setRawRotorPosition(
-        JOINT_GEAR_RATIO * Units.radiansToRotations(armJointSimModel.getAngleRads()));
+    // Arm Shoulder Updates
+    armShoulderLeaderSim.setSupplyVoltage(RobotController.getBatteryVoltage());
+    var armShoulderMotorVoltage = armShoulderLeaderSim.getMotorVoltage();
+    armShoulderSimModel.setInputVoltage(armShoulderMotorVoltage);
+    armShoulderSimModel.update(0.020); // Assume 20 ms loop time
+    armShoulderLeaderSim.setRawRotorPosition(
+        SHOULDER_GEAR_RATIO * Units.radiansToRotations(armShoulderSimModel.getAngleRads()));
+
+    // Arm Wrist Updates
+    armWristLeaderSim.setSupplyVoltage(RobotController.getBatteryVoltage());
+    var armWristMotorVoltage = armWristLeaderSim.getMotorVoltage();
+    armWristSimModel.setInputVoltage(armWristMotorVoltage);
+    armWristSimModel.update(0.020); // Assume 20 ms loop time
+    armWristLeaderSim.setRawRotorPosition(
+        WRIST_GEAR_RATIO * Units.radiansToRotations(armWristSimModel.getAngleRads()));
 
     // Arm Extension Updates
     armExtensionLeaderSim.setSupplyVoltage(RobotController.getBatteryVoltage());

@@ -11,7 +11,6 @@ import edu.wpi.first.wpilibj2.command.Command;
 import edu.wpi.first.wpilibj2.command.Commands;
 import edu.wpi.first.wpilibj2.command.SelectCommand;
 import edu.wpi.first.wpilibj2.command.SubsystemBase;
-import frc.robot.utils.ArmVisualizer;
 import java.util.Map;
 import org.littletonrobotics.junction.AutoLogOutput;
 import org.littletonrobotics.junction.Logger;
@@ -19,7 +18,7 @@ import org.littletonrobotics.junction.Logger;
 /**
  * The Arm subsystem controls a mechanism with both rotation and extension capabilities for game
  * piece manipulation. It supports multiple positions for different game actions and provides
- * closed-loop control for both joint angle and extension distance.
+ * closed-loop control for shoulder angle, wrist angle, and extension distance.
  */
 public class Arm extends SubsystemBase {
   // Hardware interfaces and inputs
@@ -33,12 +32,16 @@ public class Arm extends SubsystemBase {
   private final ArmVisualizer setpointVisualizer;
 
   // Alerts for motor connection status
-  private final Alert jointLeaderAlert =
-      new Alert("Joint leader motor isn't connected", AlertType.kError);
-  private final Alert jointFollowerAlert =
-      new Alert("Joint follower motor isn't connected", AlertType.kError);
-  private final Alert jointEncoderAlert =
-      new Alert("Joint encoder isn't connected", AlertType.kError);
+  private final Alert shoulderLeaderAlert =
+      new Alert("Shoulder leader motor isn't connected", AlertType.kError);
+  private final Alert shoulderFollowerAlert =
+      new Alert("Shoulder follower motor isn't connected", AlertType.kError);
+  private final Alert shoulderEncoderAlert =
+      new Alert("Shoulder encoder isn't connected", AlertType.kError);
+  private final Alert wristLeaderAlert =
+      new Alert("Wrist leader motor isn't connected", AlertType.kError);
+  private final Alert wristEncoderAlert =
+      new Alert("Wrist encoder isn't connected", AlertType.kError);
   private final Alert extensionLeaderAlert =
       new Alert("Extension leader motor isn't connected", AlertType.kError);
   private final Alert extensionFollowerAlert =
@@ -66,27 +69,28 @@ public class Arm extends SubsystemBase {
     Logger.processInputs("Arm", inputs);
 
     // Update motor connection status alerts
-    jointLeaderAlert.set(!inputs.jointLeaderConnected);
-    jointFollowerAlert.set(!inputs.jointFollowerConnected);
-    jointEncoderAlert.set(!inputs.jointEncoderConnected);
+    shoulderLeaderAlert.set(!inputs.shoulderLeaderConnected);
+    shoulderFollowerAlert.set(!inputs.shoulderFollowerConnected);
+    shoulderEncoderAlert.set(!inputs.shoulderEncoderConnected);
+    wristLeaderAlert.set(!inputs.wristLeaderConnected);
+    wristEncoderAlert.set(!inputs.wristEncoderConnected);
     extensionLeaderAlert.set(!inputs.extensionLeaderConnected);
     extensionFollowerAlert.set(!inputs.extensionFollowerConnected);
     extensionEncoderAlert.set(!inputs.extensionEncoderConnected);
 
-    measuredVisualizer.update(inputs.jointAngle, inputs.extensionDistance);
-    setpointVisualizer.update(targetJointAngle(), targetExtensionDistance());
+    measuredVisualizer.update(inputs.shoulderAngle, inputs.wristAngle, inputs.extensionDistance);
+    setpointVisualizer.update(targetShoulderAngle(), targetWristAngle(), targetExtensionDistance());
   }
 
   /**
-   * Runs the arm in closed-loop position mode to the specified angle and extension.
+   * Runs the arm in closed-loop position mode to the specified angles and extension.
    *
-   * @param jointAngle The target joint angle
+   * @param shoulderAngle The target shoulder angle
+   * @param wristAngle The target wrist angle
    * @param extensionDistance The target extension distance
    */
-  private void setPosition(Angle jointAngle, Distance extensionDistance) {
-    System.out.println(
-        "Setting position: jointAngle=" + jointAngle + ", extensionDistance=" + extensionDistance);
-    io.setPosition(jointAngle, extensionDistance);
+  private void setPosition(Angle shoulderAngle, Angle wristAngle, Distance extensionDistance) {
+    io.setPosition(shoulderAngle, wristAngle, extensionDistance);
   }
 
   /** Stops all arm motors. */
@@ -95,13 +99,23 @@ public class Arm extends SubsystemBase {
   }
 
   /**
-   * Returns the current joint angle of the arm.
+   * Returns the current shoulder angle of the arm.
    *
    * @return The current angular position
    */
   @AutoLogOutput
-  public Angle getJointPosition() {
-    return inputs.jointAngle;
+  public Angle getShoulderPosition() {
+    return inputs.shoulderAngle;
+  }
+
+  /**
+   * Returns the current wrist angle of the arm.
+   *
+   * @return The current angular position
+   */
+  @AutoLogOutput
+  public Angle getWristPosition() {
+    return inputs.wristAngle;
   }
 
   /**
@@ -116,33 +130,42 @@ public class Arm extends SubsystemBase {
 
   /** Enumeration of available arm positions with their corresponding targets. */
   private enum ArmPosition {
-    STOP(Radians.of(0), Meters.of(0)), // Stop the arm
-    INTAKE(Radians.of(0), Meters.of(0)), // Arm tucked in
-    L1(Radians.of(90), Meters.of(12)), // Position for scoring in L1
-    L2(Radians.of(135), Meters.of(24)), // Position for scoring in L2
-    L3(Radians.of(135), Meters.of(36)), // Position for scoring in L3
-    L4(Radians.of(180), Meters.of(48)); // Position for scoring in L4
+    STOP(Radians.of(0), Radians.of(0), Meters.of(0)), // Stop the arm
+    INTAKE(Radians.of(0), Radians.of(0), Meters.of(0)), // Arm tucked in
+    L1(Radians.of(90), Radians.of(5), Meters.of(12)), // Position for scoring in L1
+    L2(Radians.of(135), Radians.of(10), Meters.of(24)), // Position for scoring in L2
+    L3(Radians.of(135), Radians.of(15), Meters.of(36)), // Position for scoring in L3
+    L4(Radians.of(180), Radians.of(20), Meters.of(48)); // Position for scoring in L4
 
-    private final Angle targetJointAngle;
+    private final Angle targetShoulderAngle;
+    private final Angle targetWristAngle;
     private final Distance targetExtensionDistance;
-    private final Angle jointTolerance;
+    private final Angle shoulderTolerance;
+    private final Angle wristTolerance;
     private final Distance extensionTolerance;
 
     ArmPosition(
-        Angle targetJointAngle,
+        Angle targetShoulderAngle,
+        Angle targetWristAngle,
         Distance targetExtensionDistance,
-        Angle jointTolerance,
+        Angle shoulderTolerance,
+        Angle wristTolerance,
         Distance extensionTolerance) {
-      this.targetJointAngle = targetJointAngle;
+      this.targetShoulderAngle = targetShoulderAngle;
+      this.targetWristAngle = targetWristAngle;
       this.targetExtensionDistance = targetExtensionDistance;
-      this.jointTolerance = jointTolerance;
+      this.shoulderTolerance = shoulderTolerance;
+      this.wristTolerance = wristTolerance;
       this.extensionTolerance = extensionTolerance;
     }
 
-    ArmPosition(Angle targetJointAngle, Distance targetExtensionDistance) {
+    ArmPosition(
+        Angle targetShoulderAngle, Angle targetWristAngle, Distance targetExtensionDistance) {
       this(
-          targetJointAngle,
+          targetShoulderAngle,
+          targetWristAngle,
           targetExtensionDistance,
+          Degrees.of(2),
           Degrees.of(2),
           Inches.of(0.5)); // Default tolerances
     }
@@ -187,21 +210,18 @@ public class Arm extends SubsystemBase {
           this::getMode);
 
   /**
-   * Creates a command for a specific arm position that moves both joint and extension.
+   * Creates a command for a specific arm position that moves both shoulder and extension.
    *
    * @param position The arm position to create a command for
    * @return A command that implements the arm movement
    */
   private Command createPositionCommand(ArmPosition position) {
-    System.out.println(
-        "Creating position command: "
-            + position.toString()
-            + " with jointAngle="
-            + position.targetJointAngle
-            + " and extensionDistance="
-            + position.targetExtensionDistance);
     return Commands.runOnce(
-            () -> setPosition(position.targetJointAngle, position.targetExtensionDistance))
+            () ->
+                setPosition(
+                    position.targetShoulderAngle,
+                    position.targetWristAngle,
+                    position.targetExtensionDistance))
         .withName("Move to " + position.toString());
   }
 
@@ -213,19 +233,31 @@ public class Arm extends SubsystemBase {
   @AutoLogOutput
   public boolean isAtTarget() {
     if (currentMode == ArmPosition.STOP) return true;
-    return getJointPosition().isNear(currentMode.targetJointAngle, currentMode.jointTolerance)
+    return getShoulderPosition()
+            .isNear(currentMode.targetShoulderAngle, currentMode.shoulderTolerance)
+        && getWristPosition().isNear(currentMode.targetWristAngle, currentMode.wristTolerance)
         && getExtensionPosition()
             .isNear(currentMode.targetExtensionDistance, currentMode.extensionTolerance);
   }
 
   /**
-   * Gets the target joint angle for the current mode.
+   * Gets the target shoulder angle for the current mode.
    *
-   * @return The target joint angle
+   * @return The target shoulder angle
    */
   @AutoLogOutput
-  private Angle targetJointAngle() {
-    return currentMode.targetJointAngle;
+  private Angle targetShoulderAngle() {
+    return currentMode.targetShoulderAngle;
+  }
+
+  /**
+   * Gets the target wrist angle for the current mode.
+   *
+   * @return The target wrist angle
+   */
+  @AutoLogOutput
+  private Angle targetWristAngle() {
+    return currentMode.targetWristAngle;
   }
 
   /**
