@@ -1,10 +1,7 @@
 package frc.robot.commands;
 
-import com.pathplanner.lib.auto.AutoBuilder;
-import com.pathplanner.lib.path.PathConstraints;
 import com.pathplanner.lib.path.PathPlannerPath;
 import edu.wpi.first.math.geometry.Pose2d;
-import edu.wpi.first.math.util.Units;
 import edu.wpi.first.wpilibj2.command.Command;
 import frc.robot.subsystems.arm.Arm;
 import frc.robot.subsystems.claw.Claw;
@@ -41,7 +38,7 @@ public class AutoScore extends Command {
     this.side = side;
     this.armMode = armMode;
 
-    addRequirements(claw, arm);
+    addRequirements(drivetrain, claw, arm);
   }
 
   @Override
@@ -85,10 +82,7 @@ public class AutoScore extends Command {
       String pathName = getPathName(closestPoseIndex, side);
       System.out.println("Trying to run path: " + pathName);
       PathPlannerPath path = PathPlannerPath.fromPathFile(pathName);
-      PathConstraints constraints =
-          new PathConstraints(3.0, 4.0, Units.degreesToRadians(540), Units.degreesToRadians(720));
-      System.out.println("Path constraints: " + constraints);
-      return AutoBuilder.pathfindThenFollowPath(path, constraints);
+      return drivetrain.goToPath(path);
     } catch (Exception e) {
       System.out.println("Path not found: " + e.getMessage());
       return null;
