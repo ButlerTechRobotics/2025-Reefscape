@@ -58,8 +58,8 @@ public class Arm extends SubsystemBase {
     this.io = io;
     this.inputs = new ArmIOInputsAutoLogged();
 
-    measuredVisualizer = new ArmVisualizer("Measured", Color.kBlack, Inches.of(0));
-    setpointVisualizer = new ArmVisualizer("Setpoint", Color.kGreen, Inches.of(0));
+    measuredVisualizer = new ArmVisualizer("Measured", Color.kBlack, Color.kGray, Inches.of(24));
+    setpointVisualizer = new ArmVisualizer("Setpoint", Color.kGreen, Color.kBlue, Inches.of(24));
   }
 
   @Override
