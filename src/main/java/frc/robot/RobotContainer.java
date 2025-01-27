@@ -3,6 +3,7 @@ package frc.robot;
 import com.ctre.phoenix6.swerve.SwerveModule.DriveRequestType;
 import com.ctre.phoenix6.swerve.SwerveRequest;
 import com.pathplanner.lib.auto.AutoBuilder;
+import com.pathplanner.lib.auto.NamedCommands;
 import edu.wpi.first.math.geometry.Rotation2d;
 import edu.wpi.first.math.geometry.Rotation3d;
 import edu.wpi.first.math.geometry.Transform3d;
@@ -13,6 +14,7 @@ import edu.wpi.first.wpilibj2.command.Command;
 import edu.wpi.first.wpilibj2.command.sysid.SysIdRoutine;
 import frc.robot.commands.AutoScore;
 import frc.robot.commands.DriveCommands;
+import frc.robot.commands.SmartScore;
 import frc.robot.generated.TunerConstants;
 import frc.robot.subsystems.arm.Arm;
 import frc.robot.subsystems.arm.ArmIO;
@@ -125,6 +127,19 @@ public class RobotContainer {
         arm = new Arm(new ArmIO() {});
         break;
     }
+
+    // Set up the named commands
+    NamedCommands.registerCommand(
+        "L1Align", new AutoScore(claw, arm, AutoScore.ArmMode.L1, AutoScore.ClawMode.OUTTAKE));
+    NamedCommands.registerCommand(
+        "L2Align", new AutoScore(claw, arm, AutoScore.ArmMode.L2, AutoScore.ClawMode.OUTTAKE));
+    NamedCommands.registerCommand(
+        "L3Align", new AutoScore(claw, arm, AutoScore.ArmMode.L3, AutoScore.ClawMode.OUTTAKE));
+    NamedCommands.registerCommand(
+        "L4Align", new AutoScore(claw, arm, AutoScore.ArmMode.L4, AutoScore.ClawMode.OUTTAKE));
+    NamedCommands.registerCommand(
+        "StationIntake",
+        new AutoScore(claw, arm, AutoScore.ArmMode.INTAKE, AutoScore.ClawMode.STATION_INTAKE));
 
     // Set up auto routines
     autoChooser = new LoggedDashboardChooser<>("Auto Choices", AutoBuilder.buildAutoChooser());
@@ -242,7 +257,7 @@ public class RobotContainer {
     // reset the field-centric heading on left bumper press
     // joystick.leftBumper().onTrue(drivetrain.runOnce(drivetrain::seedFieldCentric));
 
-    joystick.povDown().whileTrue(arm.intake());
+    joystick.povDown().whileTrue(arm.stopCommand());
     joystick.povLeft().whileTrue(arm.L1());
     joystick.povRight().whileTrue(arm.L2());
     joystick.povUp().whileTrue(arm.L3());
@@ -250,12 +265,13 @@ public class RobotContainer {
     joystick
         .leftBumper()
         .and(joystick.a())
-        .whileTrue(new AutoScore(drivetrain, claw, arm, AutoScore.Side.LEFT, AutoScore.ArmMode.L1));
+        .whileTrue(
+            new SmartScore(drivetrain, claw, arm, SmartScore.Side.LEFT, SmartScore.ArmMode.L1));
     joystick
         .rightBumper()
         .and(joystick.a())
         .whileTrue(
-            new AutoScore(drivetrain, claw, arm, AutoScore.Side.RIGHT, AutoScore.ArmMode.L1));
+            new SmartScore(drivetrain, claw, arm, SmartScore.Side.RIGHT, SmartScore.ArmMode.L1));
   }
 
   public Command getAutonomousCommand() {

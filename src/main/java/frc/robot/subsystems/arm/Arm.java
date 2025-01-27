@@ -128,14 +128,21 @@ public class Arm extends SubsystemBase {
     return inputs.extensionDistance;
   }
 
-  /** Enumeration of available arm positions with their corresponding targets. */
+  /**
+   * Enumeration of available arm positions with their corresponding targets. Shoulder Angle, Wrist
+   * Angle, Extension Distance
+   */
   private enum ArmPosition {
     STOP(Radians.of(0), Radians.of(0), Meters.of(0)), // Stop the arm
     INTAKE(Radians.of(0), Radians.of(0), Meters.of(0)), // Arm tucked in
-    L1(Radians.of(90), Radians.of(5), Meters.of(12)), // Position for scoring in L1
-    L2(Radians.of(135), Radians.of(10), Meters.of(24)), // Position for scoring in L2
-    L3(Radians.of(135), Radians.of(15), Meters.of(36)), // Position for scoring in L3
-    L4(Radians.of(180), Radians.of(20), Meters.of(48)); // Position for scoring in L4
+    L1(Radians.of(90), Radians.of(90), Meters.of(0)), // Position for scoring in L1
+    L1Back(Radians.of(90), Radians.of(90), Meters.of(0)), // Position for scoring in L1Back
+    L2(Radians.of(135), Radians.of(90), Meters.of(12)), // Position for scoring in L2
+    L2Back(Radians.of(135), Radians.of(90), Meters.of(12)), // Position for scoring in L2Back
+    L3(Radians.of(135), Radians.of(90), Meters.of(24)), // Position for scoring in L3
+    L3Back(Radians.of(135), Radians.of(90), Meters.of(24)), // Position for scoring in L3Back
+    L4(Radians.of(180), Radians.of(90), Meters.of(36)), // Position for scoring in L4
+    L4Back(Radians.of(180), Radians.of(90), Meters.of(36)); // Position for scoring in L4Back
 
     private final Angle targetShoulderAngle;
     private final Angle targetWristAngle;
@@ -201,12 +208,20 @@ public class Arm extends SubsystemBase {
               createPositionCommand(ArmPosition.INTAKE),
               ArmPosition.L1,
               createPositionCommand(ArmPosition.L1),
+              ArmPosition.L1Back,
+              createPositionCommand(ArmPosition.L1Back),
               ArmPosition.L2,
               createPositionCommand(ArmPosition.L2),
+              ArmPosition.L2Back,
+              createPositionCommand(ArmPosition.L2Back),
               ArmPosition.L3,
               createPositionCommand(ArmPosition.L3),
+              ArmPosition.L3Back,
+              createPositionCommand(ArmPosition.L3Back),
               ArmPosition.L4,
-              createPositionCommand(ArmPosition.L4)),
+              createPositionCommand(ArmPosition.L4),
+              ArmPosition.L4Back,
+              createPositionCommand(ArmPosition.L4Back)),
           this::getMode);
 
   /**
@@ -291,10 +306,24 @@ public class Arm extends SubsystemBase {
   }
 
   /**
+   * @return Command to move the arm to L1Back scoring position
+   */
+  public Command L1Back() {
+    return setPositionCommand(ArmPosition.L1Back);
+  }
+
+  /**
    * @return Command to move the arm to L2 scoring position
    */
   public Command L2() {
     return setPositionCommand(ArmPosition.L2);
+  }
+
+  /**
+   * @return Command to move the arm to L2Back scoring position
+   */
+  public Command L2Back() {
+    return setPositionCommand(ArmPosition.L2Back);
   }
 
   /**
@@ -305,10 +334,24 @@ public class Arm extends SubsystemBase {
   }
 
   /**
+   * @return Command to move the arm to L3Back position
+   */
+  public Command L3Back() {
+    return setPositionCommand(ArmPosition.L3Back);
+  }
+
+  /**
    * @return Command to move the arm to L4 position
    */
   public Command L4() {
     return setPositionCommand(ArmPosition.L4);
+  }
+
+  /**
+   * @return Command to move the arm to L4Back position
+   */
+  public Command L4Back() {
+    return setPositionCommand(ArmPosition.L4Back);
   }
 
   /**

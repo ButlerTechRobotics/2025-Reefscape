@@ -1,20 +1,15 @@
 package frc.robot.commands;
 
-import com.pathplanner.lib.path.PathPlannerPath;
-import edu.wpi.first.math.geometry.Pose2d;
 import edu.wpi.first.wpilibj2.command.Command;
 import frc.robot.subsystems.arm.Arm;
 import frc.robot.subsystems.claw.Claw;
-import frc.robot.subsystems.drive.Drive;
-import frc.robot.utils.FieldConstants.Reef;
 
 public class AutoScore extends Command {
-  Drive drivetrain;
-  Claw claw;
-  Arm arm;
-  Side side;
-  ArmMode armMode;
-  Command pathCommand;
+  private final Claw claw;
+  private final Arm arm;
+  private final ArmMode armMode;
+  private final ClawMode clawMode;
+  private boolean isScored;
 
   public enum ArmMode {
     STOP,
@@ -25,36 +20,26 @@ public class AutoScore extends Command {
     L4
   }
 
-  public enum Side {
-    LEFT,
-    CENTER,
-    RIGHT
+  public enum ClawMode {
+    NONE,
+    FLOOR_INTAKE,
+    STATION_INTAKE,
+    OUTTAKE
   }
 
-  public AutoScore(Drive drivetrain, Claw claw, Arm arm, Side side, ArmMode armMode) {
-    this.drivetrain = drivetrain;
+  public AutoScore(Claw claw, Arm arm, ArmMode armMode, ClawMode clawMode) {
     this.claw = claw;
     this.arm = arm;
-    this.side = side;
     this.armMode = armMode;
+    this.clawMode = clawMode;
+    this.isScored = false;
 
-    addRequirements(drivetrain, claw, arm);
+    addRequirements(claw, arm);
   }
 
   @Override
   public void initialize() {
-    Pose2d closestPose = drivetrain.findClosestPose(Reef.centerFaces);
-    int closestPoseIndex =
-        getClosestPoseIndex(closestPose, Reef.centerFaces) + 1; // Convert to 1-based index
-    System.out.println("Closest Pose: " + closestPose + ", Index: " + closestPoseIndex);
-
-    pathCommand = getPathCommand(closestPoseIndex, side);
-    if (pathCommand != null) {
-      pathCommand.schedule();
-    } else {
-      System.out.println("Path command is null");
-    }
-
+    // Set the arm mode
     switch (armMode) {
       case STOP:
         arm.stopCommand().schedule();
@@ -75,43 +60,42 @@ public class AutoScore extends Command {
         arm.L4().schedule();
         break;
     }
-  }
 
-  private Command getPathCommand(int closestPoseIndex, Side side) {
-    try {
-      String pathName = getPathName(closestPoseIndex, side);
-      System.out.println("Trying to run path: " + pathName);
-      PathPlannerPath path = PathPlannerPath.fromPathFile(pathName);
-      return drivetrain.goToPath(path);
-    } catch (Exception e) {
-      System.out.println("Path not found: " + e.getMessage());
-      return null;
+    // Set the claw mode
+    switch (clawMode) {
+      case NONE:
+        claw.stopCommand().schedule();
+        break;
+      case FLOOR_INTAKE:
+        claw.floorIntake().schedule();
+        break;
+      case STATION_INTAKE:
+        claw.stationIntake().schedule();
+        break;
+      case OUTTAKE:
+        // Do not schedule outtake here, wait until arm is in position
+        break;
     }
   }
 
-  private String getPathName(int closestPoseIndex, Side side) {
-    // Implement logic to determine the path name based on the closest pose index and side
-    // For example:
-    if (side == Side.LEFT) {
-      return "Left_" + closestPoseIndex;
-    } else if (side == Side.CENTER) {
-      return "Center_" + closestPoseIndex;
-    } else {
-      return "Right_" + closestPoseIndex;
+  @Override
+  public void execute() {
+    // Check if the arm is in the correct position before outtaking
+    if (!isScored && clawMode == ClawMode.OUTTAKE && arm.isAtTarget()) {
+      claw.outtake().schedule();
+      isScored = true;
     }
   }
 
-  private int getClosestPoseIndex(Pose2d closestPose, Pose2d[] poses) {
-    for (int i = 0; i < poses.length; i++) {
-      if (poses[i].equals(closestPose)) {
-        return i;
-      }
-    }
-    return -1; // Should not happen if closestPose is guaranteed to be in poses
+  @Override
+  public void end(boolean interrupted) {
+    // Put the arm back to home
+    arm.stopCommand().schedule();
+    claw.stopCommand().schedule();
   }
 
   @Override
   public boolean isFinished() {
-    return true; // Adjust this based on your command's requirements
+    return isScored;
   }
 }

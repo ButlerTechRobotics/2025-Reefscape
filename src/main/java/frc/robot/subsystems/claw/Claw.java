@@ -10,15 +10,13 @@ import edu.wpi.first.wpilibj2.command.Command;
 import edu.wpi.first.wpilibj2.command.Commands;
 import edu.wpi.first.wpilibj2.command.SelectCommand;
 import edu.wpi.first.wpilibj2.command.SubsystemBase;
-import edu.wpi.first.wpilibj2.command.sysid.SysIdRoutine;
 import java.util.Map;
 import org.littletonrobotics.junction.AutoLogOutput;
 import org.littletonrobotics.junction.Logger;
 
 /**
  * The Claw subsystem controls a motor-driven claw mechanism for game piece manipulation. It
- * supports multiple speeds for different game actions and provides both open-loop and closed-loop
- * control options.
+ * supports multiple speeds for different game actions and provides open-loop control.
  */
 public class Claw extends SubsystemBase {
   // Hardware interface and inputs
@@ -27,24 +25,6 @@ public class Claw extends SubsystemBase {
 
   // Alerts for motor connection status
   private final Alert motorAlert = new Alert("Claw motor isn't connected", AlertType.kError);
-  private final Alert encoderAlert = new Alert("Claw encoder isn't connected", AlertType.kError);
-
-  // System identification routine configuration
-  private final SysIdRoutine sysId =
-      new SysIdRoutine(
-          new SysIdRoutine.Config(
-              null, // Use default ramp rate (1 V/s)
-              Volts.of(2), // Reduced voltage for claw to prevent damage
-              null, // Use default timeout (10 s)
-              // Log state with Phoenix SignalLogger class
-              state -> Logger.recordOutput("state", state.toString())),
-          new SysIdRoutine.Mechanism(
-              output -> {
-                this.runVoltage(output);
-                Logger.recordOutput("Claw_Position", output.in(Volts));
-              },
-              null,
-              this));
 
   // Current claw position mode
   private ClawMode currentMode = ClawMode.NONE;
@@ -67,41 +47,11 @@ public class Claw extends SubsystemBase {
 
     // Update motor connection status alerts
     motorAlert.set(!inputs.leaderConnected);
-    encoderAlert.set(!inputs.encoderConnected);
-  }
-
-  /**
-   * Runs the claw in open-loop mode at the specified voltage.
-   *
-   * @param volts The voltage to apply to the motor
-   */
-  public void runVoltage(Voltage volts) {
-    io.setVoltage(volts);
   }
 
   /** Stops the claw motor. */
   public void stop() {
     io.stop();
-  }
-
-  /**
-   * Returns a command to run a quasistatic system identification test.
-   *
-   * @param direction The direction to run the test
-   * @return The command to run the test
-   */
-  public Command sysIdQuasistatic(SysIdRoutine.Direction direction) {
-    return sysId.quasistatic(direction);
-  }
-
-  /**
-   * Returns a command to run a dynamic system identification test.
-   *
-   * @param direction The direction to run the test
-   * @return The command to run the test
-   */
-  public Command sysIdDynamic(SysIdRoutine.Direction direction) {
-    return sysId.dynamic(direction);
   }
 
   /**
@@ -111,7 +61,7 @@ public class Claw extends SubsystemBase {
    */
   @AutoLogOutput
   public Angle getPosition() {
-    return inputs.encoderPosition;
+    return inputs.leaderPosition;
   }
 
   /** Enumeration of available claw positions with their corresponding target angles. */
@@ -155,11 +105,11 @@ public class Claw extends SubsystemBase {
               ClawMode.NONE,
               Commands.runOnce(this::stop).withName("Stop Claw"),
               ClawMode.FLOOR_INTAKE,
-              createPositionCommand(ClawMode.FLOOR_INTAKE),
+              createVoltageCommand(ClawMode.FLOOR_INTAKE),
               ClawMode.STATION_INTAKE,
-              createPositionCommand(ClawMode.STATION_INTAKE),
+              createVoltageCommand(ClawMode.STATION_INTAKE),
               ClawMode.OUTTAKE,
-              createPositionCommand(ClawMode.OUTTAKE)),
+              createVoltageCommand(ClawMode.OUTTAKE)),
           this::getMode);
 
   /**
@@ -169,10 +119,9 @@ public class Claw extends SubsystemBase {
    * @param voltage The claw voltage to create a command for
    * @return A command that implements the claw movement
    */
-  private Command createPositionCommand(ClawMode voltage) {
-    return Commands.parallel(
-        Commands.runOnce(() -> runVoltage(voltage.voltage))
-            .withName("Move to " + voltage.toString()));
+  private Command createVoltageCommand(ClawMode voltage) {
+    return Commands.runOnce(() -> io.setVoltage(voltage.voltage))
+        .withName("Set volts to " + voltage.toString());
   }
 
   /**

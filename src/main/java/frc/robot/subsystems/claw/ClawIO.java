@@ -26,13 +26,10 @@ public interface ClawIO {
   @AutoLog
   public static class ClawIOInputs {
     public boolean leaderConnected = false;
-    public boolean encoderConnected = false;
 
     public Angle leaderPosition = Rotations.of(0);
-    public Angle encoderPosition = Rotations.of(0);
 
     public AngularVelocity leaderVelocity = RotationsPerSecond.of(0);
-    public AngularVelocity encoderVelocity = RotationsPerSecond.of(0);
 
     public Voltage appliedVoltage = Volts.of(0.0);
     public Current leaderStatorCurrent = Amps.of(0);

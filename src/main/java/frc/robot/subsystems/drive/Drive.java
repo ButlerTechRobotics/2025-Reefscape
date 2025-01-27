@@ -197,9 +197,9 @@ public class Drive extends SubsystemBase {
                     .withWheelForceFeedforwardsY(feedforwards.robotRelativeForcesYNewtons())),
         new PPHolonomicDriveController(
             // PID constants for translation
-            new PIDConstants(5, 0, 0),
+            new PIDConstants(3, 0, 0),
             // PID constants for rotation
-            new PIDConstants(7, 0, 0)),
+            new PIDConstants(5, 0, 0)),
         Constants.PP_CONFIG,
         // Assume the path needs to be flipped for Red vs Blue, this is normally the case
         () -> DriverStation.getAlliance().orElse(Alliance.Blue) == Alliance.Red,
@@ -301,7 +301,7 @@ public class Drive extends SubsystemBase {
    */
   public Command goToPoint(Pose2d pose) {
     PathConstraints constraints =
-        new PathConstraints(3.0, 2.0, Units.degreesToRadians(540), Units.degreesToRadians(720));
+        new PathConstraints(5.0, 5.0, Units.degreesToRadians(540), Units.degreesToRadians(720));
     return new ConditionalCommand(
         AutoBuilder.pathfindToPoseFlipped(pose, constraints),
         AutoBuilder.pathfindToPose(pose, constraints),

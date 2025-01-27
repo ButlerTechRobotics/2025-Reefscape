@@ -17,7 +17,6 @@ import com.ctre.phoenix6.BaseStatusSignal;
 import com.ctre.phoenix6.StatusSignal;
 import com.ctre.phoenix6.configs.TalonFXConfiguration;
 import com.ctre.phoenix6.controls.VoltageOut;
-import com.ctre.phoenix6.hardware.CANcoder;
 import com.ctre.phoenix6.hardware.TalonFX;
 import com.ctre.phoenix6.signals.FeedbackSensorSourceValue;
 import com.ctre.phoenix6.signals.NeutralModeValue;
@@ -32,8 +31,6 @@ public class ClawIOCTRE implements ClawIO {
 
   public final TalonFX leader = new TalonFX(20);
 
-  public final CANcoder leaderEncoder = new CANcoder(22);
-
   private final VoltageOut m_voltReq = new VoltageOut(0.0);
 
   private final StatusSignal<Angle> leaderPosition = leader.getPosition();
@@ -41,8 +38,6 @@ public class ClawIOCTRE implements ClawIO {
   private final StatusSignal<Voltage> leaderAppliedVolts = leader.getMotorVoltage();
   private final StatusSignal<Current> leaderStatorCurrent = leader.getStatorCurrent();
   private final StatusSignal<Current> leaderSupplyCurrent = leader.getSupplyCurrent();
-  private final StatusSignal<Angle> encoderPosition = leaderEncoder.getPosition();
-  private final StatusSignal<AngularVelocity> encoderVelocity = leaderEncoder.getVelocity();
 
   private final Debouncer leaderDebounce = new Debouncer(0.5);
   private final Debouncer encoderDebounce = new Debouncer(0.5);
@@ -52,7 +47,6 @@ public class ClawIOCTRE implements ClawIO {
     config.CurrentLimits.StatorCurrentLimit = 30.0;
     config.CurrentLimits.StatorCurrentLimitEnable = true;
     config.MotorOutput.NeutralMode = NeutralModeValue.Coast;
-    config.Feedback.FeedbackRemoteSensorID = leaderEncoder.getDeviceID();
     config.Feedback.FeedbackSensorSource = FeedbackSensorSourceValue.RemoteCANcoder;
     config.Slot0.kP = 5;
     config.Slot0.kI = 0;
@@ -65,9 +59,7 @@ public class ClawIOCTRE implements ClawIO {
         leaderVelocity,
         leaderAppliedVolts,
         leaderStatorCurrent,
-        leaderSupplyCurrent,
-        encoderPosition,
-        encoderVelocity);
+        leaderSupplyCurrent);
   }
 
   @Override
@@ -80,16 +72,10 @@ public class ClawIOCTRE implements ClawIO {
             leaderStatorCurrent,
             leaderSupplyCurrent);
 
-    var encoderStatus = BaseStatusSignal.refreshAll(encoderPosition, encoderVelocity);
-
     inputs.leaderConnected = leaderDebounce.calculate(leaderStatus.isOK());
-    inputs.encoderConnected = encoderDebounce.calculate(encoderStatus.isOK());
 
     inputs.leaderPosition = leaderPosition.getValue().div(GEAR_RATIO);
     inputs.leaderVelocity = leaderVelocity.getValue().div(GEAR_RATIO);
-
-    inputs.encoderPosition = encoderPosition.getValue();
-    inputs.encoderVelocity = encoderVelocity.getValue();
 
     inputs.appliedVoltage = leaderAppliedVolts.getValue();
     inputs.leaderStatorCurrent = leaderStatorCurrent.getValue();

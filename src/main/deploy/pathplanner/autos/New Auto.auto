@@ -7,7 +7,31 @@
         {
           "type": "path",
           "data": {
-            "pathName": "Left_1"
+            "pathName": "S3 - R3-R"
+          }
+        },
+        {
+          "type": "path",
+          "data": {
+            "pathName": "R3-R - CS-4"
+          }
+        },
+        {
+          "type": "path",
+          "data": {
+            "pathName": "CS-4 - R2-L"
+          }
+        },
+        {
+          "type": "path",
+          "data": {
+            "pathName": "R2-L - CS-4"
+          }
+        },
+        {
+          "type": "path",
+          "data": {
+            "pathName": "CS-4 - R2-R"
           }
         }
       ]

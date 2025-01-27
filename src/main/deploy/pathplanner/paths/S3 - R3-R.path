@@ -3,38 +3,50 @@
   "waypoints": [
     {
       "anchor": {
-        "x": 2.19375,
-        "y": 3.8897688356164384
+        "x": 7.167,
+        "y": 5.079
       },
       "prevControl": null,
       "nextControl": {
-        "x": 2.4437498373707527,
-        "y": 3.8900539927612403
+        "x": 6.422381974211152,
+        "y": 5.185203222414972
       },
       "isLocked": false,
-      "linkedName": null
+      "linkedName": "S3"
     },
     {
       "anchor": {
-        "x": 3.080265410958904,
-        "y": 3.8897688356164384
+        "x": 5.003289473684211,
+        "y": 5.246957236842105
       },
       "prevControl": {
-        "x": 2.8302654353872363,
-        "y": 3.8896583179003104
+        "x": 6.040203746445093,
+        "y": 5.165501454198414
       },
       "nextControl": null,
       "isLocked": false,
-      "linkedName": null
+      "linkedName": "R3-R"
     }
   ],
   "rotationTargets": [],
   "constraintZones": [],
   "pointTowardsZones": [],
-  "eventMarkers": [],
+  "eventMarkers": [
+    {
+      "name": "L4Align",
+      "waypointRelativePos": 0.6,
+      "endWaypointRelativePos": null,
+      "command": {
+        "type": "named",
+        "data": {
+          "name": "L4Align"
+        }
+      }
+    }
+  ],
   "globalConstraints": {
-    "maxVelocity": 3.0,
-    "maxAcceleration": 2.0,
+    "maxVelocity": 5.0,
+    "maxAcceleration": 5.0,
     "maxAngularVelocity": 540.0,
     "maxAngularAcceleration": 720.0,
     "nominalVoltage": 12.0,
@@ -42,7 +54,7 @@
   },
   "goalEndState": {
     "velocity": 0,
-    "rotation": 0.0
+    "rotation": 59.99999999999999
   },
   "reversed": false,
   "folder": null,
@@ -50,5 +62,5 @@
     "velocity": 0,
     "rotation": 0.0
   },
-  "useDefaultConstraints": true
+  "useDefaultConstraints": false
 }
