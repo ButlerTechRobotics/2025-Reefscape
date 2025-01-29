@@ -26,7 +26,7 @@ public class Arm extends SubsystemBase {
   private final ArmIOInputsAutoLogged inputs;
 
   // Current arm position mode
-  private ArmPosition currentMode = ArmPosition.INTAKE;
+  private ArmPosition currentMode = ArmPosition.STOP;
 
   private final ArmVisualizer measuredVisualizer;
   private final ArmVisualizer setpointVisualizer;
