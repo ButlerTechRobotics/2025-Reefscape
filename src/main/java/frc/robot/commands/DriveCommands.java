@@ -1,6 +1,9 @@
-// This file is based on code from team 6328 Mechanical Advantage
-// See here for the original source:
-// https://github.com/Mechanical-Advantage/RobotCode2024/blob/c0c6d11547769f6dc5f304d5c18c9b51086a691b/src/main/java/org/littletonrobotics/frc2024/commands/WheelRadiusCharacterization.java
+// Copyright (c) 2025 FRC 325/144 & 5712
+// https://hemlock5712.github.io/Swerve-Setup/home.html
+//
+// Use of this source code is governed by an MIT-style
+// license that can be found in the LICENSE file at
+// the root directory of this project.
 
 package frc.robot.commands;
 

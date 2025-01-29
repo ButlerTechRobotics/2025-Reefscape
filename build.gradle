@@ -192,6 +192,8 @@ spotless {
         removeUnusedImports()
         trimTrailingWhitespace()
         endWithNewline()
+        licenseHeader("// Copyright (c) 2025 FRC 325/144 & 5712\n// https://hemlock5712.github.io/Swerve-Setup/home.html\n//\n// Use of this source code is governed by an MIT-style\n// license that can be found in the LICENSE file at\n// the root directory of this project.\n\n")
+
     }
     groovyGradle {
         target fileTree(".") {
