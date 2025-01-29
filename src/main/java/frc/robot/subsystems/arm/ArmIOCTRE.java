@@ -189,7 +189,7 @@ public class ArmIOCTRE implements ArmIO {
   private TalonFXConfiguration createShoulderConfiguration() {
     var config = new TalonFXConfiguration();
     config.MotorOutput.NeutralMode = NeutralModeValue.Coast;
-    config.Slot0.kP = 620;
+    config.Slot0.kP = 5;
     config.Slot0.kI = 0;
     config.Slot0.kD = 11;
     config.Slot0.kS = 0.08;
@@ -350,7 +350,7 @@ public class ArmIOCTRE implements ArmIO {
     shoulderLeader.setControl(new PositionVoltage(shoulderAngle));
     wristLeader.setControl(new PositionVoltage(wristAngle));
     extensionLeader.setControl(
-        new PositionVoltage(Conversions.metersToRotations(extensionDistance, 1, extensionRadius)));
+        new PositionVoltage(Conversions.inchesToRotations(extensionDistance, 1, extensionRadius)));
   }
 
   /** Stops all arm movement. */

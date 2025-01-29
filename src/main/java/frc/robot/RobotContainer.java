@@ -20,8 +20,16 @@ import edu.wpi.first.units.measure.LinearVelocity;
 import edu.wpi.first.wpilibj2.command.Command;
 import edu.wpi.first.wpilibj2.command.sysid.SysIdRoutine;
 import frc.robot.commands.DriveCommands;
-import frc.robot.commands.SmartDrive;
+import frc.robot.commands.SmartScore;
 import frc.robot.generated.TunerConstants;
+import frc.robot.subsystems.arm.Arm;
+import frc.robot.subsystems.arm.ArmIO;
+import frc.robot.subsystems.arm.ArmIOCTRE;
+import frc.robot.subsystems.arm.ArmIOSIM;
+import frc.robot.subsystems.claw.Claw;
+import frc.robot.subsystems.claw.ClawIO;
+import frc.robot.subsystems.claw.ClawIOCTRE;
+import frc.robot.subsystems.claw.ClawIOSIM;
 import frc.robot.subsystems.drive.Drive;
 import frc.robot.subsystems.drive.DriveIO;
 import frc.robot.subsystems.drive.DriveIOCTRE;
@@ -43,8 +51,8 @@ public class RobotContainer {
   private final LoggedDashboardChooser<Command> autoChooser;
 
   public final Drive drivetrain;
-  //   public final Claw claw;
-  //   public final Arm arm;
+  public final Claw claw;
+  public final Arm arm;
 
   // CTRE Default Drive Request
   private final SwerveRequest.FieldCentric drive =
@@ -85,8 +93,8 @@ public class RobotContainer {
                     new Rotation3d(0, Math.toRadians(10), Math.toRadians(210))),
                 drivetrain::getVisionParameters));
 
-        // claw = new Claw(new ClawIOCTRE());
-        // arm = new Arm(new ArmIOCTRE());
+        claw = new Claw(new ClawIOCTRE());
+        arm = new Arm(new ArmIOCTRE());
         break;
 
       case SIM:
@@ -132,8 +140,8 @@ public class RobotContainer {
                     new Rotation3d(0, Math.toRadians(10), Math.toRadians(330))),
                 drivetrain::getVisionParameters));
 
-        // claw = new Claw(new ClawIOSIM());
-        // arm = new Arm(new ArmIOSIM());
+        claw = new Claw(new ClawIOSIM());
+        arm = new Arm(new ArmIOSIM());
         break;
 
       default:
@@ -147,8 +155,8 @@ public class RobotContainer {
             new VisionIO() {},
             new VisionIO() {});
 
-        // claw = new Claw(new ClawIO() {});
-        // arm = new Arm(new ArmIO() {});
+        claw = new Claw(new ClawIO() {});
+        arm = new Arm(new ArmIO() {});
         break;
     }
 
@@ -281,29 +289,29 @@ public class RobotContainer {
     // reset the field-centric heading on left bumper press
     // joystick.leftBumper().onTrue(drivetrain.runOnce(drivetrain::seedFieldCentric));
 
-    // joystick.povDown().whileTrue(arm.stopCommand());
-    // joystick.povLeft().whileTrue(arm.L1());
-    // joystick.povRight().whileTrue(arm.L2());
-    // joystick.povUp().whileTrue(arm.L3());
+    joystick.povDown().whileTrue(arm.stopCommand());
+    joystick.povLeft().whileTrue(arm.L1());
+    joystick.povRight().whileTrue(arm.L2());
+    joystick.povUp().whileTrue(arm.L3());
 
-    // joystick
-    //     .leftBumper()
-    //     .and(joystick.a())
-    //     .whileTrue(
-    //         new SmartScore(drivetrain, claw, arm, SmartScore.Side.LEFT, SmartScore.ArmMode.L1));
-    // joystick
-    //     .rightBumper()
-    //     .and(joystick.a())
-    //     .whileTrue(
-    //         new SmartScore(drivetrain, claw, arm, SmartScore.Side.RIGHT, SmartScore.ArmMode.L1));
     joystick
         .leftBumper()
         .and(joystick.a())
-        .whileTrue(new SmartDrive(drivetrain, SmartDrive.Side.LEFT));
+        .whileTrue(
+            new SmartScore(drivetrain, claw, arm, SmartScore.Side.LEFT, SmartScore.ArmMode.L1));
     joystick
         .rightBumper()
         .and(joystick.a())
-        .whileTrue(new SmartDrive(drivetrain, SmartDrive.Side.RIGHT));
+        .whileTrue(
+            new SmartScore(drivetrain, claw, arm, SmartScore.Side.RIGHT, SmartScore.ArmMode.L1));
+    // joystick
+    //     .leftBumper()
+    //     .and(joystick.a())
+    //     .whileTrue(new SmartDrive(drivetrain, SmartDrive.Side.LEFT));
+    // joystick
+    //     .rightBumper()
+    //     .and(joystick.a())
+    //     .whileTrue(new SmartDrive(drivetrain, SmartDrive.Side.RIGHT));
   }
 
   public Command getAutonomousCommand() {

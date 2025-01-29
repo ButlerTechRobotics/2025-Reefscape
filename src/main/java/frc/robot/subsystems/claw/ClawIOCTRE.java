@@ -25,7 +25,7 @@ import edu.wpi.first.units.measure.Voltage;
 public class ClawIOCTRE implements ClawIO {
   public static final double GEAR_RATIO = 1.5;
 
-  public final TalonFX leader = new TalonFX(20);
+  public final TalonFX leader = new TalonFX(32);
 
   private final VoltageOut m_voltReq = new VoltageOut(0.0);
 

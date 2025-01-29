@@ -8,6 +8,7 @@
 package frc.robot.subsystems.arm;
 
 import static edu.wpi.first.units.Units.Amps;
+import static edu.wpi.first.units.Units.Degrees;
 import static edu.wpi.first.units.Units.Inches;
 import static edu.wpi.first.units.Units.Rotations;
 import static edu.wpi.first.units.Units.RotationsPerSecond;
@@ -89,8 +90,8 @@ public interface ArmIO {
     public Current extensionFollowerSupplyCurrent = Amps.of(0);
 
     // Processed measurements for subsystem use
-    public Angle shoulderAngle = Rotations.of(0);
-    public Angle wristAngle = Rotations.of(0);
+    public Angle shoulderAngle = Degrees.of(0);
+    public Angle wristAngle = Degrees.of(0);
     public Distance extensionDistance = Inches.of(0);
   }
 

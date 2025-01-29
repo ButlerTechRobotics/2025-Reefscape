@@ -33,8 +33,17 @@ public class ArmIOSIM extends ArmIOCTRE {
   private final TalonFXSimState armExtensionLeaderSim;
 
   public ArmIOSIM() {
-    // Arm Shoulder Simulation
+    super(); // Initialize hardware interface components
+
+    // Get simulation states for all hardware
+    armShoulderLeaderSim = shoulderLeader.getSimState();
+    armWristLeaderSim = wristLeader.getSimState();
+    armExtensionLeaderSim = extensionLeader.getSimState();
+
+    // Configure dual Kraken X60 FOC motors
     DCMotor armShoulderMotor = DCMotor.getKrakenX60Foc(2);
+
+    // Create arm physics model
     LinearSystem<N2, N1, N2> armShoulderLinearSystem =
         LinearSystemId.createSingleJointedArmSystem(armShoulderMotor, 0.00032, SHOULDER_GEAR_RATIO);
     armShoulderSimModel =
@@ -47,16 +56,16 @@ public class ArmIOSIM extends ArmIOCTRE {
             1.5708,
             true,
             0);
-    armShoulderLeaderSim = shoulderLeader.getSimState();
 
-    // Arm Wrist Simulation
+    // Configure single Kraken X60 FOC motor
     DCMotor armWristMotor = DCMotor.getKrakenX60Foc(1);
+
+    // Create arm physics model
     LinearSystem<N2, N1, N2> armWristLinearSystem =
         LinearSystemId.createSingleJointedArmSystem(armWristMotor, 0.00032, WRIST_GEAR_RATIO);
     armWristSimModel =
         new SingleJointedArmSim(
             armWristLinearSystem, armWristMotor, WRIST_GEAR_RATIO, 1, -0.785398, 1.5708, true, 0);
-    armWristLeaderSim = wristLeader.getSimState();
 
     // Configure dual Kraken X60 FOC motors
     DCMotor armExtensionMotor = DCMotor.getKrakenX60Foc(2);
@@ -76,7 +85,6 @@ public class ArmIOSIM extends ArmIOCTRE {
             Feet.of(8).in(Meters), // Maximum height (8 feet -> meters)
             true, // Enable gravity simulation
             0); // Start at bottom position
-    armExtensionLeaderSim = extensionLeader.getSimState();
   }
 
   public void updateInputs(ArmIOInputs inputs) {

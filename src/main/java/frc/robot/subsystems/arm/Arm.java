@@ -140,16 +140,16 @@ public class Arm extends SubsystemBase {
    * Angle, Extension Distance
    */
   private enum ArmPosition {
-    STOP(Radians.of(0), Radians.of(0), Meters.of(0)), // Stop the arm
-    INTAKE(Radians.of(0), Radians.of(0), Meters.of(0)), // Arm tucked in
-    L1(Radians.of(90), Radians.of(90), Meters.of(0)), // Position for scoring in L1
-    L1Back(Radians.of(90), Radians.of(90), Meters.of(0)), // Position for scoring in L1Back
-    L2(Radians.of(135), Radians.of(90), Meters.of(12)), // Position for scoring in L2
-    L2Back(Radians.of(135), Radians.of(90), Meters.of(12)), // Position for scoring in L2Back
-    L3(Radians.of(135), Radians.of(90), Meters.of(24)), // Position for scoring in L3
-    L3Back(Radians.of(135), Radians.of(90), Meters.of(24)), // Position for scoring in L3Back
-    L4(Radians.of(180), Radians.of(90), Meters.of(36)), // Position for scoring in L4
-    L4Back(Radians.of(180), Radians.of(90), Meters.of(36)); // Position for scoring in L4Back
+    STOP(Degrees.of(0), Degrees.of(0), Inches.of(0)), // Stop the arm
+    INTAKE(Degrees.of(0), Degrees.of(0), Inches.of(0)), // Arm tucked in
+    L1(Degrees.of(90), Degrees.of(90), Inches.of(0)), // Position for scoring in L1
+    L1Back(Degrees.of(90), Degrees.of(90), Inches.of(0)), // Position for scoring in L1Back
+    L2(Degrees.of(135), Degrees.of(90), Inches.of(12)), // Position for scoring in L2
+    L2Back(Degrees.of(135), Degrees.of(90), Inches.of(12)), // Position for scoring in L2Back
+    L3(Degrees.of(135), Degrees.of(90), Inches.of(24)), // Position for scoring in L3
+    L3Back(Degrees.of(135), Degrees.of(90), Inches.of(24)), // Position for scoring in L3Back
+    L4(Degrees.of(180), Degrees.of(90), Inches.of(36)), // Position for scoring in L4
+    L4Back(Degrees.of(180), Degrees.of(90), Inches.of(36)); // Position for scoring in L4Back
 
     private final Angle targetShoulderAngle;
     private final Angle targetWristAngle;

@@ -7,6 +7,7 @@
 
 package frc.robot.utils;
 
+import static edu.wpi.first.units.Units.Inches;
 import static edu.wpi.first.units.Units.Meters;
 import static edu.wpi.first.units.Units.MetersPerSecond;
 import static edu.wpi.first.units.Units.Radians;
@@ -30,6 +31,13 @@ public class Conversions {
   public static Angle metersToRotations(Distance meters, double gearRatio, Distance wheelRadius) {
     /* Divide the distance by the wheel radius to get radians */
     var wheelRadians = meters.in(Meters) / wheelRadius.in(Meters);
+    /* Then multiply by gear ratio to get rotor rotations */
+    return Radians.of(wheelRadians * gearRatio);
+  }
+
+  public static Angle inchesToRotations(Distance inches, double gearRatio, Distance wheelRadius) {
+    /* Divide the distance by the wheel radius to get radians */
+    var wheelRadians = inches.in(Inches) / wheelRadius.in(Inches);
     /* Then multiply by gear ratio to get rotor rotations */
     return Radians.of(wheelRadians * gearRatio);
   }
