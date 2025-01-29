@@ -3,27 +3,17 @@ package frc.robot;
 import com.ctre.phoenix6.swerve.SwerveModule.DriveRequestType;
 import com.ctre.phoenix6.swerve.SwerveRequest;
 import com.pathplanner.lib.auto.AutoBuilder;
-import com.pathplanner.lib.auto.NamedCommands;
 import edu.wpi.first.math.geometry.Rotation2d;
 import edu.wpi.first.math.geometry.Rotation3d;
 import edu.wpi.first.math.geometry.Transform3d;
 import edu.wpi.first.math.geometry.Translation3d;
 import edu.wpi.first.math.trajectory.TrapezoidProfile;
+import edu.wpi.first.math.util.Units;
 import edu.wpi.first.units.measure.LinearVelocity;
 import edu.wpi.first.wpilibj2.command.Command;
 import edu.wpi.first.wpilibj2.command.sysid.SysIdRoutine;
-import frc.robot.commands.AutoScore;
 import frc.robot.commands.DriveCommands;
-import frc.robot.commands.SmartScore;
 import frc.robot.generated.TunerConstants;
-import frc.robot.subsystems.arm.Arm;
-import frc.robot.subsystems.arm.ArmIO;
-import frc.robot.subsystems.arm.ArmIOCTRE;
-import frc.robot.subsystems.arm.ArmIOSIM;
-import frc.robot.subsystems.claw.Claw;
-import frc.robot.subsystems.claw.ClawIO;
-import frc.robot.subsystems.claw.ClawIOCTRE;
-import frc.robot.subsystems.claw.ClawIOSIM;
 import frc.robot.subsystems.drive.Drive;
 import frc.robot.subsystems.drive.DriveIO;
 import frc.robot.subsystems.drive.DriveIOCTRE;
@@ -31,7 +21,7 @@ import frc.robot.subsystems.drive.requests.ProfiledFieldCentricFacingAngle;
 import frc.robot.subsystems.drive.requests.SwerveSetpointGen;
 import frc.robot.subsystems.vision.Vision;
 import frc.robot.subsystems.vision.VisionIO;
-import frc.robot.subsystems.vision.VisionIOLimelight;
+import frc.robot.subsystems.vision.VisionIOPhotonVision;
 import frc.robot.subsystems.vision.VisionIOPhotonVisionSIM;
 import frc.robot.utils.TunableController;
 import frc.robot.utils.TunableController.TunableControllerType;
@@ -45,8 +35,8 @@ public class RobotContainer {
   private final LoggedDashboardChooser<Command> autoChooser;
 
   public final Drive drivetrain;
-  public final Claw claw;
-  public final Arm arm;
+  //   public final Claw claw;
+  //   public final Arm arm;
 
   // CTRE Default Drive Request
   private final SwerveRequest.FieldCentric drive =
@@ -68,13 +58,27 @@ public class RobotContainer {
 
         new Vision(
             drivetrain::addVisionData,
-            new VisionIOLimelight("limelight-fl", drivetrain::getVisionParameters),
-            new VisionIOLimelight("limelight-fr", drivetrain::getVisionParameters),
-            new VisionIOLimelight("limelight-bl", drivetrain::getVisionParameters),
-            new VisionIOLimelight("limelight-br", drivetrain::getVisionParameters));
+            new VisionIOPhotonVision(
+                "BL-Camera",
+                new Transform3d(
+                    new Translation3d(
+                        Units.inchesToMeters(-10.5),
+                        Units.inchesToMeters(10.5),
+                        Units.inchesToMeters(6.5)),
+                    new Rotation3d(0, Math.toRadians(10), Math.toRadians(150))),
+                drivetrain::getVisionParameters),
+            new VisionIOPhotonVision(
+                "BR-Camera",
+                new Transform3d(
+                    new Translation3d(
+                        Units.inchesToMeters(-10.5),
+                        Units.inchesToMeters(-10.5),
+                        Units.inchesToMeters(6.5)),
+                    new Rotation3d(0, Math.toRadians(10), Math.toRadians(210))),
+                drivetrain::getVisionParameters));
 
-        claw = new Claw(new ClawIOCTRE());
-        arm = new Arm(new ArmIOCTRE());
+        // claw = new Claw(new ClawIOCTRE());
+        // arm = new Arm(new ArmIOCTRE());
         break;
 
       case SIM:
@@ -108,8 +112,8 @@ public class RobotContainer {
                     new Rotation3d(0, Math.toRadians(20), Math.toRadians(-90))),
                 drivetrain::getVisionParameters));
 
-        claw = new Claw(new ClawIOSIM());
-        arm = new Arm(new ArmIOSIM());
+        // claw = new Claw(new ClawIOSIM());
+        // arm = new Arm(new ArmIOSIM());
         break;
 
       default:
@@ -123,23 +127,23 @@ public class RobotContainer {
             new VisionIO() {},
             new VisionIO() {});
 
-        claw = new Claw(new ClawIO() {});
-        arm = new Arm(new ArmIO() {});
+        // claw = new Claw(new ClawIO() {});
+        // arm = new Arm(new ArmIO() {});
         break;
     }
 
     // Set up the named commands
-    NamedCommands.registerCommand(
-        "L1Align", new AutoScore(claw, arm, AutoScore.ArmMode.L1, AutoScore.ClawMode.OUTTAKE));
-    NamedCommands.registerCommand(
-        "L2Align", new AutoScore(claw, arm, AutoScore.ArmMode.L2, AutoScore.ClawMode.OUTTAKE));
-    NamedCommands.registerCommand(
-        "L3Align", new AutoScore(claw, arm, AutoScore.ArmMode.L3, AutoScore.ClawMode.OUTTAKE));
-    NamedCommands.registerCommand(
-        "L4Align", new AutoScore(claw, arm, AutoScore.ArmMode.L4, AutoScore.ClawMode.OUTTAKE));
-    NamedCommands.registerCommand(
-        "StationIntake",
-        new AutoScore(claw, arm, AutoScore.ArmMode.INTAKE, AutoScore.ClawMode.STATION_INTAKE));
+    // NamedCommands.registerCommand(
+    //     "L1Align", new AutoScore(claw, arm, AutoScore.ArmMode.L1, AutoScore.ClawMode.OUTTAKE));
+    // NamedCommands.registerCommand(
+    //     "L2Align", new AutoScore(claw, arm, AutoScore.ArmMode.L2, AutoScore.ClawMode.OUTTAKE));
+    // NamedCommands.registerCommand(
+    //     "L3Align", new AutoScore(claw, arm, AutoScore.ArmMode.L3, AutoScore.ClawMode.OUTTAKE));
+    // NamedCommands.registerCommand(
+    //     "L4Align", new AutoScore(claw, arm, AutoScore.ArmMode.L4, AutoScore.ClawMode.OUTTAKE));
+    // NamedCommands.registerCommand(
+    //     "StationIntake",
+    //     new AutoScore(claw, arm, AutoScore.ArmMode.INTAKE, AutoScore.ClawMode.STATION_INTAKE));
 
     // Set up auto routines
     autoChooser = new LoggedDashboardChooser<>("Auto Choices", AutoBuilder.buildAutoChooser());
@@ -257,21 +261,21 @@ public class RobotContainer {
     // reset the field-centric heading on left bumper press
     // joystick.leftBumper().onTrue(drivetrain.runOnce(drivetrain::seedFieldCentric));
 
-    joystick.povDown().whileTrue(arm.stopCommand());
-    joystick.povLeft().whileTrue(arm.L1());
-    joystick.povRight().whileTrue(arm.L2());
-    joystick.povUp().whileTrue(arm.L3());
+    // joystick.povDown().whileTrue(arm.stopCommand());
+    // joystick.povLeft().whileTrue(arm.L1());
+    // joystick.povRight().whileTrue(arm.L2());
+    // joystick.povUp().whileTrue(arm.L3());
 
-    joystick
-        .leftBumper()
-        .and(joystick.a())
-        .whileTrue(
-            new SmartScore(drivetrain, claw, arm, SmartScore.Side.LEFT, SmartScore.ArmMode.L1));
-    joystick
-        .rightBumper()
-        .and(joystick.a())
-        .whileTrue(
-            new SmartScore(drivetrain, claw, arm, SmartScore.Side.RIGHT, SmartScore.ArmMode.L1));
+    // joystick
+    //     .leftBumper()
+    //     .and(joystick.a())
+    //     .whileTrue(
+    //         new SmartScore(drivetrain, claw, arm, SmartScore.Side.LEFT, SmartScore.ArmMode.L1));
+    // joystick
+    //     .rightBumper()
+    //     .and(joystick.a())
+    //     .whileTrue(
+    //         new SmartScore(drivetrain, claw, arm, SmartScore.Side.RIGHT, SmartScore.ArmMode.L1));
   }
 
   public Command getAutonomousCommand() {
