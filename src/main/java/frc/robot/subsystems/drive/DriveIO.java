@@ -1,7 +1,3 @@
-// Copyright (c) 2024 FRC 5712
-// Open Source Software, you can modify it according to the terms
-// of the MIT License at the root of this project
-
 package frc.robot.subsystems.drive;
 
 import static edu.wpi.first.units.Units.Amps;
@@ -24,6 +20,8 @@ import edu.wpi.first.units.measure.Angle;
 import edu.wpi.first.units.measure.AngularVelocity;
 import edu.wpi.first.units.measure.Current;
 import edu.wpi.first.units.measure.Voltage;
+import frc.robot.Constants;
+import frc.robot.utils.ArrayBuilder;
 import java.util.Optional;
 import org.littletonrobotics.junction.AutoLog;
 
@@ -36,26 +34,11 @@ public interface DriveIO {
   public static class DriveIOInputs {
     // Module arrays with default states
     public SwerveModuleState[] moduleStates =
-        new SwerveModuleState[] {
-          new SwerveModuleState(),
-          new SwerveModuleState(),
-          new SwerveModuleState(),
-          new SwerveModuleState()
-        };
+        ArrayBuilder.buildSwerveModuleState(Constants.PP_CONFIG.numModules);
     public SwerveModuleState[] moduleTargets =
-        new SwerveModuleState[] {
-          new SwerveModuleState(),
-          new SwerveModuleState(),
-          new SwerveModuleState(),
-          new SwerveModuleState()
-        };
+        ArrayBuilder.buildSwerveModuleState(Constants.PP_CONFIG.numModules);
     public SwerveModulePosition[] modulePositions =
-        new SwerveModulePosition[] {
-          new SwerveModulePosition(),
-          new SwerveModulePosition(),
-          new SwerveModulePosition(),
-          new SwerveModulePosition()
-        };
+        ArrayBuilder.buildSwerveModulePosition(Constants.PP_CONFIG.numModules);
 
     // Position and motion state
     public Pose2d pose = Pose2d.kZero;
@@ -75,8 +58,8 @@ public interface DriveIO {
     public boolean gyroConnected = false;
 
     // Module position arrays
-    public double[][] drivePositions = new double[4][0];
-    public Rotation2d[][] steerPositions = new Rotation2d[4][0];
+    public double[][] drivePositions = new double[Constants.PP_CONFIG.numModules][0];
+    public Rotation2d[][] steerPositions = new Rotation2d[Constants.PP_CONFIG.numModules][0];
   }
 
   @AutoLog

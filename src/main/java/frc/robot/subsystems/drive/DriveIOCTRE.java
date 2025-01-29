@@ -1,27 +1,24 @@
-// Copyright (c) 2024 FRC 5712
-// Open Source Software, you can modify it according to the terms
-// of the MIT License at the root of this project
-
 package frc.robot.subsystems.drive;
 
 import com.ctre.phoenix6.Utils;
 import com.ctre.phoenix6.hardware.CANcoder;
-import com.ctre.phoenix6.hardware.ParentDevice;
-import com.ctre.phoenix6.hardware.traits.CommonTalon;
-import com.ctre.phoenix6.swerve.SwerveDrivetrain;
+import com.ctre.phoenix6.hardware.TalonFX;
 import com.ctre.phoenix6.swerve.SwerveDrivetrainConstants;
 import com.ctre.phoenix6.swerve.SwerveModule;
 import com.ctre.phoenix6.swerve.SwerveModuleConstants;
 import edu.wpi.first.math.Matrix;
 import edu.wpi.first.math.geometry.Pose2d;
 import edu.wpi.first.math.geometry.Rotation2d;
+import edu.wpi.first.math.kinematics.SwerveModulePosition;
 import edu.wpi.first.math.numbers.N1;
 import edu.wpi.first.math.numbers.N3;
+import edu.wpi.first.wpilibj.DriverStation;
 import edu.wpi.first.wpilibj.Notifier;
 import edu.wpi.first.wpilibj.RobotController;
 import edu.wpi.first.wpilibj.Timer;
 import frc.robot.Constants;
 import frc.robot.Constants.Mode;
+import frc.robot.generated.TunerConstants.TunerSwerveDrivetrain;
 import java.util.ArrayList;
 import java.util.List;
 import java.util.Optional;
@@ -37,8 +34,7 @@ import java.util.concurrent.locks.ReentrantLock;
  * <p>This class handles: - Odometry data collection and buffering - Vision measurement integration
  * - Simulation state updates - Thread-safe telemetry updates
  */
-public class DriveIOCTRE extends SwerveDrivetrain<CommonTalon, CommonTalon, ParentDevice>
-    implements DriveIO {
+public class DriveIOCTRE extends TunerSwerveDrivetrain implements DriveIO {
   // Simulation constants
   private static final double SIMULATION_LOOP_PERIOD = 0.005; // 5 ms
   private Notifier simulationNotifier;
@@ -62,17 +58,8 @@ public class DriveIOCTRE extends SwerveDrivetrain<CommonTalon, CommonTalon, Pare
    * @param modules Array of constants for each swerve module
    */
   public DriveIOCTRE(
-      DeviceConstructor<CommonTalon> driveMotorConstructor,
-      DeviceConstructor<CommonTalon> steerMotorConstructor,
-      DeviceConstructor<ParentDevice> encoderConstructor,
-      SwerveDrivetrainConstants drivetrainConstants,
-      SwerveModuleConstants<?, ?, ?>... modules) {
-    super(
-        driveMotorConstructor,
-        steerMotorConstructor,
-        encoderConstructor,
-        drivetrainConstants,
-        modules);
+      SwerveDrivetrainConstants drivetrainConstants, SwerveModuleConstants<?, ?, ?>... modules) {
+    super(drivetrainConstants, modules);
     setup();
   }
 
@@ -83,35 +70,20 @@ public class DriveIOCTRE extends SwerveDrivetrain<CommonTalon, CommonTalon, Pare
    * @param modules Array of constants for each swerve module
    */
   public DriveIOCTRE(
-      DeviceConstructor<CommonTalon> driveMotorConstructor,
-      DeviceConstructor<CommonTalon> steerMotorConstructor,
-      DeviceConstructor<ParentDevice> encoderConstructor,
       SwerveDrivetrainConstants drivetrainConstants,
       double odometryUpdateFrequency,
       SwerveModuleConstants<?, ?, ?>... modules) {
-    super(
-        driveMotorConstructor,
-        steerMotorConstructor,
-        encoderConstructor,
-        drivetrainConstants,
-        odometryUpdateFrequency,
-        modules);
+    super(drivetrainConstants, odometryUpdateFrequency, modules);
     setup();
   }
 
   public DriveIOCTRE(
-      DeviceConstructor<CommonTalon> driveMotorConstructor,
-      DeviceConstructor<CommonTalon> steerMotorConstructor,
-      DeviceConstructor<ParentDevice> encoderConstructor,
       SwerveDrivetrainConstants drivetrainConstants,
       double odometryUpdateFrequency,
       Matrix<N3, N1> odometryStandardDeviation,
       Matrix<N3, N1> visionStandardDeviation,
       SwerveModuleConstants<?, ?, ?>... modules) {
     super(
-        driveMotorConstructor,
-        steerMotorConstructor,
-        encoderConstructor,
         drivetrainConstants,
         odometryUpdateFrequency,
         odometryStandardDeviation,
@@ -130,7 +102,7 @@ public class DriveIOCTRE extends SwerveDrivetrain<CommonTalon, CommonTalon, Pare
 
   /** Initializes the position queues for drive and steer data. */
   private void initializeQueues() {
-    for (int i = 0; i < 4; i++) {
+    for (int i = 0; i < Constants.PP_CONFIG.numModules; i++) {
       drivePositionQueues.add(new ArrayBlockingQueue<>(QUEUE_SIZE));
       steerPositionQueues.add(new ArrayBlockingQueue<>(QUEUE_SIZE));
     }
@@ -163,25 +135,28 @@ public class DriveIOCTRE extends SwerveDrivetrain<CommonTalon, CommonTalon, Pare
     inputs.odometryIsValid = isOdometryValid();
 
     // Update queued data with thread safety
-    odometryLock.lock();
-    try {
-      // Process timestamps
-      inputs.timestamp = timestampQueue.stream().mapToDouble(Double::valueOf).toArray();
-      inputs.gyroYaw = gyroYawQueue.stream().toArray(Rotation2d[]::new);
+    if (odometryLock.tryLock()) {
+      try {
+        // Process timestamps
+        inputs.timestamp = timestampQueue.stream().mapToDouble(Double::valueOf).toArray();
+        inputs.gyroYaw = gyroYawQueue.stream().toArray(Rotation2d[]::new);
 
-      for (int i = 0; i < getModules().length; i++) {
-        inputs.drivePositions[i] =
-            drivePositionQueues.get(i).stream().mapToDouble(Double::valueOf).toArray();
-        inputs.steerPositions[i] = steerPositionQueues.get(i).stream().toArray(Rotation2d[]::new);
+        for (int i = 0; i < getModules().length; i++) {
+          inputs.drivePositions[i] =
+              drivePositionQueues.get(i).stream().mapToDouble(Double::valueOf).toArray();
+          inputs.steerPositions[i] = steerPositionQueues.get(i).stream().toArray(Rotation2d[]::new);
 
-        drivePositionQueues.get(i).clear();
-        steerPositionQueues.get(i).clear();
+          drivePositionQueues.get(i).clear();
+          steerPositionQueues.get(i).clear();
+        }
+
+        timestampQueue.clear();
+        gyroYawQueue.clear();
+      } finally {
+        odometryLock.unlock();
       }
-
-      timestampQueue.clear();
-      gyroYawQueue.clear();
-    } finally {
-      odometryLock.unlock();
+    } else {
+      DriverStation.reportWarning("Failed to acquire odometry lock in updateInputs", true);
     }
   }
 
@@ -192,21 +167,27 @@ public class DriveIOCTRE extends SwerveDrivetrain<CommonTalon, CommonTalon, Pare
    * @param state Current state of the swerve drive
    */
   private void updateTelemetry(SwerveDriveState state) {
-    odometryLock.lock();
-    try {
-      // Update module positions
-      for (int i = 0; i < state.ModuleStates.length; i++) {
-        drivePositionQueues.get(i).offer(state.ModulePositions[i].distanceMeters);
-        steerPositionQueues.get(i).offer(state.ModulePositions[i].angle);
+    if (odometryLock.tryLock()) {
+      try {
+        // Update module positions
+        SwerveModulePosition[] modules = state.ModulePositions;
+        for (int i = 0; i < modules.length; i++) {
+          drivePositionQueues.get(i).offer(modules[i].distanceMeters);
+          steerPositionQueues.get(i).offer(modules[i].angle);
+        }
+
+        // Update gyro and timestamp data
+        gyroYawQueue.offer(state.RawHeading);
+
+        double currentTime = Timer.getFPGATimestamp();
+        double ctreTimeStamp =
+            currentTime - (Utils.fpgaToCurrentTime(currentTime) - state.Timestamp);
+        timestampQueue.offer(ctreTimeStamp);
+      } finally {
+        odometryLock.unlock();
       }
-
-      // Update gyro and timestamp data
-      gyroYawQueue.offer(state.RawHeading);
-
-      double currentTime = Timer.getFPGATimestamp();
-      timestampQueue.offer(currentTime - (Utils.fpgaToCurrentTime(currentTime) - state.Timestamp));
-    } finally {
-      odometryLock.unlock();
+    } else {
+      DriverStation.reportWarning("Failed to acquire odometry lock in updateTelemetry", true);
     }
   }
 
@@ -229,14 +210,16 @@ public class DriveIOCTRE extends SwerveDrivetrain<CommonTalon, CommonTalon, Pare
   }
 
   @Override
-  public void addVisionMeasurement(Pose2d visionRobotPoseMeters, double timestampSeconds) {
-    // Converts our WPILib timestamp to CTRE timestamp
-    super.addVisionMeasurement(visionRobotPoseMeters, Utils.fpgaToCurrentTime(timestampSeconds));
+  public Optional<Pose2d> samplePoseAt(double timestamp) {
+    double ctreTimeStamp = Utils.fpgaToCurrentTime(timestamp);
+    return super.samplePoseAt(ctreTimeStamp);
   }
 
   @Override
-  public Optional<Pose2d> samplePoseAt(double timestamp) {
-    return super.samplePoseAt(Utils.fpgaToCurrentTime(timestamp));
+  public void addVisionMeasurement(Pose2d visionRobotPoseMeters, double timestampSeconds) {
+    // Converts our WPILib timestamp to CTRE timestamp
+    double ctreTimeStamp = Utils.fpgaToCurrentTime(timestampSeconds);
+    super.addVisionMeasurement(visionRobotPoseMeters, ctreTimeStamp);
   }
 
   @Override
@@ -245,8 +228,8 @@ public class DriveIOCTRE extends SwerveDrivetrain<CommonTalon, CommonTalon, Pare
       double timestampSeconds,
       Matrix<N3, N1> visionMeasurementStdDevs) {
     // Converts our WPILib timestamp to CTRE timestamp
-    super.addVisionMeasurement(
-        visionRobotPoseMeters, Utils.fpgaToCurrentTime(timestampSeconds), visionMeasurementStdDevs);
+    double ctreTimeStamp = Utils.fpgaToCurrentTime(timestampSeconds);
+    super.addVisionMeasurement(visionRobotPoseMeters, ctreTimeStamp, visionMeasurementStdDevs);
   }
 
   @Override
@@ -258,11 +241,11 @@ public class DriveIOCTRE extends SwerveDrivetrain<CommonTalon, CommonTalon, Pare
   }
 
   private ModuleIOInputs updateModule(
-      ModuleIOInputs inputs, SwerveModule<CommonTalon, CommonTalon, ParentDevice> module) {
+      ModuleIOInputs inputs, SwerveModule<TalonFX, TalonFX, CANcoder> module) {
     // Get hardware objects
-    CommonTalon driveTalon = module.getDriveMotor();
-    CommonTalon turnTalon = module.getSteerMotor();
-    CANcoder cancoder = (CANcoder) module.getEncoder();
+    TalonFX driveTalon = module.getDriveMotor();
+    TalonFX turnTalon = module.getSteerMotor();
+    CANcoder cancoder = module.getEncoder();
 
     inputs.driveConnected = driveTalon.getConnectedMotor().hasUpdated();
     inputs.drivePosition = driveTalon.getPosition().getValue();

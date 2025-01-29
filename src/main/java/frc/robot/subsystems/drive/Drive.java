@@ -9,6 +9,7 @@ import com.pathplanner.lib.controllers.PPHolonomicDriveController;
 import com.pathplanner.lib.path.PathConstraints;
 import com.pathplanner.lib.path.PathPlannerPath;
 import com.pathplanner.lib.util.PathPlannerLogging;
+
 import edu.wpi.first.math.Matrix;
 import edu.wpi.first.math.estimator.SwerveDrivePoseEstimator;
 import edu.wpi.first.math.geometry.Pose2d;
@@ -35,6 +36,7 @@ import frc.robot.Constants;
 import frc.robot.Constants.Mode;
 import frc.robot.Robot;
 import frc.robot.subsystems.vision.VisionUtil.VisionMeasurement;
+import frc.robot.utils.ArrayBuilder;
 import java.util.List;
 import java.util.function.Supplier;
 import org.littletonrobotics.junction.AutoLogOutput;
@@ -48,12 +50,7 @@ public class Drive extends SubsystemBase {
   private final DriveIO io;
   private final DriveIOInputsAutoLogged inputs;
   private final ModuleIOInputsAutoLogged[] modules =
-      new ModuleIOInputsAutoLogged[] {
-        new ModuleIOInputsAutoLogged(),
-        new ModuleIOInputsAutoLogged(),
-        new ModuleIOInputsAutoLogged(),
-        new ModuleIOInputsAutoLogged()
-      };
+      buildModuleAutoLogeed(Constants.PP_CONFIG.numModules);
 
   private final SwerveDriveKinematics kinematics =
       new SwerveDriveKinematics(Constants.SWERVE_MODULE_OFFSETS);
@@ -61,16 +58,11 @@ public class Drive extends SubsystemBase {
   private Trigger estimatorTrigger =
       new Trigger(() -> poseEstimator != null).and(() -> Constants.currentMode == Mode.REPLAY);
   private SwerveModulePosition[] currentPositions =
-      new SwerveModulePosition[] {
-        new SwerveModulePosition(),
-        new SwerveModulePosition(),
-        new SwerveModulePosition(),
-        new SwerveModulePosition()
-      };
+      ArrayBuilder.buildSwerveModulePosition(Constants.PP_CONFIG.numModules);
 
-  private Alert[] driveDisconnectedAlert = new Alert[4];
-  private Alert[] turnDisconnectedAlert = new Alert[4];
-  private Alert[] turnEncoderDisconnectedAlert = new Alert[4];
+  private Alert[] driveDisconnectedAlert = new Alert[Constants.PP_CONFIG.numModules];
+  private Alert[] turnDisconnectedAlert = new Alert[Constants.PP_CONFIG.numModules];
+  private Alert[] turnEncoderDisconnectedAlert = new Alert[Constants.PP_CONFIG.numModules];
 
   private Alert gyroDisconnectedAlert;
 
@@ -352,8 +344,8 @@ public class Drive extends SubsystemBase {
   }
 
   public Angle[] getDrivePositions() {
-    Angle[] values = new Angle[4];
-    for (int i = 0; i < 4; i++) {
+    Angle[] values = new Angle[Constants.PP_CONFIG.numModules];
+    for (int i = 0; i < values.length; i++) {
       values[i] = modules[i].drivePosition;
     }
     return values;
@@ -458,5 +450,22 @@ public class Drive extends SubsystemBase {
       currentPositions[moduleIndex].distanceMeters = inputs.drivePositions[moduleIndex][timeIndex];
       currentPositions[moduleIndex].angle = inputs.steerPositions[moduleIndex][timeIndex];
     }
+  }
+
+  /**
+   * Builds an array of `ModuleIOInputsAutoLogged` objects.
+   *
+   * @param size The number of elements in the array.
+   * @return An initialized array of `ModuleIOInputsAutoLogged` objects.
+   */
+  public ModuleIOInputsAutoLogged[] buildModuleAutoLogeed(int size) {
+    if (size <= 0) {
+      throw new IllegalArgumentException("Size must be positive");
+    }
+    ModuleIOInputsAutoLogged[] modulePositions = new ModuleIOInputsAutoLogged[size];
+    for (int i = 0; i < modulePositions.length; i++) {
+      modulePositions[i] = new ModuleIOInputsAutoLogged();
+    }
+    return modulePositions;
   }
 }
