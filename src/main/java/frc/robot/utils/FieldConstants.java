@@ -7,12 +7,10 @@
 
 package frc.robot.utils;
 
-import static edu.wpi.first.apriltag.AprilTagFields.k2024Crescendo;
-
 import edu.wpi.first.apriltag.AprilTagFieldLayout;
+import edu.wpi.first.apriltag.AprilTagFields;
 import edu.wpi.first.math.geometry.*;
 import edu.wpi.first.math.util.Units;
-import java.io.IOException;
 import java.util.ArrayList;
 import java.util.HashMap;
 import java.util.List;
@@ -178,10 +176,6 @@ public class FieldConstants {
   public static AprilTagFieldLayout aprilTags;
 
   static {
-    try {
-      aprilTags = AprilTagFieldLayout.loadFromResource(k2024Crescendo.m_resourceFile);
-    } catch (IOException e) {
-      throw new RuntimeException(e);
-    }
+    aprilTags = AprilTagFieldLayout.loadField(AprilTagFields.kDefaultField);
   }
 }
