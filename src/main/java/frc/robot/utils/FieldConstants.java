@@ -173,9 +173,6 @@ public class FieldConstants {
   }
 
   public static double aprilTagWidth = Units.inchesToMeters(6.50);
-  public static AprilTagFieldLayout aprilTags;
-
-  static {
-    aprilTags = AprilTagFieldLayout.loadField(AprilTagFields.kDefaultField);
-  }
+  public static AprilTagFieldLayout aprilTags =
+      AprilTagFieldLayout.loadField(AprilTagFields.kDefaultField);
 }

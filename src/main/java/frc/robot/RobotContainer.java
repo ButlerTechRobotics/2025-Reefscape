@@ -20,6 +20,7 @@ import edu.wpi.first.units.measure.LinearVelocity;
 import edu.wpi.first.wpilibj2.command.Command;
 import edu.wpi.first.wpilibj2.command.sysid.SysIdRoutine;
 import frc.robot.commands.DriveCommands;
+import frc.robot.commands.SmartDrive;
 import frc.robot.generated.TunerConstants;
 import frc.robot.subsystems.drive.Drive;
 import frc.robot.subsystems.drive.DriveIO;
@@ -95,28 +96,40 @@ public class RobotContainer {
         new Vision(
             drivetrain::addVisionData,
             new VisionIOPhotonVisionSIM(
-                "Front Camera",
+                "BL-Camera",
                 new Transform3d(
-                    new Translation3d(0.2, 0.0, 0.8),
-                    new Rotation3d(0, Math.toRadians(20), Math.toRadians(0))),
+                    new Translation3d(
+                        Units.inchesToMeters(-10.5),
+                        Units.inchesToMeters(10.5),
+                        Units.inchesToMeters(6.5)),
+                    new Rotation3d(0, Math.toRadians(10), Math.toRadians(150))),
                 drivetrain::getVisionParameters),
             new VisionIOPhotonVisionSIM(
-                "Back Camera",
+                "BR-Camera",
                 new Transform3d(
-                    new Translation3d(-0.2, 0.0, 0.8),
-                    new Rotation3d(0, Math.toRadians(20), Math.toRadians(180))),
+                    new Translation3d(
+                        Units.inchesToMeters(-10.5),
+                        Units.inchesToMeters(-10.5),
+                        Units.inchesToMeters(6.5)),
+                    new Rotation3d(0, Math.toRadians(10), Math.toRadians(210))),
                 drivetrain::getVisionParameters),
             new VisionIOPhotonVisionSIM(
-                "Left Camera",
+                "FL-Camera",
                 new Transform3d(
-                    new Translation3d(0.0, 0.2, 0.8),
-                    new Rotation3d(0, Math.toRadians(20), Math.toRadians(90))),
+                    new Translation3d(
+                        Units.inchesToMeters(10.5),
+                        Units.inchesToMeters(10.5),
+                        Units.inchesToMeters(6.5)),
+                    new Rotation3d(0, Math.toRadians(10), Math.toRadians(30))),
                 drivetrain::getVisionParameters),
             new VisionIOPhotonVisionSIM(
-                "Right Camera",
+                "FR-Camera",
                 new Transform3d(
-                    new Translation3d(0.0, -0.2, 0.8),
-                    new Rotation3d(0, Math.toRadians(20), Math.toRadians(-90))),
+                    new Translation3d(
+                        Units.inchesToMeters(-10.5),
+                        Units.inchesToMeters(-10.5),
+                        Units.inchesToMeters(6.5)),
+                    new Rotation3d(0, Math.toRadians(10), Math.toRadians(330))),
                 drivetrain::getVisionParameters));
 
         // claw = new Claw(new ClawIOSIM());
@@ -283,6 +296,14 @@ public class RobotContainer {
     //     .and(joystick.a())
     //     .whileTrue(
     //         new SmartScore(drivetrain, claw, arm, SmartScore.Side.RIGHT, SmartScore.ArmMode.L1));
+    joystick
+        .leftBumper()
+        .and(joystick.a())
+        .whileTrue(new SmartDrive(drivetrain, SmartDrive.Side.LEFT));
+    joystick
+        .rightBumper()
+        .and(joystick.a())
+        .whileTrue(new SmartDrive(drivetrain, SmartDrive.Side.RIGHT));
   }
 
   public Command getAutonomousCommand() {

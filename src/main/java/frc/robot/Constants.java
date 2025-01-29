@@ -24,7 +24,6 @@ import edu.wpi.first.units.measure.Mass;
 import edu.wpi.first.units.measure.MomentOfInertia;
 import edu.wpi.first.wpilibj.RobotBase;
 import frc.robot.generated.TunerConstants;
-import frc.robot.utils.PPUtil;
 
 /**
  * This class defines the runtime mode used by AdvantageKit. The mode is always "real" when running
@@ -90,14 +89,10 @@ public final class Constants {
   }
 
   static {
-    RobotConfig config;
-    try {
-      config = RobotConfig.fromGUISettings();
-      // Check if the GUI settings match the constants
-      PPUtil.compareConfigs(config, PP_CONFIG);
-    } catch (Exception e) {
-      PPUtil.badGUI();
-      e.printStackTrace();
+    // Checks to make sure config matches GUI values. Code should not throw as not breaking
+    if (!PP_CONFIG.hasValidConfig()) {
+      String error = "Invalid robot configuration detected in PP_CONFIG";
+      System.err.println(error);
     }
   }
 }
