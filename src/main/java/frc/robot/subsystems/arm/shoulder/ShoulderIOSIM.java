@@ -82,7 +82,7 @@ public class ShoulderIOSIM extends ShoulderIOCTRE {
             Degrees.of(0).in(Radians), // Lower limit (0°)
             Degrees.of(180).in(Radians), // Upper limit (180)
             true, // Enable gravity simulation
-            Degrees.of(90).in(Radians)); // Start at 90°
+            Degrees.of(0).in(Radians)); // Start at 90°
   }
 
   /**
