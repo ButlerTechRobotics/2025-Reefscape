@@ -17,6 +17,7 @@ import edu.wpi.first.math.geometry.Translation3d;
 import edu.wpi.first.math.trajectory.TrapezoidProfile;
 import edu.wpi.first.math.util.Units;
 import edu.wpi.first.units.measure.LinearVelocity;
+import edu.wpi.first.wpilibj.smartdashboard.SmartDashboard;
 import edu.wpi.first.wpilibj2.command.Command;
 import edu.wpi.first.wpilibj2.command.sysid.SysIdRoutine;
 import frc.robot.commands.DriveCommands;
@@ -324,6 +325,13 @@ public class RobotContainer {
         .rightBumper()
         .and(joystick.a())
         .whileTrue(new SmartScore(drivetrain, arm, SmartScore.Side.RIGHT, SmartScore.ArmMode.L1));
+
+    SmartDashboard.putData(
+        "Pathfind and score L1 Left",
+        new SmartScore(drivetrain, arm, SmartScore.Side.LEFT, SmartScore.ArmMode.L1));
+    SmartDashboard.putData(
+        "Pathfind and score L1 Right",
+        new SmartScore(drivetrain, arm, SmartScore.Side.RIGHT, SmartScore.ArmMode.L1));
     // joystick
     //     .leftBumper()
     //     .and(joystick.a())
