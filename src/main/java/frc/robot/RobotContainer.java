@@ -23,9 +23,18 @@ import frc.robot.commands.DriveCommands;
 import frc.robot.commands.SmartScore;
 import frc.robot.generated.TunerConstants;
 import frc.robot.subsystems.arm.Arm;
-import frc.robot.subsystems.arm.ArmIO;
-import frc.robot.subsystems.arm.ArmIOCTRE;
-import frc.robot.subsystems.arm.ArmIOSIM;
+import frc.robot.subsystems.arm.extension.Extension;
+import frc.robot.subsystems.arm.extension.ExtensionIO;
+import frc.robot.subsystems.arm.extension.ExtensionIOCTRE;
+import frc.robot.subsystems.arm.extension.ExtensionIOSIM;
+import frc.robot.subsystems.arm.shoulder.Shoulder;
+import frc.robot.subsystems.arm.shoulder.ShoulderIO;
+import frc.robot.subsystems.arm.shoulder.ShoulderIOCTRE;
+import frc.robot.subsystems.arm.shoulder.ShoulderIOSIM;
+import frc.robot.subsystems.arm.wrist.Wrist;
+import frc.robot.subsystems.arm.wrist.WristIO;
+import frc.robot.subsystems.arm.wrist.WristIOCTRE;
+import frc.robot.subsystems.arm.wrist.WristIOSIM;
 import frc.robot.subsystems.claw.Claw;
 import frc.robot.subsystems.claw.ClawIO;
 import frc.robot.subsystems.claw.ClawIOCTRE;
@@ -66,6 +75,11 @@ public class RobotContainer {
   private final SwerveRequest.PointWheelsAt point = new SwerveRequest.PointWheelsAt();
 
   public RobotContainer() {
+    // Declare component subsystems (not visible outside constructor)
+    Extension extension = null;
+    Shoulder shoulder = null;
+    Wrist wrist = null;
+
     DriveIOCTRE currentDriveTrain = TunerConstants.createDrivetrain();
     switch (Constants.currentMode) {
       case REAL:
@@ -94,7 +108,9 @@ public class RobotContainer {
                 drivetrain::getVisionParameters));
 
         claw = new Claw(new ClawIOCTRE());
-        arm = new Arm(new ArmIOCTRE());
+        extension = new Extension(new ExtensionIOCTRE());
+        shoulder = new Shoulder(new ShoulderIOCTRE());
+        wrist = new Wrist(new WristIOCTRE());
         break;
 
       case SIM:
@@ -141,7 +157,9 @@ public class RobotContainer {
                 drivetrain::getVisionParameters));
 
         claw = new Claw(new ClawIOSIM());
-        arm = new Arm(new ArmIOSIM());
+        extension = new Extension(new ExtensionIOSIM());
+        shoulder = new Shoulder(new ShoulderIOSIM());
+        wrist = new Wrist(new WristIOSIM());
         break;
 
       default:
@@ -156,9 +174,13 @@ public class RobotContainer {
             new VisionIO() {});
 
         claw = new Claw(new ClawIO() {});
-        arm = new Arm(new ArmIO() {});
+        extension = new Extension(new ExtensionIO() {});
+        shoulder = new Shoulder(new ShoulderIO() {});
+        wrist = new Wrist(new WristIO() {});
         break;
     }
+
+    arm = new Arm(shoulder, extension, wrist);
 
     // Set up the named commands
     // NamedCommands.registerCommand(
@@ -289,21 +311,19 @@ public class RobotContainer {
     // reset the field-centric heading on left bumper press
     // joystick.leftBumper().onTrue(drivetrain.runOnce(drivetrain::seedFieldCentric));
 
-    joystick.povDown().whileTrue(arm.stopCommand());
-    joystick.povLeft().whileTrue(arm.L1());
-    joystick.povRight().whileTrue(arm.L2());
-    joystick.povUp().whileTrue(arm.L3());
+    joystick.povDown().whileTrue(arm.setGoalCommand(Arm.Goal.STOW));
+    joystick.povLeft().whileTrue(arm.setGoalCommand(Arm.Goal.L1));
+    joystick.povRight().whileTrue(arm.setGoalCommand(Arm.Goal.L2));
+    joystick.povUp().whileTrue(arm.setGoalCommand(Arm.Goal.L3));
 
     joystick
         .leftBumper()
         .and(joystick.a())
-        .whileTrue(
-            new SmartScore(drivetrain, claw, arm, SmartScore.Side.LEFT, SmartScore.ArmMode.L1));
+        .whileTrue(new SmartScore(drivetrain, arm, SmartScore.Side.LEFT, SmartScore.ArmMode.L1));
     joystick
         .rightBumper()
         .and(joystick.a())
-        .whileTrue(
-            new SmartScore(drivetrain, claw, arm, SmartScore.Side.RIGHT, SmartScore.ArmMode.L1));
+        .whileTrue(new SmartScore(drivetrain, arm, SmartScore.Side.RIGHT, SmartScore.ArmMode.L1));
     // joystick
     //     .leftBumper()
     //     .and(joystick.a())

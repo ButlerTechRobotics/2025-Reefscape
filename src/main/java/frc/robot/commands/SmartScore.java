@@ -48,12 +48,14 @@ public class SmartScore extends Command {
   private static final double SIDE_OFFSET = Units.inchesToMeters(6.469);
 
   public enum ArmMode {
-    STOP,
-    INTAKE,
+    STOW,
+    FLOOR_INTAKE,
+    SOURCE_INTAKE,
     L1,
     L2,
     L3,
-    L4
+    L4,
+    CLIMB
   }
 
   public enum Side {
@@ -62,14 +64,13 @@ public class SmartScore extends Command {
     RIGHT
   }
 
-  public SmartScore(Drive drivetrain, Claw claw, Arm arm, Side side, ArmMode armMode) {
+  public SmartScore(Drive drivetrain, Arm arm, Side side, ArmMode armMode) {
     this.drivetrain = drivetrain;
-    this.claw = claw;
     this.arm = arm;
     this.side = side;
     this.armMode = armMode;
 
-    addRequirements(drivetrain, claw, arm);
+    addRequirements(drivetrain, arm);
   }
 
   @Override
@@ -134,45 +135,65 @@ public class SmartScore extends Command {
 
   private void scheduleArmCommand(boolean isReversed) {
     switch (armMode) {
-      case STOP:
-        arm.stopCommand().schedule();
+      case STOW:
+        arm.setGoalCommand(Arm.Goal.STOW).schedule();
         break;
-      case INTAKE:
-        arm.intake().schedule();
+      case FLOOR_INTAKE:
+        arm.setGoalCommand(Arm.Goal.FLOOR_INTAKE).schedule();
+        break;
+      case SOURCE_INTAKE:
+        arm.setGoalCommand(Arm.Goal.SOURCE_INTAKE).schedule();
         break;
       case L1:
         if (isReversed) {
-          arm.L1Back().schedule();
+          arm.setGoalCommand(Arm.Goal.L1).schedule();
         } else {
-          arm.L1().schedule();
+          arm.setGoalCommand(Arm.Goal.L1Back).schedule();
         }
         break;
       case L2:
         if (isReversed) {
-          arm.L2Back().schedule();
+          arm.setGoalCommand(Arm.Goal.L2).schedule();
         } else {
-          arm.L2().schedule();
+          arm.setGoalCommand(Arm.Goal.L2Back).schedule();
         }
-        break;
       case L3:
         if (isReversed) {
-          arm.L3Back().schedule();
+          arm.setGoalCommand(Arm.Goal.L3).schedule();
         } else {
-          arm.L3().schedule();
+          arm.setGoalCommand(Arm.Goal.L3Back).schedule();
         }
         break;
       case L4:
         if (isReversed) {
-          arm.L4Back().schedule();
+          arm.setGoalCommand(Arm.Goal.L4).schedule();
         } else {
-          arm.L4().schedule();
+          arm.setGoalCommand(Arm.Goal.L4Back).schedule();
         }
+        break;
+      case CLIMB:
+        arm.setGoalCommand(Arm.Goal.CLIMB).schedule();
         break;
     }
   }
 
   @Override
+  public void execute() {
+    // Continuously check and update the drive command if necessary
+    if (driveCommand != null && !driveCommand.isScheduled()) {
+      driveCommand.schedule();
+    }
+  }
+
+  @Override
+  public void end(boolean interrupted) {
+    if (driveCommand != null) {
+      driveCommand.cancel();
+    }
+  }
+
+  @Override
   public boolean isFinished() {
-    return true;
+    return false;
   }
 }

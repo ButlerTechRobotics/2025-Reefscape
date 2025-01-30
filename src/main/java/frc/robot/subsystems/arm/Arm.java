@@ -7,371 +7,167 @@
 
 package frc.robot.subsystems.arm;
 
-import static edu.wpi.first.units.Units.*;
-
-import edu.wpi.first.units.measure.Angle;
-import edu.wpi.first.units.measure.Distance;
-import edu.wpi.first.wpilibj.Alert;
-import edu.wpi.first.wpilibj.Alert.AlertType;
-import edu.wpi.first.wpilibj.util.Color;
+import edu.wpi.first.wpilibj.DriverStation;
+import edu.wpi.first.wpilibj.Timer;
 import edu.wpi.first.wpilibj2.command.Command;
-import edu.wpi.first.wpilibj2.command.Commands;
-import edu.wpi.first.wpilibj2.command.SelectCommand;
 import edu.wpi.first.wpilibj2.command.SubsystemBase;
-import java.util.Map;
+import frc.robot.subsystems.arm.extension.Extension;
+import frc.robot.subsystems.arm.shoulder.Shoulder;
+import frc.robot.subsystems.arm.wrist.Wrist;
 import org.littletonrobotics.junction.AutoLogOutput;
 import org.littletonrobotics.junction.Logger;
 
-/**
- * The Arm subsystem controls a mechanism with both rotation and extension capabilities for game
- * piece manipulation. It supports multiple positions for different game actions and provides
- * closed-loop control for shoulder angle, wrist angle, and extension distance.
- */
 public class Arm extends SubsystemBase {
-  // Hardware interfaces and inputs
-  private final ArmIO io;
-  private final ArmIOInputsAutoLogged inputs;
+  public enum Goal {
+    STOW,
+    FLOOR_INTAKE,
+    SOURCE_INTAKE,
+    L1,
+    L1Back,
+    L2,
+    L2Back,
+    L3,
+    L3Back,
+    L4,
+    L4Back,
+    CLIMB
+  }
 
-  // Current arm position mode
-  private ArmPosition currentMode = ArmPosition.STOP;
+  private Goal currentGoal = Goal.STOW;
+  private Goal desiredGoal = Goal.STOW;
+  private Goal previousGoal = Goal.STOW;
 
-  private final ArmVisualizer measuredVisualizer;
-  private final ArmVisualizer setpointVisualizer;
+  private final Shoulder shoulder;
+  private final Extension extension;
+  private final Wrist wrist;
 
-  // Alerts for motor connection status
-  private final Alert shoulderLeaderAlert =
-      new Alert("Shoulder leader motor isn't connected", AlertType.kError);
-  private final Alert shoulderFollowerAlert =
-      new Alert("Shoulder follower motor isn't connected", AlertType.kError);
-  private final Alert shoulderEncoderAlert =
-      new Alert("Shoulder encoder isn't connected", AlertType.kError);
-  private final Alert wristLeaderAlert =
-      new Alert("Wrist leader motor isn't connected", AlertType.kError);
-  private final Alert wristEncoderAlert =
-      new Alert("Wrist encoder isn't connected", AlertType.kError);
-  private final Alert extensionLeaderAlert =
-      new Alert("Extension leader motor isn't connected", AlertType.kError);
-  private final Alert extensionFollowerAlert =
-      new Alert("Extension follower motor isn't connected", AlertType.kError);
-  private final Alert extensionEncoderAlert =
-      new Alert("Extension encoder isn't connected", AlertType.kError);
+  private Timer goalTimer = new Timer();
 
-  /**
-   * Creates a new Arm subsystem with the specified hardware interface.
-   *
-   * @param io The hardware interface implementation for the arm
-   */
-  public Arm(ArmIO io) {
-    this.io = io;
-    this.inputs = new ArmIOInputsAutoLogged();
+  public Arm(Shoulder shoulder, Extension extension, Wrist wrist) {
+    this.shoulder = shoulder;
+    this.extension = extension;
+    this.wrist = wrist;
 
-    measuredVisualizer = new ArmVisualizer("Measured", Color.kBlack, Color.kGray, Inches.of(24));
-    setpointVisualizer = new ArmVisualizer("Setpoint", Color.kGreen, Color.kBlue, Inches.of(24));
+    setDefaultCommand(setGoalCommand(Goal.STOW));
+    goalTimer.start();
   }
 
   @Override
   public void periodic() {
-    // Update and log inputs from hardware
-    io.updateInputs(inputs);
-    Logger.processInputs("Arm", inputs);
-
-    // Update motor connection status alerts
-    shoulderLeaderAlert.set(!inputs.shoulderLeaderConnected);
-    shoulderFollowerAlert.set(!inputs.shoulderFollowerConnected);
-    shoulderEncoderAlert.set(!inputs.shoulderEncoderConnected);
-    wristLeaderAlert.set(!inputs.wristLeaderConnected);
-    wristEncoderAlert.set(!inputs.wristEncoderConnected);
-    extensionLeaderAlert.set(!inputs.extensionLeaderConnected);
-    extensionFollowerAlert.set(!inputs.extensionFollowerConnected);
-    extensionEncoderAlert.set(!inputs.extensionEncoderConnected);
-
-    measuredVisualizer.update(inputs.shoulderAngle, inputs.wristAngle, inputs.extensionDistance);
-    setpointVisualizer.update(targetShoulderAngle(), targetWristAngle(), targetExtensionDistance());
-  }
-
-  /**
-   * Runs the arm in closed-loop position mode to the specified angles and extension.
-   *
-   * @param shoulderAngle The target shoulder angle
-   * @param wristAngle The target wrist angle
-   * @param extensionDistance The target extension distance
-   */
-  private void setPosition(Angle shoulderAngle, Angle wristAngle, Distance extensionDistance) {
-    io.setPosition(shoulderAngle, wristAngle, extensionDistance);
-  }
-
-  /** Stops all arm motors. */
-  private void stop() {
-    io.stop();
-  }
-
-  /**
-   * Returns the current shoulder angle of the arm.
-   *
-   * @return The current angular position
-   */
-  @AutoLogOutput
-  public Angle getShoulderPosition() {
-    return inputs.shoulderAngle;
-  }
-
-  /**
-   * Returns the current wrist angle of the arm.
-   *
-   * @return The current angular position
-   */
-  @AutoLogOutput
-  public Angle getWristPosition() {
-    return inputs.wristAngle;
-  }
-
-  /**
-   * Returns the current extension of the arm.
-   *
-   * @return The current extension distance
-   */
-  @AutoLogOutput
-  public Distance getExtensionPosition() {
-    return inputs.extensionDistance;
-  }
-
-  /**
-   * Enumeration of available arm positions with their corresponding targets. Shoulder Angle, Wrist
-   * Angle, Extension Distance
-   */
-  private enum ArmPosition {
-    STOP(Degrees.of(0), Degrees.of(0), Inches.of(0)), // Stop the arm
-    INTAKE(Degrees.of(0), Degrees.of(0), Inches.of(0)), // Arm tucked in
-    L1(Degrees.of(90), Degrees.of(90), Inches.of(0)), // Position for scoring in L1
-    L1Back(Degrees.of(90), Degrees.of(90), Inches.of(0)), // Position for scoring in L1Back
-    L2(Degrees.of(135), Degrees.of(90), Inches.of(12)), // Position for scoring in L2
-    L2Back(Degrees.of(135), Degrees.of(90), Inches.of(12)), // Position for scoring in L2Back
-    L3(Degrees.of(135), Degrees.of(90), Inches.of(24)), // Position for scoring in L3
-    L3Back(Degrees.of(135), Degrees.of(90), Inches.of(24)), // Position for scoring in L3Back
-    L4(Degrees.of(180), Degrees.of(90), Inches.of(36)), // Position for scoring in L4
-    L4Back(Degrees.of(180), Degrees.of(90), Inches.of(36)); // Position for scoring in L4Back
-
-    private final Angle targetShoulderAngle;
-    private final Angle targetWristAngle;
-    private final Distance targetExtensionDistance;
-    private final Angle shoulderTolerance;
-    private final Angle wristTolerance;
-    private final Distance extensionTolerance;
-
-    ArmPosition(
-        Angle targetShoulderAngle,
-        Angle targetWristAngle,
-        Distance targetExtensionDistance,
-        Angle shoulderTolerance,
-        Angle wristTolerance,
-        Distance extensionTolerance) {
-      this.targetShoulderAngle = targetShoulderAngle;
-      this.targetWristAngle = targetWristAngle;
-      this.targetExtensionDistance = targetExtensionDistance;
-      this.shoulderTolerance = shoulderTolerance;
-      this.wristTolerance = wristTolerance;
-      this.extensionTolerance = extensionTolerance;
+    if (DriverStation.isDisabled()) {
+      setDefaultCommand(setGoalCommand(Goal.STOW));
+      shoulder.stopCommand();
+      extension.stopCommand();
+      wrist.stopCommand();
     }
 
-    ArmPosition(
-        Angle targetShoulderAngle, Angle targetWristAngle, Distance targetExtensionDistance) {
-      this(
-          targetShoulderAngle,
-          targetWristAngle,
-          targetExtensionDistance,
-          Degrees.of(2),
-          Degrees.of(2),
-          Inches.of(0.5)); // Default tolerances
+    // Reset timer
+    if (currentGoal != previousGoal) {
+      goalTimer.reset();
     }
+    previousGoal = currentGoal;
+
+    switch (currentGoal) {
+      case STOW -> {
+        shoulder.setShoulderPosition(Shoulder.ShoulderPosition.STOW);
+        extension.setExtensionPosition(Extension.ExtensionPosition.STOW);
+        wrist.setWristPosition(Wrist.WristPosition.STOW);
+      }
+      case FLOOR_INTAKE -> {
+        shoulder.setShoulderPosition(Shoulder.ShoulderPosition.FLOOR_INTAKE);
+        extension.setExtensionPosition(Extension.ExtensionPosition.FLOOR_INTAKE);
+        wrist.setWristPosition(Wrist.WristPosition.FLOOR_INTAKE);
+      }
+      case SOURCE_INTAKE -> {
+        shoulder.setShoulderPosition(Shoulder.ShoulderPosition.SOURCE_INTAKE);
+        extension.setExtensionPosition(Extension.ExtensionPosition.SOURCE_INTAKE);
+        wrist.setWristPosition(Wrist.WristPosition.SOURCE_INTAKE);
+      }
+      case L1 -> {
+        shoulder.setShoulderPosition(Shoulder.ShoulderPosition.L1);
+        extension.setExtensionPosition(Extension.ExtensionPosition.L1);
+        wrist.setWristPosition(Wrist.WristPosition.L1);
+      }
+      case L1Back -> {
+        shoulder.setShoulderPosition(Shoulder.ShoulderPosition.L1Back);
+        extension.setExtensionPosition(Extension.ExtensionPosition.L1Back);
+        wrist.setWristPosition(Wrist.WristPosition.L1Back);
+      }
+      case L2 -> {
+        shoulder.setShoulderPosition(Shoulder.ShoulderPosition.L2);
+        extension.setExtensionPosition(Extension.ExtensionPosition.L2);
+        wrist.setWristPosition(Wrist.WristPosition.L2);
+      }
+      case L2Back -> {
+        shoulder.setShoulderPosition(Shoulder.ShoulderPosition.L2Back);
+        extension.setExtensionPosition(Extension.ExtensionPosition.L2Back);
+        wrist.setWristPosition(Wrist.WristPosition.L2Back);
+      }
+      case L3 -> {
+        shoulder.setShoulderPosition(Shoulder.ShoulderPosition.L3);
+        extension.setExtensionPosition(Extension.ExtensionPosition.L3);
+        wrist.setWristPosition(Wrist.WristPosition.L3);
+      }
+      case L3Back -> {
+        shoulder.setShoulderPosition(Shoulder.ShoulderPosition.L3Back);
+        extension.setExtensionPosition(Extension.ExtensionPosition.L3Back);
+        wrist.setWristPosition(Wrist.WristPosition.L3Back);
+      }
+      case L4 -> {
+        shoulder.setShoulderPosition(Shoulder.ShoulderPosition.L4);
+        extension.setExtensionPosition(Extension.ExtensionPosition.L4);
+        wrist.setWristPosition(Wrist.WristPosition.L4);
+      }
+      case L4Back -> {
+        shoulder.setShoulderPosition(Shoulder.ShoulderPosition.L4Back);
+        extension.setExtensionPosition(Extension.ExtensionPosition.L4Back);
+        wrist.setWristPosition(Wrist.WristPosition.L4Back);
+      }
+      case CLIMB -> {
+        shoulder.setShoulderPosition(Shoulder.ShoulderPosition.CLIMB);
+        extension.setExtensionPosition(Extension.ExtensionPosition.CLIMB);
+        wrist.setWristPosition(Wrist.WristPosition.CLIMB);
+      }
+    }
+    shoulder.periodic();
+    extension.periodic();
+    wrist.periodic();
+
+    Logger.recordOutput("Arm/GoalState", desiredGoal);
+    Logger.recordOutput("Arm/CurrentState", currentGoal);
   }
 
-  /**
-   * Gets the current arm position mode.
-   *
-   * @return The current ArmPosition
-   */
-  public ArmPosition getMode() {
-    return currentMode;
+  /** Set goal of arm */
+  private void setGoal(Goal goal) {
+    if (desiredGoal == goal) return;
+    desiredGoal = goal;
   }
 
-  /**
-   * Sets a new arm position and schedules the corresponding command.
-   *
-   * @param position The desired ArmPosition
-   */
-  private void setArmPosition(ArmPosition position) {
-    currentCommand.cancel();
-    currentMode = position;
-    currentCommand.schedule();
+  /** Command to set goal of arm */
+  public Command setGoalCommand(Goal goal) {
+    return startEnd(() -> setGoal(goal), () -> setGoal(Goal.STOW)).withName("Arm " + goal);
   }
 
-  // Command that runs the appropriate routine based on the current position
-  private final Command currentCommand =
-      new SelectCommand<>(
-          Map.of(
-              ArmPosition.STOP,
-              Commands.runOnce(this::stop).withName("Stop Arm"),
-              ArmPosition.INTAKE,
-              createPositionCommand(ArmPosition.INTAKE),
-              ArmPosition.L1,
-              createPositionCommand(ArmPosition.L1),
-              ArmPosition.L1Back,
-              createPositionCommand(ArmPosition.L1Back),
-              ArmPosition.L2,
-              createPositionCommand(ArmPosition.L2),
-              ArmPosition.L2Back,
-              createPositionCommand(ArmPosition.L2Back),
-              ArmPosition.L3,
-              createPositionCommand(ArmPosition.L3),
-              ArmPosition.L3Back,
-              createPositionCommand(ArmPosition.L3Back),
-              ArmPosition.L4,
-              createPositionCommand(ArmPosition.L4),
-              ArmPosition.L4Back,
-              createPositionCommand(ArmPosition.L4Back)),
-          this::getMode);
-
-  /**
-   * Creates a command for a specific arm position that moves both shoulder and extension.
-   *
-   * @param position The arm position to create a command for
-   * @return A command that implements the arm movement
-   */
-  private Command createPositionCommand(ArmPosition position) {
-    return Commands.runOnce(
-            () ->
-                setPosition(
-                    position.targetShoulderAngle,
-                    position.targetWristAngle,
-                    position.targetExtensionDistance))
-        .withName("Move to " + position.toString());
-  }
-
-  /**
-   * Checks if the arm is at its target position.
-   *
-   * @return true if at target position, false otherwise
-   */
-  @AutoLogOutput
+  @AutoLogOutput(key = "Arm/AtGoal")
   public boolean isAtTarget() {
-    if (currentMode == ArmPosition.STOP) return true;
-    return getShoulderPosition()
-            .isNear(currentMode.targetShoulderAngle, currentMode.shoulderTolerance)
-        && getWristPosition().isNear(currentMode.targetWristAngle, currentMode.wristTolerance)
-        && getExtensionPosition()
-            .isNear(currentMode.targetExtensionDistance, currentMode.extensionTolerance);
+    return currentGoal == desiredGoal
+        && shoulder.isAtTarget()
+        && extension.isAtTarget()
+        && wrist.isAtTarget();
   }
 
-  /**
-   * Gets the target shoulder angle for the current mode.
-   *
-   * @return The target shoulder angle
-   */
-  @AutoLogOutput
-  private Angle targetShoulderAngle() {
-    return currentMode.targetShoulderAngle;
+  @AutoLogOutput(key = "Arm/AtShoulderGoal")
+  public boolean atArmGoal() {
+    return currentGoal == desiredGoal && shoulder.isAtTarget();
   }
 
-  /**
-   * Gets the target wrist angle for the current mode.
-   *
-   * @return The target wrist angle
-   */
-  @AutoLogOutput
-  private Angle targetWristAngle() {
-    return currentMode.targetWristAngle;
+  @AutoLogOutput(key = "Arm/AtExtensionGoal")
+  public boolean atExtensionGoal() {
+    return currentGoal == desiredGoal && extension.isAtTarget();
   }
 
-  /**
-   * Gets the target extension distance for the current mode.
-   *
-   * @return The target extension distance
-   */
-  @AutoLogOutput
-  private Distance targetExtensionDistance() {
-    return currentMode.targetExtensionDistance;
-  }
-
-  /**
-   * Creates a command to set the arm to a specific position.
-   *
-   * @param position The desired arm position
-   * @return Command to set the position
-   */
-  private Command setPositionCommand(ArmPosition position) {
-    return Commands.runOnce(() -> setArmPosition(position))
-        .withName("SetArmPosition(" + position.toString() + ")");
-  }
-
-  /** Factory methods for common position commands */
-
-  /**
-   * @return Command to move the arm to L1 scoring position
-   */
-  public Command L1() {
-    return setPositionCommand(ArmPosition.L1);
-  }
-
-  /**
-   * @return Command to move the arm to L1Back scoring position
-   */
-  public Command L1Back() {
-    return setPositionCommand(ArmPosition.L1Back);
-  }
-
-  /**
-   * @return Command to move the arm to L2 scoring position
-   */
-  public Command L2() {
-    return setPositionCommand(ArmPosition.L2);
-  }
-
-  /**
-   * @return Command to move the arm to L2Back scoring position
-   */
-  public Command L2Back() {
-    return setPositionCommand(ArmPosition.L2Back);
-  }
-
-  /**
-   * @return Command to move the arm to L3 position
-   */
-  public Command L3() {
-    return setPositionCommand(ArmPosition.L3);
-  }
-
-  /**
-   * @return Command to move the arm to L3Back position
-   */
-  public Command L3Back() {
-    return setPositionCommand(ArmPosition.L3Back);
-  }
-
-  /**
-   * @return Command to move the arm to L4 position
-   */
-  public Command L4() {
-    return setPositionCommand(ArmPosition.L4);
-  }
-
-  /**
-   * @return Command to move the arm to L4Back position
-   */
-  public Command L4Back() {
-    return setPositionCommand(ArmPosition.L4Back);
-  }
-
-  /**
-   * @return Command to move to intake position
-   */
-  public Command intake() {
-    return setPositionCommand(ArmPosition.INTAKE);
-  }
-
-  /**
-   * @return Command to stop the arm
-   */
-  public Command stopCommand() {
-    return setPositionCommand(ArmPosition.STOP);
+  @AutoLogOutput(key = "Arm/AtWristGoal")
+  public boolean atWristGoal() {
+    return currentGoal == desiredGoal && wrist.isAtTarget();
   }
 }

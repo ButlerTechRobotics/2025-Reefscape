@@ -38,9 +38,9 @@ public final class Constants {
   public static final AngularVelocity MaxModuleRate = RotationsPerSecond.of(20.0);
 
   // PathPlanner config constants
-  private static final Mass ROBOT_MASS = Kilogram.of(69.78);
+  private static final Mass ROBOT_MASS = Kilogram.of(45.360);
   // 15.2
-  private static final MomentOfInertia ROBOT_MOI = KilogramSquareMeters.of(6.0);
+  private static final MomentOfInertia ROBOT_MOI = KilogramSquareMeters.of(6.000);
   private static final double WHEEL_COF = 1.9;
   public static final SwerveModuleConstants SWERVE_MODULE_CONSTANTS = TunerConstants.FrontLeft;
   public static final Translation2d[] SWERVE_MODULE_OFFSETS =
@@ -92,7 +92,7 @@ public final class Constants {
     // Checks to make sure config matches GUI values. Code should not throw as not breaking
     if (!PP_CONFIG.hasValidConfig()) {
       String error = "Invalid robot configuration detected in PP_CONFIG";
-      System.err.println(error);
+      // System.err.println(error);
     }
   }
 }
