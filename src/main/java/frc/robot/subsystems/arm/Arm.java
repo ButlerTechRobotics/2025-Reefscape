@@ -35,7 +35,6 @@ public class Arm extends SubsystemBase {
 
   private Goal currentGoal = Goal.STOW;
   private Goal desiredGoal = Goal.STOW;
-  private Goal previousGoal = Goal.STOW;
 
   private final Shoulder shoulder;
   private final Extension extension;
@@ -61,11 +60,11 @@ public class Arm extends SubsystemBase {
       wrist.stopCommand();
     }
 
-    // Reset timer
-    if (currentGoal != previousGoal) {
+    // Update current goal to desired goal
+    if (currentGoal != desiredGoal) {
+      currentGoal = desiredGoal;
       goalTimer.reset();
     }
-    previousGoal = currentGoal;
 
     switch (currentGoal) {
       case STOW -> {

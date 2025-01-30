@@ -131,9 +131,13 @@ public class Extension extends SubsystemBase {
    * @param distance The desired ExtensionPosition
    */
   public void setExtensionPosition(ExtensionPosition distance) {
-    currentCommand.cancel();
-    currentMode = distance;
-    currentCommand.schedule();
+    if (currentMode != distance) {
+      if (currentCommand != null) {
+        currentCommand.cancel();
+      }
+      currentMode = distance;
+      currentCommand.schedule();
+    }
   }
 
   // Command that runs the appropriate routine based on the current distance

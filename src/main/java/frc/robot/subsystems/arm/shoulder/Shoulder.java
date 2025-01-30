@@ -131,9 +131,13 @@ public class Shoulder extends SubsystemBase {
    * @param position The desired ShoulderPosition
    */
   public void setShoulderPosition(ShoulderPosition position) {
-    currentCommand.cancel();
-    currentMode = position;
-    currentCommand.schedule();
+    if (currentMode != position) {
+      if (currentCommand != null) {
+        currentCommand.cancel();
+      }
+      currentMode = position;
+      currentCommand.schedule();
+    }
   }
 
   // Command that runs the appropriate routine based on the current position
@@ -223,8 +227,15 @@ public class Shoulder extends SubsystemBase {
   /**
    * @return Command to move the shoulder to floor intake position
    */
-  public final Command intake() {
+  public final Command floorIntake() {
     return setPositionCommand(ShoulderPosition.FLOOR_INTAKE);
+  }
+
+  /**
+   * @return Command to move the shoulder to source intake position
+   */
+  public final Command sourceIntake() {
+    return setPositionCommand(ShoulderPosition.SOURCE_INTAKE);
   }
 
   /**
