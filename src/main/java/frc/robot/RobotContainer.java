@@ -10,6 +10,7 @@ package frc.robot;
 import com.ctre.phoenix6.swerve.SwerveModule.DriveRequestType;
 import com.ctre.phoenix6.swerve.SwerveRequest;
 import com.pathplanner.lib.auto.AutoBuilder;
+import edu.wpi.first.math.geometry.Pose2d;
 import edu.wpi.first.math.geometry.Rotation2d;
 import edu.wpi.first.math.geometry.Rotation3d;
 import edu.wpi.first.math.geometry.Transform3d;
@@ -17,29 +18,15 @@ import edu.wpi.first.math.geometry.Translation3d;
 import edu.wpi.first.math.trajectory.TrapezoidProfile;
 import edu.wpi.first.math.util.Units;
 import edu.wpi.first.units.measure.LinearVelocity;
-import edu.wpi.first.wpilibj.smartdashboard.SmartDashboard;
 import edu.wpi.first.wpilibj2.command.Command;
+import edu.wpi.first.wpilibj2.command.Commands;
 import edu.wpi.first.wpilibj2.command.sysid.SysIdRoutine;
 import frc.robot.commands.DriveCommands;
-import frc.robot.commands.SmartScore;
+import frc.robot.commands.SmartDrive;
 import frc.robot.generated.TunerConstants;
-import frc.robot.subsystems.arm.Arm;
 import frc.robot.subsystems.arm.extension.Extension;
-import frc.robot.subsystems.arm.extension.ExtensionIO;
-import frc.robot.subsystems.arm.extension.ExtensionIOCTRE;
-import frc.robot.subsystems.arm.extension.ExtensionIOSIM;
 import frc.robot.subsystems.arm.shoulder.Shoulder;
-import frc.robot.subsystems.arm.shoulder.ShoulderIO;
-import frc.robot.subsystems.arm.shoulder.ShoulderIOCTRE;
-import frc.robot.subsystems.arm.shoulder.ShoulderIOSIM;
 import frc.robot.subsystems.arm.wrist.Wrist;
-import frc.robot.subsystems.arm.wrist.WristIO;
-import frc.robot.subsystems.arm.wrist.WristIOCTRE;
-import frc.robot.subsystems.arm.wrist.WristIOSIM;
-import frc.robot.subsystems.claw.Claw;
-import frc.robot.subsystems.claw.ClawIO;
-import frc.robot.subsystems.claw.ClawIOCTRE;
-import frc.robot.subsystems.claw.ClawIOSIM;
 import frc.robot.subsystems.drive.Drive;
 import frc.robot.subsystems.drive.DriveIO;
 import frc.robot.subsystems.drive.DriveIOCTRE;
@@ -47,7 +34,6 @@ import frc.robot.subsystems.drive.requests.ProfiledFieldCentricFacingAngle;
 import frc.robot.subsystems.drive.requests.SwerveSetpointGen;
 import frc.robot.subsystems.vision.Vision;
 import frc.robot.subsystems.vision.VisionIO;
-import frc.robot.subsystems.vision.VisionIOPhotonVision;
 import frc.robot.subsystems.vision.VisionIOPhotonVisionSIM;
 import frc.robot.utils.TunableController;
 import frc.robot.utils.TunableController.TunableControllerType;
@@ -61,8 +47,8 @@ public class RobotContainer {
   private final LoggedDashboardChooser<Command> autoChooser;
 
   public final Drive drivetrain;
-  public final Claw claw;
-  public final Arm arm;
+  //   public final Claw claw;
+  //   public final Arm arm;
 
   // CTRE Default Drive Request
   private final SwerveRequest.FieldCentric drive =
@@ -87,31 +73,31 @@ public class RobotContainer {
         // Real robot, instantiate hardware IO implementations
         drivetrain = new Drive(currentDriveTrain);
 
-        new Vision(
-            drivetrain::addVisionData,
-            new VisionIOPhotonVision(
-                "BL-Camera",
-                new Transform3d(
-                    new Translation3d(
-                        Units.inchesToMeters(-10.5),
-                        Units.inchesToMeters(10.5),
-                        Units.inchesToMeters(6.5)),
-                    new Rotation3d(0, Math.toRadians(10), Math.toRadians(150))),
-                drivetrain::getVisionParameters),
-            new VisionIOPhotonVision(
-                "BR-Camera",
-                new Transform3d(
-                    new Translation3d(
-                        Units.inchesToMeters(-10.5),
-                        Units.inchesToMeters(-10.5),
-                        Units.inchesToMeters(6.5)),
-                    new Rotation3d(0, Math.toRadians(10), Math.toRadians(210))),
-                drivetrain::getVisionParameters));
+        // new Vision(
+        //     drivetrain::addVisionData,
+        //     new VisionIOPhotonVision(
+        //         "FL-Camera",
+        //         new Transform3d(
+        //             new Translation3d(
+        //                 Units.inchesToMeters(10.5),
+        //                 Units.inchesToMeters(10.5),
+        //                 Units.inchesToMeters(6.5)),
+        //             new Rotation3d(0, Math.toRadians(10), Math.toRadians(150))),
+        //         drivetrain::getVisionParameters),
+        //     new VisionIOPhotonVision(
+        //         "FR-Camera",
+        //         new Transform3d(
+        //             new Translation3d(
+        //                 Units.inchesToMeters(10.5),
+        //                 Units.inchesToMeters(-10.5),
+        //                 Units.inchesToMeters(6.5)),
+        //             new Rotation3d(0, Math.toRadians(10), Math.toRadians(210))),
+        //         drivetrain::getVisionParameters));
 
-        claw = new Claw(new ClawIOCTRE());
-        extension = new Extension(new ExtensionIOCTRE());
-        shoulder = new Shoulder(new ShoulderIOCTRE());
-        wrist = new Wrist(new WristIOCTRE());
+        // claw = new Claw(new ClawIOCTRE());
+        // extension = new Extension(new ExtensionIOCTRE());
+        // shoulder = new Shoulder(new ShoulderIOCTRE());
+        // wrist = new Wrist(new WristIOCTRE());
         break;
 
       case SIM:
@@ -157,10 +143,10 @@ public class RobotContainer {
                     new Rotation3d(0, Math.toRadians(10), Math.toRadians(330))),
                 drivetrain::getVisionParameters));
 
-        claw = new Claw(new ClawIOSIM());
-        extension = new Extension(new ExtensionIOSIM());
-        shoulder = new Shoulder(new ShoulderIOSIM());
-        wrist = new Wrist(new WristIOSIM());
+        // claw = new Claw(new ClawIOSIM());
+        // extension = new Extension(new ExtensionIOSIM());
+        // shoulder = new Shoulder(new ShoulderIOSIM());
+        // wrist = new Wrist(new WristIOSIM());
         break;
 
       default:
@@ -174,14 +160,14 @@ public class RobotContainer {
             new VisionIO() {},
             new VisionIO() {});
 
-        claw = new Claw(new ClawIO() {});
-        extension = new Extension(new ExtensionIO() {});
-        shoulder = new Shoulder(new ShoulderIO() {});
-        wrist = new Wrist(new WristIO() {});
+        // claw = new Claw(new ClawIO() {});
+        // extension = new Extension(new ExtensionIO() {});
+        // shoulder = new Shoulder(new ShoulderIO() {});
+        // wrist = new Wrist(new WristIO() {});
         break;
     }
 
-    arm = new Arm(shoulder, extension, wrist);
+    // arm = new Arm(shoulder, extension, wrist);
 
     // Set up the named commands
     // NamedCommands.registerCommand(
@@ -234,11 +220,11 @@ public class RobotContainer {
                             -joystick.customLeft().getX())) // Drive left with negative X (left)
                     .withRotationalRate(
                         Constants.MaxAngularRate.times(
-                            -joystick
+                            joystick
                                 .customRight()
                                 .getX())))); // Drive counterclockwise with negative X (left)
 
-    // joystick.a().onTrue(Commands.runOnce(() -> drivetrain.resetPose(Pose2d.kZero)));
+    joystick.start().onTrue(Commands.runOnce(() -> drivetrain.resetPose(Pose2d.kZero)));
     // joystick
     //     .b()
     //     .whileTrue(
@@ -312,34 +298,35 @@ public class RobotContainer {
     // reset the field-centric heading on left bumper press
     // joystick.leftBumper().onTrue(drivetrain.runOnce(drivetrain::seedFieldCentric));
 
-    joystick.povDown().whileTrue(arm.setGoalCommand(Arm.Goal.STOW));
-    joystick.povLeft().whileTrue(arm.setGoalCommand(Arm.Goal.L1));
-    joystick.povRight().whileTrue(arm.setGoalCommand(Arm.Goal.L2));
-    joystick.povUp().whileTrue(arm.setGoalCommand(Arm.Goal.L3));
+    // joystick.povDown().whileTrue(arm.setGoalCommand(Arm.Goal.STOW));
+    // joystick.povLeft().whileTrue(arm.setGoalCommand(Arm.Goal.L1));
+    // joystick.povRight().whileTrue(arm.setGoalCommand(Arm.Goal.L2));
+    // joystick.povUp().whileTrue(arm.setGoalCommand(Arm.Goal.L3));
 
-    joystick
-        .leftBumper()
-        .and(joystick.a())
-        .whileTrue(new SmartScore(drivetrain, arm, SmartScore.Side.LEFT, SmartScore.ArmMode.L1));
-    joystick
-        .rightBumper()
-        .and(joystick.a())
-        .whileTrue(new SmartScore(drivetrain, arm, SmartScore.Side.RIGHT, SmartScore.ArmMode.L1));
-
-    SmartDashboard.putData(
-        "Pathfind and score L1 Left",
-        new SmartScore(drivetrain, arm, SmartScore.Side.LEFT, SmartScore.ArmMode.L1));
-    SmartDashboard.putData(
-        "Pathfind and score L1 Right",
-        new SmartScore(drivetrain, arm, SmartScore.Side.RIGHT, SmartScore.ArmMode.L1));
     // joystick
     //     .leftBumper()
     //     .and(joystick.a())
-    //     .whileTrue(new SmartDrive(drivetrain, SmartDrive.Side.LEFT));
+    //     .whileTrue(new SmartScore(drivetrain, arm, SmartScore.Side.LEFT, SmartScore.ArmMode.L1));
     // joystick
     //     .rightBumper()
     //     .and(joystick.a())
-    //     .whileTrue(new SmartDrive(drivetrain, SmartDrive.Side.RIGHT));
+    //     .whileTrue(new SmartScore(drivetrain, arm, SmartScore.Side.RIGHT,
+    // SmartScore.ArmMode.L1));
+
+    // SmartDashboard.putData(
+    //     "Pathfind and score L1 Left",
+    //     new SmartScore(drivetrain, arm, SmartScore.Side.LEFT, SmartScore.ArmMode.L1));
+    // SmartDashboard.putData(
+    //     "Pathfind and score L1 Right",
+    //     new SmartScore(drivetrain, arm, SmartScore.Side.RIGHT, SmartScore.ArmMode.L1));
+    joystick
+        .leftBumper()
+        .and(joystick.a())
+        .whileTrue(new SmartDrive(drivetrain, SmartDrive.Side.LEFT));
+    joystick
+        .rightBumper()
+        .and(joystick.a())
+        .whileTrue(new SmartDrive(drivetrain, SmartDrive.Side.RIGHT));
   }
 
   public Command getAutonomousCommand() {
