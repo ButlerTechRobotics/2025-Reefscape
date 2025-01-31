@@ -59,11 +59,11 @@ public class WristIOSIM extends WristIOCTRE {
     encoderSim = encoder.getSimState();
 
     // Configure dual Kraken X60 FOC motors
-    DCMotor motor = DCMotor.getKrakenX60Foc(2);
+    DCMotor motor = DCMotor.getKrakenX60Foc(1);
 
     // Define wrist physical properties
-    Distance wristLength = Inches.of(12);
-    Mass wristMass = Pounds.of(15);
+    Distance wristLength = Inches.of(8);
+    Mass wristMass = Pounds.of(7);
 
     // Calculate moment of inertia using WPILib helper
     double wristMOI =
@@ -80,8 +80,8 @@ public class WristIOSIM extends WristIOCTRE {
             motor,
             GEAR_RATIO,
             wristLength.in(Meters),
-            Degrees.of(0).in(Radians), // Lower limit (0°)
-            Degrees.of(180).in(Radians), // Upper limit (180)
+            Degrees.of(-130).in(Radians), // Lower limit (0°)
+            Degrees.of(130).in(Radians), // Upper limit (180)
             true, // Enable gravity simulation
             Degrees.of(90).in(Radians)); // Start at 90°
   }

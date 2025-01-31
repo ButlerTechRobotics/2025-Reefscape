@@ -42,6 +42,9 @@ public class Arm extends SubsystemBase {
 
   private Timer goalTimer = new Timer();
 
+  private final ArmVisualizer measuredVisualizer = new ArmVisualizer("Measured");
+  private final ArmVisualizer setpointVisualizer = new ArmVisualizer("Setpoint");
+
   public Arm(Shoulder shoulder, Extension extension, Wrist wrist) {
     this.shoulder = shoulder;
     this.extension = extension;
@@ -134,6 +137,11 @@ public class Arm extends SubsystemBase {
 
     Logger.recordOutput("Arm/GoalState", desiredGoal);
     Logger.recordOutput("Arm/CurrentState", currentGoal);
+
+    // Update visualizer
+    measuredVisualizer.update(shoulder.getPosition(), extension.getPosition(), wrist.getPosition());
+    setpointVisualizer.update(
+        shoulder.targetAngle(), extension.targetDistance(), wrist.targetAngle());
   }
 
   /** Set goal of arm */

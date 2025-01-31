@@ -67,7 +67,7 @@ public class Wrist extends SubsystemBase {
    *
    * @param position The target angle position
    */
-  private void setPosition(Angle position) {
+  public void setPosition(Angle position) {
     io.setPosition(position);
   }
 
@@ -89,18 +89,18 @@ public class Wrist extends SubsystemBase {
   /** Enumeration of available wrist positions with their corresponding target angles. */
   public enum WristPosition {
     STOP(Degrees.of(0)), // Stop the arm
-    STOW(Degrees.of(0)), // Stow the arm
+    STOW(Degrees.of(90)), // Stow the arm
     FLOOR_INTAKE(Degrees.of(0)), // Position for intaking from floor
     SOURCE_INTAKE(Degrees.of(0)), // Position for intaking from source
-    L1(Degrees.of(12)), // Position for scoring in L1
-    L1Back(Degrees.of(12)), // Position for scoring in L1Back
-    L2(Degrees.of(24)), // Position for scoring in L2
-    L2Back(Degrees.of(24)), // Position for scoring in L2Back
-    L3(Degrees.of(36)), // Position for scoring in L3
-    L3Back(Degrees.of(36)), // Position for scoring in L3Back
-    L4(Degrees.of(48)), // Position for scoring in L4
-    L4Back(Degrees.of(48)), // Position for scoring in L4Back
-    CLIMB(Degrees.of(0)); // Position for climbing
+    L1(Degrees.of(-90)), // Position for scoring in L1
+    L1Back(Degrees.of(130)), // Position for scoring in L1Back
+    L2(Degrees.of(-90)), // Position for scoring in L2
+    L2Back(Degrees.of(110)), // Position for scoring in L2Back
+    L3(Degrees.of(-90)), // Position for scoring in L3
+    L3Back(Degrees.of(110)), // Position for scoring in L3Back
+    L4(Degrees.of(-90)), // Position for scoring in L4
+    L4Back(Degrees.of(130)), // Position for scoring in L4Back
+    CLIMB(Degrees.of(-90)); // Position for climbing
 
     private final Angle targetAngle;
     private final Angle angleTolerance;
@@ -189,7 +189,7 @@ public class Wrist extends SubsystemBase {
    * @return The target angle for the current mode
    */
   @AutoLogOutput
-  private Angle targetAngle() {
+  public Angle targetAngle() {
     return currentMode.targetAngle;
   }
 

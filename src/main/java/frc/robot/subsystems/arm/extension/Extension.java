@@ -87,20 +87,20 @@ public class Extension extends SubsystemBase {
     return inputs.extensionDistance;
   }
 
-  /** Enumeration of available arm distances with their corresponding target angles. */
+  /** Enumeration of available extension distances with their corresponding target distances. */
   public enum ExtensionPosition {
     STOP(Inches.of(0)), // Stop the arm
     STOW(Inches.of(0)), // Stow the arm
-    FLOOR_INTAKE(Inches.of(0)), // Position for intaking from floor
-    SOURCE_INTAKE(Inches.of(0)), // Position for intaking from source
-    L1(Inches.of(12)), // Position for scoring in L1
-    L1Back(Inches.of(12)), // Position for scoring in L1Back
-    L2(Inches.of(24)), // Position for scoring in L2
-    L2Back(Inches.of(24)), // Position for scoring in L2Back
-    L3(Inches.of(36)), // Position for scoring in L3
-    L3Back(Inches.of(36)), // Position for scoring in L3Back
-    L4(Inches.of(48)), // Position for scoring in L4
-    L4Back(Inches.of(48)), // Position for scoring in L4Back
+    FLOOR_INTAKE(Inches.of(36 - 24)), // Position for intaking from floor
+    SOURCE_INTAKE(Inches.of(36 - 24)), // Position for intaking from source
+    L1(Inches.of(24 - 24)), // Position for scoring in L1
+    L1Back(Inches.of(24 - 24)), // Position for scoring in L1Back
+    L2(Inches.of(28 - 24)), // Position for scoring in L2
+    L2Back(Inches.of(28 - 24)), // Position for scoring in L2Back
+    L3(Inches.of(44 - 24)), // Position for scoring in L3
+    L3Back(Inches.of(44 - 24)), // Position for scoring in L3Back
+    L4(Inches.of(72 - 24)), // Position for scoring in L4
+    L4Back(Inches.of(72 - 24)), // Position for scoring in L4Back
     CLIMB(Inches.of(0)); // Position for climbing
 
     private final Distance targetDistance;
@@ -193,7 +193,7 @@ public class Extension extends SubsystemBase {
    * @return The target angle for the current mode
    */
   @AutoLogOutput
-  private Distance targetDistance() {
+  public Distance targetDistance() {
     return currentMode.targetDistance;
   }
 

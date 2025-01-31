@@ -157,6 +157,7 @@ public class SmartScore extends Command {
         } else {
           arm.setGoalCommand(Arm.Goal.L2Back).schedule();
         }
+        break;
       case L3:
         if (isReversed) {
           arm.setGoalCommand(Arm.Goal.L3).schedule();

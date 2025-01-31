@@ -95,11 +95,11 @@ public class Shoulder extends SubsystemBase {
     SOURCE_INTAKE(Degrees.of(45)), // Position for intaking from source
     L1(Degrees.of(45)), // Position for scoring in L1
     L1Back(Degrees.of(90)), // Position for scoring in L1Back
-    L2(Degrees.of(45)), // Position for scoring in L2
+    L2(Degrees.of(25)), // Position for scoring in L2
     L2Back(Degrees.of(90)), // Position for scoring in L2Back
-    L3(Degrees.of(45)), // Position for scoring in L3
+    L3(Degrees.of(25)), // Position for scoring in L3
     L3Back(Degrees.of(90)), // Position for scoring in L3Back
-    L4(Degrees.of(45)), // Position for scoring in L4
+    L4(Degrees.of(65)), // Position for scoring in L4
     L4Back(Degrees.of(90)), // Position for scoring in L4Back
     CLIMB(Degrees.of(90)); // Position for climbing
 
@@ -193,7 +193,7 @@ public class Shoulder extends SubsystemBase {
    * @return The target angle for the current mode
    */
   @AutoLogOutput
-  private Angle targetAngle() {
+  public Angle targetAngle() {
     return currentMode.targetAngle;
   }
 

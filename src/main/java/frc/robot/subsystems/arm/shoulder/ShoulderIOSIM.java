@@ -62,8 +62,8 @@ public class ShoulderIOSIM extends ShoulderIOCTRE {
     DCMotor motor = DCMotor.getKrakenX60Foc(2);
 
     // Define shoulder physical properties
-    Distance armLength = Inches.of(12);
-    Mass armMass = Pounds.of(15);
+    Distance armLength = Inches.of(24);
+    Mass armMass = Pounds.of(20);
 
     // Calculate moment of inertia using WPILib helper
     double armMOI = SingleJointedArmSim.estimateMOI(armLength.in(Meters), armMass.in(Kilograms));

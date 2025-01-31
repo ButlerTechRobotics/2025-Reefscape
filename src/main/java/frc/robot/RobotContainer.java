@@ -322,9 +322,33 @@ public class RobotContainer {
         .and(joystick.a())
         .whileTrue(new SmartScore(drivetrain, arm, SmartScore.Side.LEFT, SmartScore.ArmMode.L1));
     joystick
+        .leftBumper()
+        .and(joystick.x())
+        .whileTrue(new SmartScore(drivetrain, arm, SmartScore.Side.LEFT, SmartScore.ArmMode.L2));
+    joystick
+        .leftBumper()
+        .and(joystick.b())
+        .whileTrue(new SmartScore(drivetrain, arm, SmartScore.Side.LEFT, SmartScore.ArmMode.L3));
+    joystick
+        .leftBumper()
+        .and(joystick.y())
+        .whileTrue(new SmartScore(drivetrain, arm, SmartScore.Side.LEFT, SmartScore.ArmMode.L4));
+    joystick
         .rightBumper()
         .and(joystick.a())
         .whileTrue(new SmartScore(drivetrain, arm, SmartScore.Side.RIGHT, SmartScore.ArmMode.L1));
+    joystick
+        .rightBumper()
+        .and(joystick.x())
+        .whileTrue(new SmartScore(drivetrain, arm, SmartScore.Side.RIGHT, SmartScore.ArmMode.L2));
+    joystick
+        .rightBumper()
+        .and(joystick.b())
+        .whileTrue(new SmartScore(drivetrain, arm, SmartScore.Side.RIGHT, SmartScore.ArmMode.L3));
+    joystick
+        .rightBumper()
+        .and(joystick.y())
+        .whileTrue(new SmartScore(drivetrain, arm, SmartScore.Side.RIGHT, SmartScore.ArmMode.L4));
 
     SmartDashboard.putData(
         "Pathfind and score L1 Left",

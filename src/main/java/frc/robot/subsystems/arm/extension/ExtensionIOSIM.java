@@ -65,7 +65,7 @@ public class ExtensionIOSIM extends ExtensionIOCTRE {
     LinearSystem<N2, N1, N2> linearSystem =
         LinearSystemId.createElevatorSystem(
             motor,
-            Pounds.of(10).in(Kilograms), // Carriage mass (10 lbs -> kg)
+            Pounds.of(20).in(Kilograms), // Carriage mass (10 lbs -> kg)
             extensionRadius.in(Meters), // Drum radius in meters
             GEAR_RATIO); // Motor to mechanism gear ratio
 
@@ -75,7 +75,7 @@ public class ExtensionIOSIM extends ExtensionIOCTRE {
             linearSystem,
             motor,
             0, // Initial position
-            Feet.of(8).in(Meters), // Maximum height (8 feet -> meters)
+            Feet.of(6.5).in(Meters), // Maximum height (8 feet -> meters)
             true, // Enable gravity simulation
             0); // Start at bottom position
   }

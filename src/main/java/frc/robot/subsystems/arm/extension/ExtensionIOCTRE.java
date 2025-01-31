@@ -33,7 +33,7 @@ import frc.robot.utils.Conversions;
  */
 public class ExtensionIOCTRE implements ExtensionIO {
   /** The gear ratio between the motor and the extension mechanism */
-  public static final double GEAR_RATIO = 2.0;
+  public static final double GEAR_RATIO = 8.0;
 
   /** The leader TalonFX motor controller (CAN ID: 30) */
   public final TalonFX leader = new TalonFX(30);
