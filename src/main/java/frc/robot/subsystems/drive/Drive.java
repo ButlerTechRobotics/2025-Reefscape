@@ -288,12 +288,12 @@ public class Drive extends SubsystemBase {
     io.resetPose(pose);
   }
 
-  public Command goToPoint(int x, int y) {
-    Pose2d targetPose = new Pose2d(x, y, Rotation2d.fromDegrees(180));
-    PathConstraints constraints =
-        new PathConstraints(4.0, 5.0, Units.degreesToRadians(540), Units.degreesToRadians(720));
-    return AutoBuilder.pathfindToPose(targetPose, constraints);
-  }
+  // public Command goToPoint(int x, int y) {
+  //   Pose2d targetPose = new Pose2d(x, y, Rotation2d.fromDegrees(180));
+  //   PathConstraints constraints =
+  //       new PathConstraints(4.0, 5.0, Units.degreesToRadians(540), Units.degreesToRadians(720));
+  //   return AutoBuilder.pathfindToPose(targetPose, constraints);
+  // }
   /*
    * flips if needed
    */

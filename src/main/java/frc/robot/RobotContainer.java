@@ -90,21 +90,21 @@ public class RobotContainer {
         new Vision(
             drivetrain::addVisionData,
             new VisionIOPhotonVision(
-                "BL-Camera",
+                "FL-Camera",
                 new Transform3d(
                     new Translation3d(
                         Units.inchesToMeters(-10.5),
                         Units.inchesToMeters(10.5),
-                        Units.inchesToMeters(6.5)),
+                        Units.inchesToMeters(9.0)),
                     new Rotation3d(0, Math.toRadians(10), Math.toRadians(150))),
                 drivetrain::getVisionParameters),
             new VisionIOPhotonVision(
-                "BR-Camera",
+                "FR-Camera",
                 new Transform3d(
                     new Translation3d(
                         Units.inchesToMeters(-10.5),
                         Units.inchesToMeters(-10.5),
-                        Units.inchesToMeters(6.5)),
+                        Units.inchesToMeters(9.0)),
                     new Rotation3d(0, Math.toRadians(10), Math.toRadians(210))),
                 drivetrain::getVisionParameters));
 
@@ -142,18 +142,18 @@ public class RobotContainer {
                 "FL-Camera",
                 new Transform3d(
                     new Translation3d(
-                        Units.inchesToMeters(10.5),
-                        Units.inchesToMeters(10.5),
-                        Units.inchesToMeters(6.5)),
+                        Units.inchesToMeters(10.375),
+                        Units.inchesToMeters(10.375),
+                        Units.inchesToMeters(10.25)),
                     new Rotation3d(0, Math.toRadians(10), Math.toRadians(30))),
                 drivetrain::getVisionParameters),
             new VisionIOPhotonVisionSIM(
                 "FR-Camera",
                 new Transform3d(
                     new Translation3d(
-                        Units.inchesToMeters(-10.5),
-                        Units.inchesToMeters(-10.5),
-                        Units.inchesToMeters(6.5)),
+                        Units.inchesToMeters(-10.375),
+                        Units.inchesToMeters(-10.375),
+                        Units.inchesToMeters(10.25)),
                     new Rotation3d(0, Math.toRadians(10), Math.toRadians(330))),
                 drivetrain::getVisionParameters));
 
@@ -234,7 +234,7 @@ public class RobotContainer {
                             -joystick.customLeft().getX())) // Drive left with negative X (left)
                     .withRotationalRate(
                         Constants.MaxAngularRate.times(
-                            -joystick
+                            joystick
                                 .customRight()
                                 .getX())))); // Drive counterclockwise with negative X (left)
 
