@@ -41,7 +41,7 @@ public class SmartScore extends Command {
   public enum ArmMode {
     STOW,
     FLOOR_INTAKE,
-    SOURCE_INTAKE,
+    STATION_INTAKE,
     L1,
     L2,
     L3,
@@ -132,8 +132,8 @@ public class SmartScore extends Command {
       case FLOOR_INTAKE:
         arm.setGoalCommand(Arm.Goal.FLOOR_INTAKE).schedule();
         break;
-      case SOURCE_INTAKE:
-        arm.setGoalCommand(Arm.Goal.SOURCE_INTAKE).schedule();
+      case STATION_INTAKE:
+        arm.setGoalCommand(Arm.Goal.STATION_INTAKE).schedule();
         break;
       case L1:
         if (isReversed) {

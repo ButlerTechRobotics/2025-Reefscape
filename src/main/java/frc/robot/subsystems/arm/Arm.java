@@ -21,7 +21,7 @@ public class Arm extends SubsystemBase {
   public enum Goal {
     STOW,
     FLOOR_INTAKE,
-    SOURCE_INTAKE,
+    STATION_INTAKE,
     L1,
     L1Back,
     L2,
@@ -80,10 +80,10 @@ public class Arm extends SubsystemBase {
         extension.setExtensionPosition(Extension.ExtensionPosition.FLOOR_INTAKE);
         wrist.setWristPosition(Wrist.WristPosition.FLOOR_INTAKE);
       }
-      case SOURCE_INTAKE -> {
-        shoulder.setShoulderPosition(Shoulder.ShoulderPosition.SOURCE_INTAKE);
-        extension.setExtensionPosition(Extension.ExtensionPosition.SOURCE_INTAKE);
-        wrist.setWristPosition(Wrist.WristPosition.SOURCE_INTAKE);
+      case STATION_INTAKE -> {
+        shoulder.setShoulderPosition(Shoulder.ShoulderPosition.STATION_INTAKE);
+        extension.setExtensionPosition(Extension.ExtensionPosition.STATION_INTAKE);
+        wrist.setWristPosition(Wrist.WristPosition.STATION_INTAKE);
       }
       case L1 -> {
         shoulder.setShoulderPosition(Shoulder.ShoulderPosition.L1);

@@ -91,7 +91,7 @@ public class Wrist extends SubsystemBase {
     STOP(Degrees.of(0)), // Stop the arm
     STOW(Degrees.of(90)), // Stow the arm
     FLOOR_INTAKE(Degrees.of(0)), // Position for intaking from floor
-    SOURCE_INTAKE(Degrees.of(0)), // Position for intaking from source
+    STATION_INTAKE(Degrees.of(0)), // Position for intaking from station
     L1(Degrees.of(-90)), // Position for scoring in L1
     L1Back(Degrees.of(130)), // Position for scoring in L1Back
     L2(Degrees.of(-90)), // Position for scoring in L2
@@ -148,7 +148,8 @@ public class Wrist extends SubsystemBase {
               Map.entry(
                   WristPosition.FLOOR_INTAKE, createPositionCommand(WristPosition.FLOOR_INTAKE)),
               Map.entry(
-                  WristPosition.SOURCE_INTAKE, createPositionCommand(WristPosition.SOURCE_INTAKE)),
+                  WristPosition.STATION_INTAKE,
+                  createPositionCommand(WristPosition.STATION_INTAKE)),
               Map.entry(WristPosition.L1, createPositionCommand(WristPosition.L1)),
               Map.entry(WristPosition.L1Back, createPositionCommand(WristPosition.L1Back)),
               Map.entry(WristPosition.L2, createPositionCommand(WristPosition.L2)),
