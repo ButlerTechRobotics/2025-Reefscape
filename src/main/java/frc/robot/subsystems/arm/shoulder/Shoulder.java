@@ -92,7 +92,7 @@ public class Shoulder extends SubsystemBase {
     STOP(Degrees.of(0)), // Stop the arm
     STOW(Degrees.of(0)), // Stow the arm
     FLOOR_INTAKE(Degrees.of(10)), // Position for intaking from floor
-    SOURCE_INTAKE(Degrees.of(45)), // Position for intaking from source
+    STATION_INTAKE(Degrees.of(45)), // Position for intaking from station
     L1(Degrees.of(45)), // Position for scoring in L1
     L1Back(Degrees.of(90)), // Position for scoring in L1Back
     L2(Degrees.of(25)), // Position for scoring in L2
@@ -151,8 +151,8 @@ public class Shoulder extends SubsystemBase {
                   ShoulderPosition.FLOOR_INTAKE,
                   createPositionCommand(ShoulderPosition.FLOOR_INTAKE)),
               Map.entry(
-                  ShoulderPosition.SOURCE_INTAKE,
-                  createPositionCommand(ShoulderPosition.SOURCE_INTAKE)),
+                  ShoulderPosition.STATION_INTAKE,
+                  createPositionCommand(ShoulderPosition.STATION_INTAKE)),
               Map.entry(ShoulderPosition.L1, createPositionCommand(ShoulderPosition.L1)),
               Map.entry(ShoulderPosition.L1Back, createPositionCommand(ShoulderPosition.L1Back)),
               Map.entry(ShoulderPosition.L2, createPositionCommand(ShoulderPosition.L2)),
@@ -234,8 +234,8 @@ public class Shoulder extends SubsystemBase {
   /**
    * @return Command to move the shoulder to source intake position
    */
-  public final Command sourceIntake() {
-    return setPositionCommand(ShoulderPosition.SOURCE_INTAKE);
+  public final Command stationIntake() {
+    return setPositionCommand(ShoulderPosition.STATION_INTAKE);
   }
 
   /**

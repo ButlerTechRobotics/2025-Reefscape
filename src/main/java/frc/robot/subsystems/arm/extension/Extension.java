@@ -92,7 +92,7 @@ public class Extension extends SubsystemBase {
     STOP(Inches.of(0)), // Stop the arm
     STOW(Inches.of(0)), // Stow the arm
     FLOOR_INTAKE(Inches.of(36 - 24)), // Position for intaking from floor
-    SOURCE_INTAKE(Inches.of(36 - 24)), // Position for intaking from source
+    STATION_INTAKE(Inches.of(36 - 24)), // Position for intaking from station
     L1(Inches.of(24 - 24)), // Position for scoring in L1
     L1Back(Inches.of(24 - 24)), // Position for scoring in L1Back
     L2(Inches.of(28 - 24)), // Position for scoring in L2
@@ -151,8 +151,8 @@ public class Extension extends SubsystemBase {
                   ExtensionPosition.FLOOR_INTAKE,
                   createPositionCommand(ExtensionPosition.FLOOR_INTAKE)),
               Map.entry(
-                  ExtensionPosition.SOURCE_INTAKE,
-                  createPositionCommand(ExtensionPosition.SOURCE_INTAKE)),
+                  ExtensionPosition.STATION_INTAKE,
+                  createPositionCommand(ExtensionPosition.STATION_INTAKE)),
               Map.entry(ExtensionPosition.L1, createPositionCommand(ExtensionPosition.L1)),
               Map.entry(ExtensionPosition.L1Back, createPositionCommand(ExtensionPosition.L1Back)),
               Map.entry(ExtensionPosition.L2, createPositionCommand(ExtensionPosition.L2)),

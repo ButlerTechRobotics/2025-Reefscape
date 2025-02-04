@@ -10,6 +10,7 @@ package frc.robot;
 import com.ctre.phoenix6.swerve.SwerveModule.DriveRequestType;
 import com.ctre.phoenix6.swerve.SwerveRequest;
 import com.pathplanner.lib.auto.AutoBuilder;
+import com.pathplanner.lib.auto.NamedCommands;
 import edu.wpi.first.math.geometry.Rotation2d;
 import edu.wpi.first.math.geometry.Rotation3d;
 import edu.wpi.first.math.geometry.Transform3d;
@@ -20,6 +21,8 @@ import edu.wpi.first.units.measure.LinearVelocity;
 import edu.wpi.first.wpilibj.smartdashboard.SmartDashboard;
 import edu.wpi.first.wpilibj2.command.Command;
 import edu.wpi.first.wpilibj2.command.sysid.SysIdRoutine;
+import frc.robot.commands.AutoArm;
+import frc.robot.commands.AutoClaw;
 import frc.robot.commands.DriveCommands;
 import frc.robot.commands.SmartScore;
 import frc.robot.generated.TunerConstants;
@@ -184,17 +187,13 @@ public class RobotContainer {
     arm = new Arm(shoulder, extension, wrist);
 
     // Set up the named commands
-    // NamedCommands.registerCommand(
-    //     "L1Align", new AutoScore(claw, arm, AutoScore.ArmMode.L1, AutoScore.ClawMode.OUTTAKE));
-    // NamedCommands.registerCommand(
-    //     "L2Align", new AutoScore(claw, arm, AutoScore.ArmMode.L2, AutoScore.ClawMode.OUTTAKE));
-    // NamedCommands.registerCommand(
-    //     "L3Align", new AutoScore(claw, arm, AutoScore.ArmMode.L3, AutoScore.ClawMode.OUTTAKE));
-    // NamedCommands.registerCommand(
-    //     "L4Align", new AutoScore(claw, arm, AutoScore.ArmMode.L4, AutoScore.ClawMode.OUTTAKE));
-    // NamedCommands.registerCommand(
-    //     "StationIntake",
-    //     new AutoScore(claw, arm, AutoScore.ArmMode.INTAKE, AutoScore.ClawMode.STATION_INTAKE));
+    NamedCommands.registerCommand("L1Align", new AutoArm(arm, AutoArm.ArmMode.L1));
+    NamedCommands.registerCommand("L2Align", new AutoArm(arm, AutoArm.ArmMode.L2));
+    NamedCommands.registerCommand("L3Align", new AutoArm(arm, AutoArm.ArmMode.L3));
+    NamedCommands.registerCommand("L4Align", new AutoArm(arm, AutoArm.ArmMode.L4));
+    NamedCommands.registerCommand(
+        "StationIntake", new AutoArm(arm, AutoArm.ArmMode.STATION_INTAKE));
+    NamedCommands.registerCommand("Score", new AutoClaw(claw, AutoClaw.ClawMode.FLOOR_INTAKE));
 
     // Set up auto routines
     autoChooser = new LoggedDashboardChooser<>("Auto Choices", AutoBuilder.buildAutoChooser());
