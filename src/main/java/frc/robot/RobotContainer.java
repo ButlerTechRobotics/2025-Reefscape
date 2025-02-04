@@ -11,7 +11,7 @@ import com.ctre.phoenix6.swerve.SwerveModule.DriveRequestType;
 import com.ctre.phoenix6.swerve.SwerveRequest;
 import com.pathplanner.lib.auto.AutoBuilder;
 import com.pathplanner.lib.auto.NamedCommands;
-import edu.wpi.first.math.geometry.Rotation2d;
+import edu.wpi.first.math.geometry.Pose2d;
 import edu.wpi.first.math.geometry.Rotation3d;
 import edu.wpi.first.math.geometry.Transform3d;
 import edu.wpi.first.math.geometry.Translation3d;
@@ -20,9 +20,8 @@ import edu.wpi.first.math.util.Units;
 import edu.wpi.first.units.measure.LinearVelocity;
 import edu.wpi.first.wpilibj.smartdashboard.SmartDashboard;
 import edu.wpi.first.wpilibj2.command.Command;
+import edu.wpi.first.wpilibj2.command.Commands;
 import edu.wpi.first.wpilibj2.command.sysid.SysIdRoutine;
-import frc.robot.commands.AutoArm;
-import frc.robot.commands.AutoClaw;
 import frc.robot.commands.DriveCommands;
 import frc.robot.commands.SmartScore;
 import frc.robot.generated.TunerConstants;
@@ -59,7 +58,7 @@ import org.littletonrobotics.junction.networktables.LoggedDashboardChooser;
 public class RobotContainer {
   private LinearVelocity MaxSpeed = TunerConstants.kSpeedAt12Volts;
   private final TunableController joystick =
-      new TunableController(0).withControllerType(TunableControllerType.QUADRATIC);
+      new TunableController(0).withControllerType(TunableControllerType.CUBIC);
 
   private final LoggedDashboardChooser<Command> autoChooser;
 
@@ -93,22 +92,22 @@ public class RobotContainer {
         new Vision(
             drivetrain::addVisionData,
             new VisionIOPhotonVision(
-                "BL-Camera",
+                "FL-Camera",
                 new Transform3d(
                     new Translation3d(
-                        Units.inchesToMeters(-10.5),
                         Units.inchesToMeters(10.5),
-                        Units.inchesToMeters(6.5)),
-                    new Rotation3d(0, Math.toRadians(10), Math.toRadians(150))),
+                        Units.inchesToMeters(10.5),
+                        Units.inchesToMeters(9.0)),
+                    new Rotation3d(0, Math.toRadians(10), Math.toRadians(30))),
                 drivetrain::getVisionParameters),
             new VisionIOPhotonVision(
-                "BR-Camera",
+                "FR-Camera",
                 new Transform3d(
                     new Translation3d(
+                        Units.inchesToMeters(10.5),
                         Units.inchesToMeters(-10.5),
-                        Units.inchesToMeters(-10.5),
-                        Units.inchesToMeters(6.5)),
-                    new Rotation3d(0, Math.toRadians(10), Math.toRadians(210))),
+                        Units.inchesToMeters(9.0)),
+                    new Rotation3d(0, Math.toRadians(10), Math.toRadians(-30))),
                 drivetrain::getVisionParameters));
 
         claw = new Claw(new ClawIOCTRE());
@@ -145,18 +144,18 @@ public class RobotContainer {
                 "FL-Camera",
                 new Transform3d(
                     new Translation3d(
-                        Units.inchesToMeters(10.5),
-                        Units.inchesToMeters(10.5),
-                        Units.inchesToMeters(6.5)),
+                        Units.inchesToMeters(10.375),
+                        Units.inchesToMeters(10.375),
+                        Units.inchesToMeters(10.25)),
                     new Rotation3d(0, Math.toRadians(10), Math.toRadians(30))),
                 drivetrain::getVisionParameters),
             new VisionIOPhotonVisionSIM(
                 "FR-Camera",
                 new Transform3d(
                     new Translation3d(
-                        Units.inchesToMeters(-10.5),
-                        Units.inchesToMeters(-10.5),
-                        Units.inchesToMeters(6.5)),
+                        Units.inchesToMeters(-10.375),
+                        Units.inchesToMeters(-10.375),
+                        Units.inchesToMeters(10.25)),
                     new Rotation3d(0, Math.toRadians(10), Math.toRadians(330))),
                 drivetrain::getVisionParameters));
 
@@ -283,71 +282,76 @@ public class RobotContainer {
             .withDriveRequestType(DriveRequestType.OpenLoopVoltage);
     // Set PID for ProfiledFieldCentricFacingAngle
     driveFacingAngle.HeadingController.setPID(7, 0, 0);
-    joystick
-        .y()
-        .whileTrue(
-            drivetrain
-                .runOnce(() -> driveFacingAngle.resetProfile(drivetrain.getRotation()))
-                .andThen(
-                    drivetrain.applyRequest(
-                        () ->
-                            driveFacingAngle
-                                .withVelocityX(
-                                    MaxSpeed.times(
-                                        -joystick
-                                            .getLeftY())) // Drive forward with negative Y (forward)
-                                .withVelocityY(MaxSpeed.times(-joystick.getLeftX()))
-                                .withTargetDirection(
-                                    new Rotation2d(
-                                        -joystick.getRightY(), -joystick.getRightX())))));
+    // joystick
+    //     .y()
+    //     .whileTrue(
+    //         drivetrain
+    //             .runOnce(() -> driveFacingAngle.resetProfile(drivetrain.getRotation()))
+    //             .andThen(
+    //                 drivetrain.applyRequest(
+    //                     () ->
+    //                         driveFacingAngle
+    //                             .withVelocityX(
+    //                                 MaxSpeed.times(
+    //                                     -joystick
+    //                                         .getLeftY())) // Drive forward with negative Y
+    // (forward)
+    //                             .withVelocityY(MaxSpeed.times(-joystick.getLeftX()))
+    //                             .withTargetDirection(
+    //                                 new Rotation2d(
+    //                                     -joystick.getRightY(), -joystick.getRightX())))));
 
     // Run SysId routines when holding back/start and X/Y.
     // Note that each routine should be run exactly once in a single log.
-    // joystick.back().and(joystick.y()).whileTrue(drivetrain.sysIdDynamic(Direction.kForward));
-    // joystick.back().and(joystick.x()).whileTrue(drivetrain.sysIdDynamic(Direction.kReverse));
-    // joystick.start().and(joystick.y()).whileTrue(drivetrain.sysIdQuasistatic(Direction.kForward));
-    // joystick.start().and(joystick.x()).whileTrue(drivetrain.sysIdQuasistatic(Direction.kReverse));
+    joystick.back().and(joystick.y()).whileTrue(drivetrain.sysIdDynamic(Direction.kForward));
+    joystick.back().and(joystick.x()).whileTrue(drivetrain.sysIdDynamic(Direction.kReverse));
+    joystick.start().and(joystick.y()).whileTrue(drivetrain.sysIdQuasistatic(Direction.kForward));
+    joystick.start().and(joystick.x()).whileTrue(drivetrain.sysIdQuasistatic(Direction.kReverse));
 
     // reset the field-centric heading on left bumper press
-    // joystick.leftBumper().onTrue(drivetrain.runOnce(drivetrain::seedFieldCentric));
+    joystick.leftBumper().onTrue(Commands.runOnce(() -> drivetrain.resetPose(Pose2d.kZero)));
 
-    joystick.povDown().whileTrue(arm.setGoalCommand(Arm.Goal.STOW));
-    joystick.povLeft().whileTrue(arm.setGoalCommand(Arm.Goal.L1));
-    joystick.povRight().whileTrue(arm.setGoalCommand(Arm.Goal.L2));
-    joystick.povUp().whileTrue(arm.setGoalCommand(Arm.Goal.L3));
+    // joystick.povDown().whileTrue(arm.setGoalCommand(Arm.Goal.STOW));
+    // joystick.povLeft().whileTrue(arm.setGoalCommand(Arm.Goal.L1));
+    // joystick.povRight().whileTrue(arm.setGoalCommand(Arm.Goal.L2));
+    // joystick.povUp().whileTrue(arm.setGoalCommand(Arm.Goal.L3));
 
-    joystick
-        .leftBumper()
-        .and(joystick.a())
-        .whileTrue(new SmartScore(drivetrain, arm, SmartScore.Side.LEFT, SmartScore.ArmMode.L1));
-    joystick
-        .leftBumper()
-        .and(joystick.x())
-        .whileTrue(new SmartScore(drivetrain, arm, SmartScore.Side.LEFT, SmartScore.ArmMode.L2));
-    joystick
-        .leftBumper()
-        .and(joystick.b())
-        .whileTrue(new SmartScore(drivetrain, arm, SmartScore.Side.LEFT, SmartScore.ArmMode.L3));
-    joystick
-        .leftBumper()
-        .and(joystick.y())
-        .whileTrue(new SmartScore(drivetrain, arm, SmartScore.Side.LEFT, SmartScore.ArmMode.L4));
-    joystick
-        .rightBumper()
-        .and(joystick.a())
-        .whileTrue(new SmartScore(drivetrain, arm, SmartScore.Side.RIGHT, SmartScore.ArmMode.L1));
-    joystick
-        .rightBumper()
-        .and(joystick.x())
-        .whileTrue(new SmartScore(drivetrain, arm, SmartScore.Side.RIGHT, SmartScore.ArmMode.L2));
-    joystick
-        .rightBumper()
-        .and(joystick.b())
-        .whileTrue(new SmartScore(drivetrain, arm, SmartScore.Side.RIGHT, SmartScore.ArmMode.L3));
-    joystick
-        .rightBumper()
-        .and(joystick.y())
-        .whileTrue(new SmartScore(drivetrain, arm, SmartScore.Side.RIGHT, SmartScore.ArmMode.L4));
+    // joystick
+    //     .leftBumper()
+    //     .and(joystick.a())
+    //     .whileTrue(new SmartScore(drivetrain, arm, SmartScore.Side.LEFT, SmartScore.ArmMode.L1));
+    // joystick
+    //     .leftBumper()
+    //     .and(joystick.x())
+    //     .whileTrue(new SmartScore(drivetrain, arm, SmartScore.Side.LEFT, SmartScore.ArmMode.L2));
+    // joystick
+    //     .leftBumper()
+    //     .and(joystick.b())
+    //     .whileTrue(new SmartScore(drivetrain, arm, SmartScore.Side.LEFT, SmartScore.ArmMode.L3));
+    // joystick
+    //     .leftBumper()
+    //     .and(joystick.y())
+    //     .whileTrue(new SmartScore(drivetrain, arm, SmartScore.Side.LEFT, SmartScore.ArmMode.L4));
+    // joystick
+    //     .rightBumper()
+    //     .and(joystick.a())
+    //     .whileTrue(new SmartScore(drivetrain, arm, SmartScore.Side.RIGHT,
+    // SmartScore.ArmMode.L1));
+    // joystick
+    //     .rightBumper()
+    //     .and(joystick.x())
+    //     .whileTrue(new SmartScore(drivetrain, arm, SmartScore.Side.RIGHT,
+    // SmartScore.ArmMode.L2));
+    // joystick
+    //     .rightBumper()
+    //     .and(joystick.b())
+    //     .whileTrue(new SmartScore(drivetrain, arm, SmartScore.Side.RIGHT,
+    // SmartScore.ArmMode.L3));
+    // joystick
+    //     .rightBumper()
+    //     .and(joystick.y())
+    //     .whileTrue(new SmartScore(drivetrain, arm, SmartScore.Side.RIGHT,
+    // SmartScore.ArmMode.L4));
 
     SmartDashboard.putData(
         "Pathfind and score L1 Left",

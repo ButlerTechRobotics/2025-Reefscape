@@ -41,6 +41,8 @@ import edu.wpi.first.wpilibj2.command.sysid.SysIdRoutine;
 import frc.robot.Constants;
 import frc.robot.Constants.Mode;
 import frc.robot.Robot;
+import frc.robot.subsystems.drive.requests.SysIdSwerveSteerGains_Torque;
+import frc.robot.subsystems.drive.requests.SysIdSwerveTranslation_Torque;
 import frc.robot.subsystems.vision.VisionUtil.VisionMeasurement;
 import frc.robot.utils.ArrayBuilder;
 import java.util.List;
@@ -94,6 +96,46 @@ public class Drive extends SubsystemBase {
   private final SwerveRequest.SysIdSwerveRotation m_rotationCharacterization =
       new SwerveRequest.SysIdSwerveRotation();
 
+  // Example TorqueCurrent SysID - Others are avalible.
+  private final SysIdSwerveTranslation_Torque m_translationTorqueCharacterization =
+      new SysIdSwerveTranslation_Torque();
+  private final SysIdSwerveSteerGains_Torque m_steerTorqueCharacterization =
+      new SysIdSwerveSteerGains_Torque();
+
+  /* SysId routine for characterizing torque translation. This is used to find PID gains for Torque Current of the drive motors. */
+  private final SysIdRoutine m_sysIdRoutineTorqueTranslation =
+      new SysIdRoutine(
+          new SysIdRoutine.Config(
+              Volts.of(5).per(Second), // Use ramp rate of 5 A/s
+              Volts.of(10), // Use dynamic step of 10 A
+              Seconds.of(5), // Use timeout of 5 seconds
+              // Log state with SignalLogger class
+              state -> Logger.recordOutput("SysIdTorqueTranslation_State", state.toString())),
+          new SysIdRoutine.Mechanism(
+              output ->
+                  setControl(
+                      m_translationTorqueCharacterization.withTorqueCurrent(
+                          output.in(Volts))), // treat volts as amps
+              null,
+              this));
+
+  /* SysId routine for characterizing torque translation. This is used to find PID gains for Torque Current of the drive motors. */
+  private final SysIdRoutine m_sysIdRoutineTorqueSteer =
+      new SysIdRoutine(
+          new SysIdRoutine.Config(
+              Volts.of(5).per(Second), // Use ramp rate of 5 A/s
+              Volts.of(10), // Use dynamic step of 10 A
+              Seconds.of(5), // Use timeout of 5 seconds
+              // Log state with SignalLogger class
+              state -> Logger.recordOutput("SysIdTorqueSteer_State", state.toString())),
+          new SysIdRoutine.Mechanism(
+              output ->
+                  setControl(
+                      m_steerTorqueCharacterization.withTorqueCurrent(
+                          output.in(Volts))), // treat volts as amps
+              null,
+              this));
+
   /* SysId routine for characterizing translation. This is used to find PID gains for the drive motors. */
   private final SysIdRoutine m_sysIdRoutineTranslation =
       new SysIdRoutine(
@@ -144,7 +186,7 @@ public class Drive extends SubsystemBase {
               this));
 
   /* The SysId routine to test */
-  private SysIdRoutine m_sysIdRoutineToApply = m_sysIdRoutineTranslation;
+  private SysIdRoutine m_sysIdRoutineToApply = m_sysIdRoutineTorqueSteer;
 
   public Drive(DriveIO io) {
 
@@ -197,7 +239,7 @@ public class Drive extends SubsystemBase {
             // PID constants for translation
             new PIDConstants(3, 0, 0),
             // PID constants for rotation
-            new PIDConstants(5, 0, 0)),
+            new PIDConstants(1, 0, 0)),
         Constants.PP_CONFIG,
         // Assume the path needs to be flipped for Red vs Blue, this is normally the case
         () -> DriverStation.getAlliance().orElse(Alliance.Blue) == Alliance.Red,
@@ -288,12 +330,12 @@ public class Drive extends SubsystemBase {
     io.resetPose(pose);
   }
 
-  public Command goToPoint(int x, int y) {
-    Pose2d targetPose = new Pose2d(x, y, Rotation2d.fromDegrees(180));
-    PathConstraints constraints =
-        new PathConstraints(4.0, 5.0, Units.degreesToRadians(540), Units.degreesToRadians(720));
-    return AutoBuilder.pathfindToPose(targetPose, constraints);
-  }
+  // public Command goToPoint(int x, int y) {
+  //   Pose2d targetPose = new Pose2d(x, y, Rotation2d.fromDegrees(180));
+  //   PathConstraints constraints =
+  //       new PathConstraints(4.0, 5.0, Units.degreesToRadians(540), Units.degreesToRadians(720));
+  //   return AutoBuilder.pathfindToPose(targetPose, constraints);
+  // }
   /*
    * flips if needed
    */

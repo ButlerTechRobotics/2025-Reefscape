@@ -15,6 +15,7 @@ import edu.wpi.first.wpilibj2.command.Command;
 import frc.robot.subsystems.arm.Arm;
 import frc.robot.subsystems.claw.Claw;
 import frc.robot.subsystems.drive.Drive;
+import frc.robot.utils.AllianceFlipUtil;
 
 public class SmartScore extends Command {
   Drive drivetrain;
@@ -26,22 +27,12 @@ public class SmartScore extends Command {
 
   // Center faces of the scoring positions
   private static final Pose2d[] centerFaces = {
-    new Pose2d(
-        Units.inchesToMeters(144.003 - 18.885),
-        Units.inchesToMeters(158.500),
-        Rotation2d.fromDegrees(180)),
-    new Pose2d(
-        Units.inchesToMeters(160.373), Units.inchesToMeters(186.857), Rotation2d.fromDegrees(120)),
-    new Pose2d(
-        Units.inchesToMeters(193.116), Units.inchesToMeters(186.858), Rotation2d.fromDegrees(60)),
-    new Pose2d(
-        Units.inchesToMeters(209.489 + 18.885),
-        Units.inchesToMeters(158.500),
-        Rotation2d.fromDegrees(0)),
-    new Pose2d(
-        Units.inchesToMeters(193.118), Units.inchesToMeters(130.145), Rotation2d.fromDegrees(-60)),
-    new Pose2d(
-        Units.inchesToMeters(160.375), Units.inchesToMeters(130.144), Rotation2d.fromDegrees(-120))
+    AllianceFlipUtil.apply(new Pose2d(3.151, 4.030, Rotation2d.fromDegrees(180))),
+    AllianceFlipUtil.apply(new Pose2d(3.151, 5.177, Rotation2d.fromDegrees(120))),
+    AllianceFlipUtil.apply(new Pose2d(5.135, 5.177, Rotation2d.fromDegrees(60))),
+    AllianceFlipUtil.apply(new Pose2d(5.823, 4.030, Rotation2d.fromDegrees(0))),
+    AllianceFlipUtil.apply(new Pose2d(5.135, 2.873, Rotation2d.fromDegrees(-60))),
+    AllianceFlipUtil.apply(new Pose2d(3.829, 2.873, Rotation2d.fromDegrees(-120)))
   };
 
   // Offset distance for left/right positions
