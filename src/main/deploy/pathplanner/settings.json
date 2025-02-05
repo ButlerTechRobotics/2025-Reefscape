@@ -3,7 +3,15 @@
   "robotLength": 0.889,
   "holonomicMode": true,
   "pathFolders": [
+    "BL-R",
+    "BR-L",
+    "BR-R",
+    "CS-1",
+    "CS-2",
+    "CS-3",
+    "BL-L",
     "S1",
+    "S2",
     "S3"
   ],
   "autoFolders": [],
