@@ -11,7 +11,6 @@ import com.ctre.phoenix6.swerve.SwerveModule.DriveRequestType;
 import com.ctre.phoenix6.swerve.SwerveRequest;
 import com.pathplanner.lib.auto.AutoBuilder;
 import com.pathplanner.lib.auto.NamedCommands;
-import edu.wpi.first.math.geometry.Pose2d;
 import edu.wpi.first.math.geometry.Rotation3d;
 import edu.wpi.first.math.geometry.Transform3d;
 import edu.wpi.first.math.geometry.Translation3d;
@@ -20,7 +19,6 @@ import edu.wpi.first.math.util.Units;
 import edu.wpi.first.units.measure.LinearVelocity;
 import edu.wpi.first.wpilibj.smartdashboard.SmartDashboard;
 import edu.wpi.first.wpilibj2.command.Command;
-import edu.wpi.first.wpilibj2.command.Commands;
 import edu.wpi.first.wpilibj2.command.sysid.SysIdRoutine;
 import frc.robot.commands.AutoArm;
 import frc.robot.commands.AutoClaw;
@@ -309,49 +307,45 @@ public class RobotContainer {
     // joystick.start().and(joystick.x()).whileTrue(drivetrain.sysIdQuasistatic(Direction.kReverse));
 
     // reset the field-centric heading on left bumper press
-    joystick.leftBumper().onTrue(Commands.runOnce(() -> drivetrain.resetPose(Pose2d.kZero)));
+    // joystick.leftBumper().onTrue(Commands.runOnce(() -> drivetrain.resetPose(Pose2d.kZero)));
 
     // joystick.povDown().whileTrue(arm.setGoalCommand(Arm.Goal.STOW));
     // joystick.povLeft().whileTrue(arm.setGoalCommand(Arm.Goal.L1));
     // joystick.povRight().whileTrue(arm.setGoalCommand(Arm.Goal.L2));
     // joystick.povUp().whileTrue(arm.setGoalCommand(Arm.Goal.L3));
 
-    // joystick
-    //     .leftBumper()
-    //     .and(joystick.a())
-    //     .whileTrue(new SmartScore(drivetrain, arm, SmartScore.Side.LEFT, SmartScore.ArmMode.L1));
-    // joystick
-    //     .leftBumper()
-    //     .and(joystick.x())
-    //     .whileTrue(new SmartScore(drivetrain, arm, SmartScore.Side.LEFT, SmartScore.ArmMode.L2));
-    // joystick
-    //     .leftBumper()
-    //     .and(joystick.b())
-    //     .whileTrue(new SmartScore(drivetrain, arm, SmartScore.Side.LEFT, SmartScore.ArmMode.L3));
-    // joystick
-    //     .leftBumper()
-    //     .and(joystick.y())
-    //     .whileTrue(new SmartScore(drivetrain, arm, SmartScore.Side.LEFT, SmartScore.ArmMode.L4));
-    // joystick
-    //     .rightBumper()
-    //     .and(joystick.a())
-    //     .whileTrue(new SmartScore(drivetrain, arm, SmartScore.Side.RIGHT,
-    // SmartScore.ArmMode.L1));
-    // joystick
-    //     .rightBumper()
-    //     .and(joystick.x())
-    //     .whileTrue(new SmartScore(drivetrain, arm, SmartScore.Side.RIGHT,
-    // SmartScore.ArmMode.L2));
-    // joystick
-    //     .rightBumper()
-    //     .and(joystick.b())
-    //     .whileTrue(new SmartScore(drivetrain, arm, SmartScore.Side.RIGHT,
-    // SmartScore.ArmMode.L3));
-    // joystick
-    //     .rightBumper()
-    //     .and(joystick.y())
-    //     .whileTrue(new SmartScore(drivetrain, arm, SmartScore.Side.RIGHT,
-    // SmartScore.ArmMode.L4));
+    joystick
+        .leftBumper()
+        .and(joystick.a())
+        .whileTrue(new SmartScore(drivetrain, arm, SmartScore.Side.LEFT, SmartScore.ArmMode.L1));
+    joystick
+        .leftBumper()
+        .and(joystick.x())
+        .whileTrue(new SmartScore(drivetrain, arm, SmartScore.Side.LEFT, SmartScore.ArmMode.L2));
+    joystick
+        .leftBumper()
+        .and(joystick.b())
+        .whileTrue(new SmartScore(drivetrain, arm, SmartScore.Side.LEFT, SmartScore.ArmMode.L3));
+    joystick
+        .leftBumper()
+        .and(joystick.y())
+        .whileTrue(new SmartScore(drivetrain, arm, SmartScore.Side.LEFT, SmartScore.ArmMode.L4));
+    joystick
+        .rightBumper()
+        .and(joystick.a())
+        .whileTrue(new SmartScore(drivetrain, arm, SmartScore.Side.RIGHT, SmartScore.ArmMode.L1));
+    joystick
+        .rightBumper()
+        .and(joystick.x())
+        .whileTrue(new SmartScore(drivetrain, arm, SmartScore.Side.RIGHT, SmartScore.ArmMode.L2));
+    joystick
+        .rightBumper()
+        .and(joystick.b())
+        .whileTrue(new SmartScore(drivetrain, arm, SmartScore.Side.RIGHT, SmartScore.ArmMode.L3));
+    joystick
+        .rightBumper()
+        .and(joystick.y())
+        .whileTrue(new SmartScore(drivetrain, arm, SmartScore.Side.RIGHT, SmartScore.ArmMode.L4));
 
     SmartDashboard.putData(
         "Pathfind and score L1 Left",
