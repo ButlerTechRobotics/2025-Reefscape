@@ -7,31 +7,31 @@
         {
           "type": "path",
           "data": {
-            "pathName": "S3 - R3-R"
+            "pathName": "S3 - BL-R"
           }
         },
         {
           "type": "path",
           "data": {
-            "pathName": "R3-R - CS-4"
+            "pathName": "BR-R - CS-3"
           }
         },
         {
           "type": "path",
           "data": {
-            "pathName": "CS-4 - R2-L"
+            "pathName": "CS-3 - FL-L"
           }
         },
         {
           "type": "path",
           "data": {
-            "pathName": "R2-L - CS-4"
+            "pathName": "FL-L - CS-3"
           }
         },
         {
           "type": "path",
           "data": {
-            "pathName": "CS-4 - R2-R"
+            "pathName": "CS-3 - FL-R"
           }
         }
       ]
