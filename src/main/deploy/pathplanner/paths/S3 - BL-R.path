@@ -8,30 +8,42 @@
       },
       "prevControl": null,
       "nextControl": {
-        "x": 5.5805921052631575,
-        "y": 5.574095394736841
+        "x": 6.422381974211152,
+        "y": 5.185203222414972
       },
       "isLocked": false,
       "linkedName": "S3"
     },
     {
       "anchor": {
-        "x": 3.9711424148708163,
-        "y": 5.246926362963725
+        "x": 5.003289473684211,
+        "y": 5.246957236842105
       },
       "prevControl": {
-        "x": 5.214967105263157,
-        "y": 6.074424342105263
+        "x": 6.040203746445093,
+        "y": 5.165501454198414
       },
       "nextControl": null,
       "isLocked": false,
-      "linkedName": "FL-L"
+      "linkedName": "BL-R"
     }
   ],
   "rotationTargets": [],
   "constraintZones": [],
   "pointTowardsZones": [],
-  "eventMarkers": [],
+  "eventMarkers": [
+    {
+      "name": "L4Align",
+      "waypointRelativePos": 0.6,
+      "endWaypointRelativePos": null,
+      "command": {
+        "type": "named",
+        "data": {
+          "name": "L4Align"
+        }
+      }
+    }
+  ],
   "globalConstraints": {
     "maxVelocity": 5.0,
     "maxAcceleration": 4.0,
@@ -42,7 +54,7 @@
   },
   "goalEndState": {
     "velocity": 0,
-    "rotation": -59.99999999999999
+    "rotation": -119.99999999999999
   },
   "reversed": false,
   "folder": "S3",
