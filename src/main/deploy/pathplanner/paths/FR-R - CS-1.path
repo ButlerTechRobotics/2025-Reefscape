@@ -1,0 +1,70 @@
+{
+  "version": "2025.0",
+  "waypoints": [
+    {
+      "anchor": {
+        "x": 3.978,
+        "y": 2.815999999999999
+      },
+      "prevControl": null,
+      "nextControl": {
+        "x": 2.3495901639374512,
+        "y": 3.263780737701617
+      },
+      "isLocked": false,
+      "linkedName": "FR-R"
+    },
+    {
+      "anchor": {
+        "x": 2.0978483606557377,
+        "y": 4.396618852459016
+      },
+      "prevControl": {
+        "x": 2.2875238217216385,
+        "y": 3.8802884221307212
+      },
+      "nextControl": {
+        "x": 1.9081728995898368,
+        "y": 4.912949282787312
+      },
+      "isLocked": false,
+      "linkedName": null
+    },
+    {
+      "anchor": {
+        "x": 0.6353483606565576,
+        "y": 6.650307377049402
+      },
+      "prevControl": {
+        "x": 2.62530737704918,
+        "y": 7.153790983606557
+      },
+      "nextControl": null,
+      "isLocked": false,
+      "linkedName": "CS-1"
+    }
+  ],
+  "rotationTargets": [],
+  "constraintZones": [],
+  "pointTowardsZones": [],
+  "eventMarkers": [],
+  "globalConstraints": {
+    "maxVelocity": 5.0,
+    "maxAcceleration": 4.0,
+    "maxAngularVelocity": 540.0,
+    "maxAngularAcceleration": 720.0,
+    "nominalVoltage": 12.0,
+    "unlimited": false
+  },
+  "goalEndState": {
+    "velocity": 0,
+    "rotation": -55.0
+  },
+  "reversed": false,
+  "folder": "FR-R",
+  "idealStartingState": {
+    "velocity": 0,
+    "rotation": 59.99999999999999
+  },
+  "useDefaultConstraints": true
+}

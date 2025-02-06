@@ -1,0 +1,43 @@
+{
+  "version": "2025.0",
+  "command": {
+    "type": "sequential",
+    "data": {
+      "commands": [
+        {
+          "type": "path",
+          "data": {
+            "pathName": "S3 - BL-R"
+          }
+        },
+        {
+          "type": "path",
+          "data": {
+            "pathName": "BL-R - CS-3"
+          }
+        },
+        {
+          "type": "path",
+          "data": {
+            "pathName": "CS-3 - FL-L"
+          }
+        },
+        {
+          "type": "path",
+          "data": {
+            "pathName": "FL-L - CS-3"
+          }
+        },
+        {
+          "type": "path",
+          "data": {
+            "pathName": "CS-3 - FL-R"
+          }
+        }
+      ]
+    }
+  },
+  "resetOdom": true,
+  "folder": "REEF FOCUSED",
+  "choreoAuto": false
+}

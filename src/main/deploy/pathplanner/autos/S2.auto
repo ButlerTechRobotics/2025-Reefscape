@@ -7,13 +7,13 @@
         {
           "type": "path",
           "data": {
-            "pathName": "S3 - BL-R"
+            "pathName": "S2 - BL-R"
           }
         },
         {
           "type": "path",
           "data": {
-            "pathName": "BR-R - CS-3"
+            "pathName": "BL-R - CS-3"
           }
         },
         {
@@ -38,6 +38,6 @@
     }
   },
   "resetOdom": true,
-  "folder": null,
+  "folder": "REEF FOCUSED",
   "choreoAuto": false
 }

@@ -1,0 +1,54 @@
+{
+  "version": "2025.0",
+  "waypoints": [
+    {
+      "anchor": {
+        "x": 1.683799342105263,
+        "y": 7.392598684210526
+      },
+      "prevControl": null,
+      "nextControl": {
+        "x": 2.4934426229508198,
+        "y": 6.9380122950819665
+      },
+      "isLocked": false,
+      "linkedName": "CS-3"
+    },
+    {
+      "anchor": {
+        "x": 5.003289473684211,
+        "y": 5.246957236842105
+      },
+      "prevControl": {
+        "x": 4.315573770491803,
+        "y": 6.038934426229508
+      },
+      "nextControl": null,
+      "isLocked": false,
+      "linkedName": "BL-R"
+    }
+  ],
+  "rotationTargets": [],
+  "constraintZones": [],
+  "pointTowardsZones": [],
+  "eventMarkers": [],
+  "globalConstraints": {
+    "maxVelocity": 5.0,
+    "maxAcceleration": 4.0,
+    "maxAngularVelocity": 540.0,
+    "maxAngularAcceleration": 720.0,
+    "nominalVoltage": 12.0,
+    "unlimited": false
+  },
+  "goalEndState": {
+    "velocity": 0,
+    "rotation": -119.99999999999999
+  },
+  "reversed": false,
+  "folder": "CS-3",
+  "idealStartingState": {
+    "velocity": 0,
+    "rotation": -55.0
+  },
+  "useDefaultConstraints": true
+}
