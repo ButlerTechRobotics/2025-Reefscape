@@ -8,8 +8,8 @@
       },
       "prevControl": null,
       "nextControl": {
-        "x": 1.565628537797667,
-        "y": 2.9407750436992544
+        "x": 2.2536885245901637,
+        "y": 2.5505122950819685
       },
       "isLocked": false,
       "linkedName": "FR-R"
@@ -20,8 +20,8 @@
         "y": 1.3757172131126685
       },
       "prevControl": {
-        "x": 2.5244177614659282,
-        "y": 2.57550915015485
+        "x": 1.6063524590155258,
+        "y": 0.8722336065507283
       },
       "nextControl": null,
       "isLocked": false,
@@ -45,7 +45,7 @@
     "rotation": -125.00000000000001
   },
   "reversed": false,
-  "folder": "FL-R",
+  "folder": "FR-R",
   "idealStartingState": {
     "velocity": 0,
     "rotation": 59.99999999999999

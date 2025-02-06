@@ -20,8 +20,8 @@
         "y": 7.1255
       },
       "prevControl": {
-        "x": 1.7022540983606556,
-        "y": 5.841137295081967
+        "x": 2.2536885245901637,
+        "y": 6.026946721311476
       },
       "nextControl": null,
       "isLocked": false,
@@ -45,7 +45,7 @@
     "rotation": 125.00000000000001
   },
   "reversed": false,
-  "folder": "FL-R",
+  "folder": "FR-R",
   "idealStartingState": {
     "velocity": 0,
     "rotation": 59.99999999999999
