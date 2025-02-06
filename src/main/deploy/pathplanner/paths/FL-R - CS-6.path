@@ -21,7 +21,7 @@
       },
       "prevControl": {
         "x": 2.4215163934426225,
-        "y": 2.526536885245902
+        "y": 2.5265368852459025
       },
       "nextControl": null,
       "isLocked": false,
@@ -42,7 +42,7 @@
   },
   "goalEndState": {
     "velocity": 0,
-    "rotation": -125.00000000000001
+    "rotation": 55.0
   },
   "reversed": false,
   "folder": "FL-R",

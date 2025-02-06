@@ -8,7 +8,7 @@
       },
       "prevControl": null,
       "nextControl": {
-        "x": 1.9899590163934426,
+        "x": 1.9899590163934424,
         "y": 1.111987704918032
       },
       "isLocked": false,
@@ -64,7 +64,7 @@
   "folder": "CS-4",
   "idealStartingState": {
     "velocity": 0,
-    "rotation": -125.00000000000001
+    "rotation": 55.0
   },
   "useDefaultConstraints": true
 }

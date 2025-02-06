@@ -9,7 +9,7 @@
       "prevControl": null,
       "nextControl": {
         "x": 3.584323770491803,
-        "y": 0.9921106557377037
+        "y": 0.9921106557377042
       },
       "isLocked": false,
       "linkedName": "BR-L"
@@ -42,7 +42,7 @@
   },
   "goalEndState": {
     "velocity": 0,
-    "rotation": 125.00000000000001
+    "rotation": -55.0
   },
   "reversed": false,
   "folder": "BR-L",

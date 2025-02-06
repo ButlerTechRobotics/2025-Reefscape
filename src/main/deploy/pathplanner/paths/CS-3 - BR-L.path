@@ -8,8 +8,8 @@
       },
       "prevControl": null,
       "nextControl": {
-        "x": 2.457479508196722,
-        "y": 3.377663934426229
+        "x": 2.4574795081967222,
+        "y": 3.377663934426228
       },
       "isLocked": false,
       "linkedName": "CS-3"
@@ -48,7 +48,7 @@
   "folder": "CS-3",
   "idealStartingState": {
     "velocity": 0,
-    "rotation": 125.00000000000001
+    "rotation": -55.0
   },
   "useDefaultConstraints": true
 }
