@@ -3,13 +3,13 @@
   "waypoints": [
     {
       "anchor": {
-        "x": 0.6353483606565576,
-        "y": 6.650307377049402
+        "x": 0.7552254098348993,
+        "y": 6.590368852461446
       },
       "prevControl": null,
       "nextControl": {
-        "x": 2.2177254098360653,
-        "y": 7.4295081967213115
+        "x": 2.337602459014407,
+        "y": 7.3695696721333555
       },
       "isLocked": false,
       "linkedName": "CS-1"
@@ -32,12 +32,12 @@
     },
     {
       "anchor": {
-        "x": 3.6952499999999997,
-        "y": 2.9817499999999995
+        "x": 3.668237704918033,
+        "y": 2.8861680327868853
       },
       "prevControl": {
-        "x": 2.972950819672131,
-        "y": 2.538524590163935
+        "x": 2.945938524590164,
+        "y": 2.4429426229508207
       },
       "nextControl": null,
       "isLocked": false,
@@ -49,8 +49,8 @@
   "pointTowardsZones": [],
   "eventMarkers": [],
   "globalConstraints": {
-    "maxVelocity": 5.0,
-    "maxAcceleration": 4.0,
+    "maxVelocity": 100.0,
+    "maxAcceleration": 6.0,
     "maxAngularVelocity": 540.0,
     "maxAngularAcceleration": 720.0,
     "nominalVoltage": 12.0,

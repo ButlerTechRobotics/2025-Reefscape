@@ -1,0 +1,67 @@
+{
+  "version": "2025.0",
+  "command": {
+    "type": "sequential",
+    "data": {
+      "commands": [
+        {
+          "type": "path",
+          "data": {
+            "pathName": "S5 - BR-R"
+          }
+        },
+        {
+          "type": "path",
+          "data": {
+            "pathName": "BR-R - CS-6"
+          }
+        },
+        {
+          "type": "path",
+          "data": {
+            "pathName": "CS-6 - BR-L"
+          }
+        },
+        {
+          "type": "path",
+          "data": {
+            "pathName": "BR-L - CS-6"
+          }
+        },
+        {
+          "type": "path",
+          "data": {
+            "pathName": "CS-6 - FR-R"
+          }
+        },
+        {
+          "type": "path",
+          "data": {
+            "pathName": "FR-R - CS-6"
+          }
+        },
+        {
+          "type": "path",
+          "data": {
+            "pathName": "CS-6 - FR-L"
+          }
+        },
+        {
+          "type": "path",
+          "data": {
+            "pathName": "FR-L - CS-6"
+          }
+        },
+        {
+          "type": "path",
+          "data": {
+            "pathName": "CS-6 - F-R"
+          }
+        }
+      ]
+    }
+  },
+  "resetOdom": true,
+  "folder": "Processor",
+  "choreoAuto": false
+}

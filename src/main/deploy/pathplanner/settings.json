@@ -9,17 +9,20 @@
     "BL-R",
     "BR-L",
     "BR-R",
+    "C",
     "CS-1",
     "CS-2",
     "CS-3",
     "CS-4",
     "CS-5",
+    "CS-6",
     "F-L",
     "F-R",
     "FL-L",
     "FL-R",
     "FR-L",
     "FR-R",
+<<<<<<< Updated upstream
     "CS-6",
     "BL-R -",
     "BR-L -",
@@ -30,6 +33,9 @@
     "FL-L -",
     "FL-R -",
     "S2",
+=======
+    "PROCESSOR",
+>>>>>>> Stashed changes
     "S1",
     "S2",
     "S3",
@@ -37,8 +43,16 @@
     "S5",
     "S6"
   ],
+<<<<<<< Updated upstream
   "autoFolders": [],
   "defaultMaxVel": 6.0,
+=======
+  "autoFolders": [
+    "Processor",
+    "Processor and reef "
+  ],
+  "defaultMaxVel": 100.0,
+>>>>>>> Stashed changes
   "defaultMaxAccel": 6.0,
   "defaultMaxAngVel": 540.0,
   "defaultMaxAngAccel": 720.0,
