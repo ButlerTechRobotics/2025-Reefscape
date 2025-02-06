@@ -8,24 +8,24 @@
       },
       "prevControl": null,
       "nextControl": {
-        "x": 1.6952816343133286,
-        "y": 5.77217446456013
+        "x": 2.817110655737705,
+        "y": 5.3496413934426235
       },
       "isLocked": false,
       "linkedName": "FL-L"
     },
     {
       "anchor": {
-        "x": 1.683799342105263,
-        "y": 7.392598684210526
+        "x": 1.1388319672131146,
+        "y": 1.0160860655737713
       },
       "prevControl": {
-        "x": 2.8595700883824122,
-        "y": 6.1785223517424415
+        "x": 1.6303278688524592,
+        "y": 2.5565061475409836
       },
       "nextControl": null,
       "isLocked": false,
-      "linkedName": "CS-3"
+      "linkedName": "CS-5"
     }
   ],
   "rotationTargets": [],
@@ -42,7 +42,7 @@
   },
   "goalEndState": {
     "velocity": 0,
-    "rotation": 125.00000000000001
+    "rotation": -125.00000000000001
   },
   "reversed": false,
   "folder": "FL-L",

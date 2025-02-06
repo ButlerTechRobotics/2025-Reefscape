@@ -3,16 +3,16 @@
   "waypoints": [
     {
       "anchor": {
-        "x": 3.9711424148708163,
-        "y": 5.246926362963725
+        "x": 3.978,
+        "y": 2.815999999999999
       },
       "prevControl": null,
       "nextControl": {
-        "x": 1.6952816343133286,
-        "y": 5.77217446456013
+        "x": 2.085860655737705,
+        "y": 2.8921618852459017
       },
       "isLocked": false,
-      "linkedName": "FL-L"
+      "linkedName": "FR-R"
     },
     {
       "anchor": {
@@ -20,8 +20,8 @@
         "y": 7.392598684210526
       },
       "prevControl": {
-        "x": 2.8595700883824122,
-        "y": 6.1785223517424415
+        "x": 1.8700819672131148,
+        "y": 6.836116803278688
       },
       "nextControl": null,
       "isLocked": false,
@@ -45,10 +45,10 @@
     "rotation": 125.00000000000001
   },
   "reversed": false,
-  "folder": "FL-L",
+  "folder": "FL-R",
   "idealStartingState": {
     "velocity": 0,
-    "rotation": -59.99999999999999
+    "rotation": 59.99999999999999
   },
   "useDefaultConstraints": true
 }
