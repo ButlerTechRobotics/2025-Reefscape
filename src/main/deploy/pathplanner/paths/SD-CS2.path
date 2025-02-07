@@ -1,0 +1,54 @@
+{
+  "version": "2025.0",
+  "waypoints": [
+    {
+      "anchor": {
+        "x": 1.606500298035179,
+        "y": 6.714442979159775
+      },
+      "prevControl": null,
+      "nextControl": {
+        "x": 1.4631061889474173,
+        "y": 6.919230990232022
+      },
+      "isLocked": false,
+      "linkedName": null
+    },
+    {
+      "anchor": {
+        "x": 1.31625,
+        "y": 7.1255
+      },
+      "prevControl": {
+        "x": 1.4596441090877617,
+        "y": 6.920711988927752
+      },
+      "nextControl": null,
+      "isLocked": false,
+      "linkedName": "CS-2"
+    }
+  ],
+  "rotationTargets": [],
+  "constraintZones": [],
+  "pointTowardsZones": [],
+  "eventMarkers": [],
+  "globalConstraints": {
+    "maxVelocity": 6.0,
+    "maxAcceleration": 6.0,
+    "maxAngularVelocity": 540.0,
+    "maxAngularAcceleration": 720.0,
+    "nominalVoltage": 12.0,
+    "unlimited": false
+  },
+  "goalEndState": {
+    "velocity": 0,
+    "rotation": -55.0
+  },
+  "reversed": false,
+  "folder": "SmartDrive",
+  "idealStartingState": {
+    "velocity": 1.0,
+    "rotation": -55.0
+  },
+  "useDefaultConstraints": true
+}
