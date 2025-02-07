@@ -37,9 +37,9 @@ public class DynamicArm extends Command {
       Map.of(
           TargetPose.CS1,
               new Pose3d(
-                0.421,
-                6.925,
-                  Units.inchesToMeters(24.0), // Height
+                0.301,
+                7.030,
+                  Units.inchesToMeters(37.5), // Height
                   new Rotation3d(0, 0, 0)),
           TargetPose.CS2,
               new Pose3d(
