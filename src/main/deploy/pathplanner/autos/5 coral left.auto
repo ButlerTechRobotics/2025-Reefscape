@@ -7,55 +7,55 @@
         {
           "type": "path",
           "data": {
-            "pathName": "S3 - B-R"
+            "pathName": "S2 - BL-L"
           }
         },
         {
           "type": "path",
           "data": {
-            "pathName": "B-R - B-C"
+            "pathName": "BL-L - CS-3"
           }
         },
         {
           "type": "path",
           "data": {
-            "pathName": "B-C - P"
+            "pathName": "CS-3 - BL-R"
           }
         },
         {
           "type": "path",
           "data": {
-            "pathName": "P - CS-6"
+            "pathName": "BL-R - CS-3"
           }
         },
         {
           "type": "path",
           "data": {
-            "pathName": "CS-6 - FR-R"
+            "pathName": "CS-3 - FL-L"
           }
         },
         {
           "type": "path",
           "data": {
-            "pathName": "FR-R - CS-6"
+            "pathName": "FL-L - CS-3"
           }
         },
         {
           "type": "path",
           "data": {
-            "pathName": "CS-6 - FR-L"
+            "pathName": "CS-3 - FL-R"
           }
         },
         {
           "type": "path",
           "data": {
-            "pathName": "FR-L - FR-C"
+            "pathName": "FL-R - CS-3"
           }
         },
         {
           "type": "path",
           "data": {
-            "pathName": "FR-C - P"
+            "pathName": "CS-3 - F-L"
           }
         }
       ]
