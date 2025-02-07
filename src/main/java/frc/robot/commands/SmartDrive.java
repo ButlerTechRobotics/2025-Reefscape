@@ -1,3 +1,10 @@
+// Copyright (c) 2025 FRC 325/144 & 5712
+// https://hemlock5712.github.io/Swerve-Setup/home.html
+//
+// Use of this source code is governed by an MIT-style
+// license that can be found in the LICENSE file at
+// the root directory of this project.
+
 package frc.robot.commands;
 
 import com.pathplanner.lib.path.PathPlannerPath;
@@ -32,14 +39,8 @@ public class SmartDrive extends Command {
         Units.inchesToMeters(160.375), Units.inchesToMeters(130.144), Rotation2d.fromDegrees(-120))
   };
 
-  public enum ArmMode {
-    STOP,
-    INTAKE,
-    L1,
-    L2,
-    L3,
-    L4
-  }
+  // Mapping from pose indices to letters
+  private static final String[] poseLetters = {"F", "FL", "BL", "B", "BR", "FR"};
 
   public enum Side {
     LEFT,
@@ -57,8 +58,7 @@ public class SmartDrive extends Command {
   @Override
   public void initialize() {
     Pose2d closestPose = drivetrain.findClosestPose(centerFaces);
-    int closestPoseIndex =
-        getClosestPoseIndex(closestPose, centerFaces) + 1; // Convert to 1-based index
+    int closestPoseIndex = getClosestPoseIndex(closestPose, centerFaces);
     System.out.println("Closest Pose: " + closestPose + ", Index: " + closestPoseIndex);
 
     pathCommand = getPathCommand(closestPoseIndex, side);
@@ -84,12 +84,13 @@ public class SmartDrive extends Command {
   private String getPathName(int closestPoseIndex, Side side) {
     // Implement logic to determine the path name based on the closest pose index and side
     // For example:
+    String poseLetter = poseLetters[closestPoseIndex];
     if (side == Side.LEFT) {
-      return "Left-" + closestPoseIndex;
+      return "SD-" + poseLetter + "-L";
     } else if (side == Side.CENTER) {
-      return "Center-" + closestPoseIndex;
+      return "SD-" + poseLetter + "-C";
     } else {
-      return "Right-" + closestPoseIndex;
+      return "SD-" + poseLetter + "-R";
     }
   }
 

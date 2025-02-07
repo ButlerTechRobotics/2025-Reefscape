@@ -87,6 +87,26 @@ public class Extension extends SubsystemBase {
     return inputs.extensionDistance;
   }
 
+  /**
+   * Sets the extension to a specific length.
+   *
+   * @param length The desired extension length
+   */
+  public void setLength(Distance length) {
+    io.setDistance(length);
+  }
+
+  /**
+   * Creates a command to set the extension to a specific length.
+   *
+   * @param length The desired extension length
+   * @return Command to set the length
+   */
+  public Command setLengthCommand(Distance length) {
+    return Commands.runOnce(() -> setLength(length))
+        .withName("SetExtensionLength(" + length.in(Inches) + ")");
+  }
+
   /** Enumeration of available extension distances with their corresponding target distances. */
   public enum ExtensionPosition {
     STOP(Inches.of(0)), // Stop the arm

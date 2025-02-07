@@ -24,6 +24,8 @@ import edu.wpi.first.wpilibj2.command.sysid.SysIdRoutine;
 import frc.robot.commands.AutoArm;
 import frc.robot.commands.AutoClaw;
 import frc.robot.commands.DriveCommands;
+import frc.robot.commands.DynamicArm;
+import frc.robot.commands.SmartDrive;
 import frc.robot.generated.TunerConstants;
 import frc.robot.subsystems.arm.Arm;
 import frc.robot.subsystems.arm.extension.Extension;
@@ -324,10 +326,12 @@ public class RobotContainer {
     //     .leftBumper()
     //     .and(joystick.a())
     //     .whileTrue(new SmartDrive(drivetrain, SmartDrive.Side.LEFT));
-    // joystick
-    //     .rightBumper()
-    //     .and(joystick.a())
-    //     .whileTrue(new SmartDrive(drivetrain, SmartDrive.Side.RIGHT));
+    joystick
+        .rightBumper()
+        .and(joystick.a())
+        .whileTrue(new SmartDrive(drivetrain, SmartDrive.Side.RIGHT));
+
+    joystick.leftBumper().whileTrue(new DynamicArm(drivetrain, arm, DynamicArm.TargetPose.CS1));
   }
 
   public Command getAutonomousCommand() {
