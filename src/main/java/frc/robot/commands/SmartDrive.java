@@ -1,23 +1,16 @@
-// Copyright (c) 2025 FRC 325/144 & 5712
-// https://hemlock5712.github.io/Swerve-Setup/home.html
-//
-// Use of this source code is governed by an MIT-style
-// license that can be found in the LICENSE file at
-// the root directory of this project.
-
 package frc.robot.commands;
 
+import com.pathplanner.lib.path.PathPlannerPath;
 import edu.wpi.first.math.geometry.Pose2d;
 import edu.wpi.first.math.geometry.Rotation2d;
-import edu.wpi.first.math.geometry.Transform2d;
 import edu.wpi.first.math.util.Units;
 import edu.wpi.first.wpilibj2.command.Command;
 import frc.robot.subsystems.drive.Drive;
 
 public class SmartDrive extends Command {
-  private Drive drivetrain;
-  private Side side;
-  private Command driveCommand;
+  Drive drivetrain;
+  Side side;
+  Command pathCommand;
 
   // Center faces of the scoring positions
   private static final Pose2d[] centerFaces = {
@@ -39,8 +32,14 @@ public class SmartDrive extends Command {
         Units.inchesToMeters(160.375), Units.inchesToMeters(130.144), Rotation2d.fromDegrees(-120))
   };
 
-  // Offset distance for left/right positions
-  private static final double SIDE_OFFSET = Units.inchesToMeters(6.469);
+  public enum ArmMode {
+    STOP,
+    INTAKE,
+    L1,
+    L2,
+    L3,
+    L4
+  }
 
   public enum Side {
     LEFT,
@@ -51,68 +50,60 @@ public class SmartDrive extends Command {
   public SmartDrive(Drive drivetrain, Side side) {
     this.drivetrain = drivetrain;
     this.side = side;
+
     addRequirements(drivetrain);
   }
 
   @Override
   public void initialize() {
-    // Find closest center face
-    Pose2d closestCenterPose = drivetrain.findClosestPose(centerFaces);
+    Pose2d closestPose = drivetrain.findClosestPose(centerFaces);
+    int closestPoseIndex =
+        getClosestPoseIndex(closestPose, centerFaces) + 1; // Convert to 1-based index
+    System.out.println("Closest Pose: " + closestPose + ", Index: " + closestPoseIndex);
 
-    // Get target pose based on side
-    Pose2d targetPose = getTargetPose(closestCenterPose, side);
-
-    // Get current robot pose
-    Pose2d currentPose = drivetrain.getPose();
-
-    // Calculate angle to target
-    double angleToTarget =
-        Math.toDegrees(
-            Math.atan2(
-                targetPose.getY() - currentPose.getY(), targetPose.getX() - currentPose.getX()));
-
-    // Get the relative angle between robot's current heading and angle to target
-    double relativeAngle = angleToTarget - currentPose.getRotation().getDegrees();
-    // Normalize to -180 to 180
-    relativeAngle = (relativeAngle + 180) % 360 - 180;
-
-    // Determine if we should use reversed heading based on relative angle
-    boolean useReversedHeading = Math.abs(relativeAngle) < 90;
-
-    // Create final pose with the correct heading
-    Rotation2d finalHeading =
-        useReversedHeading
-            ? Rotation2d.fromDegrees(closestCenterPose.getRotation().getDegrees() + 180)
-            : closestCenterPose.getRotation();
-
-    Pose2d finalPose = new Pose2d(targetPose.getX(), targetPose.getY(), finalHeading);
-
-    // Create pathfinding command to the target pose
-    driveCommand = drivetrain.goToPoint(finalPose);
-    if (driveCommand != null) {
-      driveCommand.schedule();
-      System.out.println(
-          "Using "
-              + (useReversedHeading ? "back" : "front")
-              + " | Relative angle: "
-              + relativeAngle);
+    pathCommand = getPathCommand(closestPoseIndex, side);
+    if (pathCommand != null) {
+      pathCommand.schedule();
+    } else {
+      System.out.println("Path command is null");
     }
   }
 
-  private Pose2d getTargetPose(Pose2d centerPose, Side side) {
-    switch (side) {
-      case LEFT:
-        return centerPose.transformBy(new Transform2d(0, -SIDE_OFFSET, new Rotation2d()));
-      case RIGHT:
-        return centerPose.transformBy(new Transform2d(0, SIDE_OFFSET, new Rotation2d()));
-      case CENTER:
-      default:
-        return centerPose;
+  private Command getPathCommand(int closestPoseIndex, Side side) {
+    try {
+      String pathName = getPathName(closestPoseIndex, side);
+      System.out.println("Trying to run path: " + pathName);
+      PathPlannerPath path = PathPlannerPath.fromPathFile(pathName);
+      return drivetrain.goToPath(path);
+    } catch (Exception e) {
+      System.out.println("Path not found: " + e.getMessage());
+      return null;
     }
+  }
+
+  private String getPathName(int closestPoseIndex, Side side) {
+    // Implement logic to determine the path name based on the closest pose index and side
+    // For example:
+    if (side == Side.LEFT) {
+      return "Left-" + closestPoseIndex;
+    } else if (side == Side.CENTER) {
+      return "Center-" + closestPoseIndex;
+    } else {
+      return "Right-" + closestPoseIndex;
+    }
+  }
+
+  private int getClosestPoseIndex(Pose2d closestPose, Pose2d[] poses) {
+    for (int i = 0; i < poses.length; i++) {
+      if (poses[i].equals(closestPose)) {
+        return i;
+      }
+    }
+    return -1; // Should not happen if closestPose is guaranteed to be in poses
   }
 
   @Override
   public boolean isFinished() {
-    return true;
+    return true; // Adjust this based on your command's requirements
   }
 }
