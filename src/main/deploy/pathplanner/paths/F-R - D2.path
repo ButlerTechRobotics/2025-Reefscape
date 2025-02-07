@@ -3,29 +3,29 @@
   "waypoints": [
     {
       "anchor": {
-        "x": 3.812090163934426,
-        "y": 2.850204918032787
+        "x": 3.1287909836065575,
+        "y": 3.881147540983607
       },
       "prevControl": null,
       "nextControl": {
-        "x": 4.414851034657257,
-        "y": 2.253049411881371
+        "x": 2.4215163934426225,
+        "y": 3.965061475409836
       },
       "isLocked": false,
-      "linkedName": "FR-C"
+      "linkedName": "F-R"
     },
     {
       "anchor": {
-        "x": 5.993852459016393,
-        "y": 0.5845286885245912
+        "x": 1.798155737704918,
+        "y": 4.013012295081967
       },
       "prevControl": {
-        "x": 5.819704756168272,
-        "y": 0.7841055763362915
+        "x": 2.2536885245901637,
+        "y": 3.9530737704918035
       },
       "nextControl": null,
       "isLocked": false,
-      "linkedName": "P"
+      "linkedName": "D2"
     }
   ],
   "rotationTargets": [],
@@ -33,7 +33,7 @@
   "pointTowardsZones": [],
   "eventMarkers": [],
   "globalConstraints": {
-    "maxVelocity": 100000.0,
+    "maxVelocity": 6.0,
     "maxAcceleration": 6.0,
     "maxAngularVelocity": 540.0,
     "maxAngularAcceleration": 720.0,
@@ -42,13 +42,13 @@
   },
   "goalEndState": {
     "velocity": 0,
-    "rotation": 90.0
+    "rotation": 0.0
   },
   "reversed": false,
-  "folder": "CENTER",
+  "folder": "F-R",
   "idealStartingState": {
     "velocity": 0,
-    "rotation": 59.99999999999999
+    "rotation": 0.0
   },
   "useDefaultConstraints": true
 }

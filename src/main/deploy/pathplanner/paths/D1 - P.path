@@ -3,16 +3,32 @@
   "waypoints": [
     {
       "anchor": {
-        "x": 3.812090163934426,
-        "y": 2.850204918032787
+        "x": 1.7382172131147542,
+        "y": 5.823155737704918
       },
       "prevControl": null,
       "nextControl": {
-        "x": 4.414851034657257,
-        "y": 2.253049411881371
+        "x": 2.2888813208127896,
+        "y": 4.984795333697422
       },
       "isLocked": false,
-      "linkedName": "FR-C"
+      "linkedName": "D1"
+    },
+    {
+      "anchor": {
+        "x": 3.4164959016393444,
+        "y": 2.7902663934426233
+      },
+      "prevControl": {
+        "x": 2.3907311821777024,
+        "y": 3.808707761523204
+      },
+      "nextControl": {
+        "x": 4.304586066843853,
+        "y": 1.9085166650014997
+      },
+      "isLocked": false,
+      "linkedName": null
     },
     {
       "anchor": {
@@ -20,8 +36,8 @@
         "y": 0.5845286885245912
       },
       "prevControl": {
-        "x": 5.819704756168272,
-        "y": 0.7841055763362915
+        "x": 5.601365927375258,
+        "y": 0.9787281342315134
       },
       "nextControl": null,
       "isLocked": false,
@@ -33,7 +49,7 @@
   "pointTowardsZones": [],
   "eventMarkers": [],
   "globalConstraints": {
-    "maxVelocity": 100000.0,
+    "maxVelocity": 6.0,
     "maxAcceleration": 6.0,
     "maxAngularVelocity": 540.0,
     "maxAngularAcceleration": 720.0,
@@ -45,10 +61,10 @@
     "rotation": 90.0
   },
   "reversed": false,
-  "folder": "CENTER",
+  "folder": "D1",
   "idealStartingState": {
     "velocity": 0,
-    "rotation": 59.99999999999999
+    "rotation": 0.0
   },
   "useDefaultConstraints": true
 }

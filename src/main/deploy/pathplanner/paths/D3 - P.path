@@ -3,16 +3,16 @@
   "waypoints": [
     {
       "anchor": {
-        "x": 3.812090163934426,
-        "y": 2.850204918032787
+        "x": 1.6662909836065571,
+        "y": 2.2148565573770487
       },
       "prevControl": null,
       "nextControl": {
-        "x": 4.414851034657257,
-        "y": 2.253049411881371
+        "x": 2.6147191955838696,
+        "y": 1.7777146143583178
       },
       "isLocked": false,
-      "linkedName": "FR-C"
+      "linkedName": "D3"
     },
     {
       "anchor": {
@@ -20,8 +20,8 @@
         "y": 0.5845286885245912
       },
       "prevControl": {
-        "x": 5.819704756168272,
-        "y": 0.7841055763362915
+        "x": 4.827365305587863,
+        "y": 0.909390122736464
       },
       "nextControl": null,
       "isLocked": false,
@@ -33,7 +33,7 @@
   "pointTowardsZones": [],
   "eventMarkers": [],
   "globalConstraints": {
-    "maxVelocity": 100000.0,
+    "maxVelocity": 6.0,
     "maxAcceleration": 6.0,
     "maxAngularVelocity": 540.0,
     "maxAngularAcceleration": 720.0,
@@ -45,10 +45,10 @@
     "rotation": 90.0
   },
   "reversed": false,
-  "folder": "CENTER",
+  "folder": "D3",
   "idealStartingState": {
     "velocity": 0,
-    "rotation": 59.99999999999999
+    "rotation": 0.0
   },
   "useDefaultConstraints": true
 }
