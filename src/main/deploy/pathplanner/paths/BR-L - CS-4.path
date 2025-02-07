@@ -3,25 +3,25 @@
   "waypoints": [
     {
       "anchor": {
-        "x": 4.992000000000001,
-        "y": 2.8452499999999996
+        "x": 5.0468237704918035,
+        "y": 2.8142418032786884
       },
       "prevControl": null,
       "nextControl": {
-        "x": 4.459426229508196,
-        "y": 1.7832991803278697
+        "x": 4.514249999999999,
+        "y": 1.7522909836065585
       },
       "isLocked": false,
       "linkedName": "BR-L"
     },
     {
       "anchor": {
-        "x": 0.6473360655670366,
-        "y": 1.3757172131126685
+        "x": 0.6832991803205792,
+        "y": 1.3996926229511688
       },
       "prevControl": {
-        "x": 1.9420081967213105,
-        "y": 1.6394467213114752
+        "x": 1.8580942622945258,
+        "y": 1.195901639346697
       },
       "nextControl": null,
       "isLocked": false,
@@ -33,8 +33,8 @@
   "pointTowardsZones": [],
   "eventMarkers": [],
   "globalConstraints": {
-    "maxVelocity": 5.0,
-    "maxAcceleration": 4.0,
+    "maxVelocity": 100000.0,
+    "maxAcceleration": 6.0,
     "maxAngularVelocity": 540.0,
     "maxAngularAcceleration": 720.0,
     "nominalVoltage": 12.0,
@@ -42,7 +42,7 @@
   },
   "goalEndState": {
     "velocity": 0,
-    "rotation": -125.00000000000001
+    "rotation": 55.0
   },
   "reversed": false,
   "folder": "BR-L",

@@ -8,20 +8,20 @@
       },
       "prevControl": null,
       "nextControl": {
-        "x": 2.8051229508151394,
-        "y": 4.22879098360215
+        "x": 3.272643442622134,
+        "y": 4.564446721306437
       },
       "isLocked": false,
       "linkedName": "CS-2"
     },
     {
       "anchor": {
-        "x": 4.992000000000001,
-        "y": 2.8452499999999996
+        "x": 5.0468237704918035,
+        "y": 2.8142418032786884
       },
       "prevControl": {
-        "x": 3.260655737700386,
-        "y": 0.9921106557332962
+        "x": 3.3154795081921886,
+        "y": 0.961102459011985
       },
       "nextControl": null,
       "isLocked": false,
@@ -33,8 +33,8 @@
   "pointTowardsZones": [],
   "eventMarkers": [],
   "globalConstraints": {
-    "maxVelocity": 5.0,
-    "maxAcceleration": 4.0,
+    "maxVelocity": 100000.0,
+    "maxAcceleration": 6.0,
     "maxAngularVelocity": 540.0,
     "maxAngularAcceleration": 720.0,
     "nominalVoltage": 12.0,
@@ -48,7 +48,7 @@
   "folder": "CS-2",
   "idealStartingState": {
     "velocity": 0,
-    "rotation": 125.00000000000001
+    "rotation": -55.0
   },
   "useDefaultConstraints": true
 }

@@ -1,0 +1,64 @@
+{
+  "version": "2025.0",
+  "waypoints": [
+    {
+      "anchor": {
+        "x": 5.993852459016393,
+        "y": 0.5845286885245912
+      },
+      "prevControl": null,
+      "nextControl": {
+<<<<<<< Updated upstream
+        "x": 1.0069672131147538,
+        "y": 3.3896516393442617
+=======
+        "x": 1.0069672131147556,
+        "y": 3.389651639344261
+>>>>>>> Stashed changes
+      },
+      "isLocked": false,
+      "linkedName": "P"
+    },
+    {
+      "anchor": {
+        "x": 3.9711424148708163,
+        "y": 5.246926362963725
+      },
+      "prevControl": {
+        "x": 3.032889344262295,
+        "y": 5.247745901639345
+      },
+      "nextControl": null,
+      "isLocked": false,
+      "linkedName": "FL-L"
+    }
+  ],
+  "rotationTargets": [],
+  "constraintZones": [],
+  "pointTowardsZones": [],
+  "eventMarkers": [],
+  "globalConstraints": {
+<<<<<<< Updated upstream
+    "maxVelocity": 5.0,
+    "maxAcceleration": 4.0,
+=======
+    "maxVelocity": 100.0,
+    "maxAcceleration": 6.0,
+>>>>>>> Stashed changes
+    "maxAngularVelocity": 540.0,
+    "maxAngularAcceleration": 720.0,
+    "nominalVoltage": 12.0,
+    "unlimited": false
+  },
+  "goalEndState": {
+    "velocity": 0,
+    "rotation": -59.99999999999999
+  },
+  "reversed": false,
+  "folder": "PROCESSOR",
+  "idealStartingState": {
+    "velocity": 0,
+    "rotation": 90.0
+  },
+  "useDefaultConstraints": true
+}

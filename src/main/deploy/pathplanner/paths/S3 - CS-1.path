@@ -8,20 +8,20 @@
       },
       "prevControl": null,
       "nextControl": {
-        "x": 4.5143404659931985,
-        "y": 5.595013879876783
+        "x": 4.2919701917210755,
+        "y": 5.620754340171044
       },
       "isLocked": false,
       "linkedName": "S3"
     },
     {
       "anchor": {
-        "x": 0.6353483606565576,
-        "y": 6.650307377049402
+        "x": 0.7552254098348993,
+        "y": 6.590368852461446
       },
       "prevControl": {
-        "x": 0.2813721835418158,
-        "y": 6.760625343109161
+        "x": 1.9779713114734232,
+        "y": 6.938012295084175
       },
       "nextControl": null,
       "isLocked": false,
@@ -33,8 +33,8 @@
   "pointTowardsZones": [],
   "eventMarkers": [],
   "globalConstraints": {
-    "maxVelocity": 5.0,
-    "maxAcceleration": 4.0,
+    "maxVelocity": 100000.0,
+    "maxAcceleration": 6.0,
     "maxAngularVelocity": 540.0,
     "maxAngularAcceleration": 720.0,
     "nominalVoltage": 12.0,
@@ -42,7 +42,7 @@
   },
   "goalEndState": {
     "velocity": 0,
-    "rotation": 125.00000000000001
+    "rotation": -55.0
   },
   "reversed": false,
   "folder": "S3",

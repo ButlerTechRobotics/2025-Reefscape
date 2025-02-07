@@ -1,0 +1,51 @@
+{
+  "version": "2025.0",
+  "command": {
+    "type": "sequential",
+    "data": {
+      "commands": [
+        {
+          "type": "path",
+          "data": {
+<<<<<<< Updated upstream
+            "pathName": "S2 - BL-R"
+=======
+            "pathName": "S1 - BL-R"
+>>>>>>> Stashed changes
+          }
+        },
+        {
+          "type": "path",
+          "data": {
+            "pathName": "BL-R - CS-3"
+          }
+        },
+        {
+          "type": "path",
+          "data": {
+            "pathName": "CS-3 - FL-L"
+          }
+        },
+        {
+          "type": "path",
+          "data": {
+            "pathName": "FL-L - CS-3"
+          }
+        },
+        {
+          "type": "path",
+          "data": {
+            "pathName": "CS-3 - FL-R"
+          }
+        }
+      ]
+    }
+  },
+  "resetOdom": true,
+<<<<<<< Updated upstream
+  "folder": "REEF FOCUSED",
+=======
+  "folder": "Processor",
+>>>>>>> Stashed changes
+  "choreoAuto": false
+}
