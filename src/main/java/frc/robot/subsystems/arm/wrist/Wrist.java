@@ -86,6 +86,26 @@ public class Wrist extends SubsystemBase {
     return inputs.encoderPosition;
   }
 
+  /**
+   * Sets the wrist to a specific angle.
+   *
+   * @param angle The desired angle in degrees
+   */
+  public void setAngle(Angle angle) {
+    io.setPosition(angle);
+  }
+
+  /**
+   * Creates a command to set the wrist to a specific angle.
+   *
+   * @param angle The desired angle in degrees
+   * @return Command to set the angle
+   */
+  public Command setAngleCommand(Angle angle) {
+    return Commands.runOnce(() -> setAngle(angle))
+        .withName("SetWristAngle(" + angle.in(Degrees) + ")");
+  }
+
   /** Enumeration of available wrist positions with their corresponding target angles. */
   public enum WristPosition {
     STOP(Degrees.of(0)), // Stop the arm

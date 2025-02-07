@@ -144,6 +144,18 @@ public class Arm extends SubsystemBase {
         shoulder.targetAngle(), extension.targetDistance(), wrist.targetAngle());
   }
 
+  public Shoulder getShoulder() {
+    return shoulder;
+  }
+
+  public Extension getExtension() {
+    return extension;
+  }
+
+  public Wrist getWrist() {
+    return wrist;
+  }
+
   /** Set goal of arm */
   private void setGoal(Goal goal) {
     if (desiredGoal == goal) return;

@@ -350,7 +350,7 @@ public class Drive extends SubsystemBase {
 
   public Command goToPath(PathPlannerPath path) {
     PathConstraints constraints =
-        new PathConstraints(4.0, 4.0, Units.degreesToRadians(540), Units.degreesToRadians(720));
+        new PathConstraints(5.0, 5.0, Units.degreesToRadians(540), Units.degreesToRadians(720));
     return AutoBuilder.pathfindThenFollowPath(path, constraints);
   }
 
