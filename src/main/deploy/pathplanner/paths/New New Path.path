@@ -3,29 +3,29 @@
   "waypoints": [
     {
       "anchor": {
-        "x": 1.7142418032786886,
-        "y": 2.1908811475409844
+        "x": 0.421,
+        "y": 6.925
       },
       "prevControl": null,
       "nextControl": {
-        "x": 1.931739245487089,
-        "y": 2.4498765408833933
+        "x": 1.4210000000000043,
+        "y": 6.925
       },
       "isLocked": false,
-      "linkedName": "D3"
+      "linkedName": null
     },
     {
       "anchor": {
-        "x": 3.1785,
-        "y": 4.1907499999999995
+        "x": 4.0,
+        "y": 6.0
       },
       "prevControl": {
-        "x": 2.6697280945301514,
-        "y": 3.5306998464752315
+        "x": 3.0,
+        "y": 6.0
       },
       "nextControl": null,
       "isLocked": false,
-      "linkedName": "F-L"
+      "linkedName": null
     }
   ],
   "rotationTargets": [],
@@ -45,7 +45,7 @@
     "rotation": 0.0
   },
   "reversed": false,
-  "folder": "D3",
+  "folder": "SmartDrive",
   "idealStartingState": {
     "velocity": 0,
     "rotation": 0.0

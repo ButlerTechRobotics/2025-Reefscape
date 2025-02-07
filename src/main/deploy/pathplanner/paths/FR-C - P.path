@@ -45,7 +45,7 @@
     "rotation": 90.0
   },
   "reversed": false,
-  "folder": "CENTER",
+  "folder": "PROCESSOR",
   "idealStartingState": {
     "velocity": 0,
     "rotation": 59.99999999999999
