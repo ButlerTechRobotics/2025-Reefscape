@@ -16,12 +16,12 @@
     },
     {
       "anchor": {
-        "x": 1.7142418032786886,
-        "y": 2.1908811475409844
+        "x": 1.23825,
+        "y": 2.22125
       },
       "prevControl": {
-        "x": 2.9969262295081966,
-        "y": 2.538524590163935
+        "x": 2.520934426229508,
+        "y": 2.5688934426229504
       },
       "nextControl": null,
       "isLocked": false,
@@ -42,7 +42,7 @@
   },
   "goalEndState": {
     "velocity": 0,
-    "rotation": 0.0
+    "rotation": 35.0
   },
   "reversed": false,
   "folder": "FR-R",

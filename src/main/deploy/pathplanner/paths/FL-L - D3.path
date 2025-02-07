@@ -16,12 +16,12 @@
     },
     {
       "anchor": {
-        "x": 1.7142418032786886,
-        "y": 2.1908811475409844
+        "x": 1.23825,
+        "y": 2.22125
       },
       "prevControl": {
-        "x": 2.7212090163934426,
-        "y": 2.13094262295082
+        "x": 2.245217213114754,
+        "y": 2.1613114754098355
       },
       "nextControl": null,
       "isLocked": false,
@@ -42,7 +42,7 @@
   },
   "goalEndState": {
     "velocity": 0,
-    "rotation": 0.0
+    "rotation": 35.0
   },
   "reversed": false,
   "folder": "FL-L",
