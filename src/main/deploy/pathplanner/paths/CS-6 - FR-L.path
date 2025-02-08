@@ -8,8 +8,8 @@
       },
       "prevControl": null,
       "nextControl": {
-        "x": 2.7451844262295086,
-        "y": 1.9031762295081953
+        "x": 2.663837062320251,
+        "y": 1.7867312137945477
       },
       "isLocked": false,
       "linkedName": "CS-6"
@@ -20,8 +20,8 @@
         "y": 2.8744999999999994
       },
       "prevControl": {
-        "x": 2.3892295081967223,
-        "y": 1.568159836065574
+        "x": 2.4300944685398496,
+        "y": 1.5845901129957816
       },
       "nextControl": null,
       "isLocked": false,
@@ -33,7 +33,7 @@
   "pointTowardsZones": [],
   "eventMarkers": [],
   "globalConstraints": {
-    "maxVelocity": 100000.0,
+    "maxVelocity": 6.0,
     "maxAcceleration": 6.0,
     "maxAngularVelocity": 540.0,
     "maxAngularAcceleration": 720.0,
