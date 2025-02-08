@@ -7,55 +7,61 @@
         {
           "type": "path",
           "data": {
-            "pathName": "S3 - FL-R"
+            "pathName": "S5 - BR-R"
           }
         },
         {
           "type": "path",
           "data": {
-            "pathName": "FL-R - D1"
+            "pathName": "BR-R - CS-6"
           }
         },
         {
           "type": "path",
           "data": {
-            "pathName": "D1 - F-L"
+            "pathName": "CS-6 - FR-R"
           }
         },
         {
           "type": "path",
           "data": {
-            "pathName": "F-L - D2"
+            "pathName": "FR-R - CS-6"
           }
         },
         {
           "type": "path",
           "data": {
-            "pathName": "D2 - F-R"
+            "pathName": "CS-6 - FR-L"
           }
         },
         {
           "type": "path",
           "data": {
-            "pathName": "F-R - D3"
+            "pathName": "FR-L - D3 - F-R"
           }
         },
         {
           "type": "path",
           "data": {
-            "pathName": "D3 - FR-L"
+            "pathName": "F-R - D2"
           }
         },
         {
           "type": "path",
           "data": {
-            "pathName": "FR-L - FR-C"
+            "pathName": "D2 - F-L"
+          }
+        },
+        {
+          "type": "path",
+          "data": {
+            "pathName": "F-L - D1 - FL-R"
           }
         }
       ]
     }
   },
   "resetOdom": true,
-  "folder": "DANDELION",
+  "folder": null,
   "choreoAuto": false
 }
