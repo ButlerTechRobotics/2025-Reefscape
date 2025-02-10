@@ -41,7 +41,7 @@
     "REEF AND PROCESSOR",
     "REEF FOCUSED"
   ],
-  "defaultMaxVel": 6.0,
+  "defaultMaxVel": 10000.0,
   "defaultMaxAccel": 6.0,
   "defaultMaxAngVel": 540.0,
   "defaultMaxAngAccel": 720.0,
