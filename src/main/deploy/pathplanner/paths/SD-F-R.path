@@ -3,47 +3,35 @@
   "waypoints": [
     {
       "anchor": {
-        "x": 7.117,
-        "y": 1.9
+        "x": 2.6669582292742975,
+        "y": 3.881
       },
       "prevControl": null,
       "nextControl": {
-        "x": 6.017827868852459,
-        "y": 2.4066598360655735
+        "x": 2.9169582292742975,
+        "y": 3.881
       },
       "isLocked": false,
-      "linkedName": "S5"
+      "linkedName": null
     },
     {
       "anchor": {
-        "x": 5.3105532786885234,
-        "y": 2.934118852459016
+        "x": 3.1287909836065575,
+        "y": 3.881147540983607
       },
       "prevControl": {
-        "x": 5.760906095689309,
-        "y": 2.7017710003502735
+        "x": 2.8787909836065575,
+        "y": 3.881147540983607
       },
       "nextControl": null,
       "isLocked": false,
-      "linkedName": "BR-R"
+      "linkedName": "F-R"
     }
   ],
   "rotationTargets": [],
   "constraintZones": [],
   "pointTowardsZones": [],
-  "eventMarkers": [
-    {
-      "name": "Arm-L4",
-      "waypointRelativePos": 0.5,
-      "endWaypointRelativePos": null,
-      "command": {
-        "type": "named",
-        "data": {
-          "name": "Arm-L4"
-        }
-      }
-    }
-  ],
+  "eventMarkers": [],
   "globalConstraints": {
     "maxVelocity": 6.0,
     "maxAcceleration": 6.0,
@@ -54,13 +42,13 @@
   },
   "goalEndState": {
     "velocity": 0,
-    "rotation": 119.99999999999999
+    "rotation": 0.0
   },
   "reversed": false,
-  "folder": "S5",
+  "folder": "SmartDrive",
   "idealStartingState": {
     "velocity": 0,
-    "rotation": 180.0
+    "rotation": 0.0
   },
   "useDefaultConstraints": true
 }
