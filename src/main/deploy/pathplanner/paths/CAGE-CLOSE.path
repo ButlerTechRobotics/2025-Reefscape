@@ -45,11 +45,7 @@
     "rotation": 0.0
   },
   "reversed": false,
-<<<<<<< HEAD
   "folder": "WORST CASE SCENARIO",
-=======
-  "folder": "CAGES",
->>>>>>> 65842ed2cdf938444dd262031f15dc2c2ab8234a
   "idealStartingState": {
     "velocity": 0,
     "rotation": 0.0
