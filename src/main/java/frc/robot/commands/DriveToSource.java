@@ -14,33 +14,29 @@ import edu.wpi.first.math.util.Units;
 import edu.wpi.first.wpilibj2.command.Command;
 import frc.robot.subsystems.drive.Drive;
 
-public class SmartDrive extends Command {
+public class DriveToSource extends Command {
   Drive drivetrain;
   Side side;
   Command pathCommand;
 
-  // Center faces of the scoring positions
-  private static final Pose2d[] centerFaces = {
+  // Source positions
+  private static final Pose2d[] sourcePoses = {
     new Pose2d(
-        Units.inchesToMeters(144.003 - 18.885),
-        Units.inchesToMeters(158.500),
-        Rotation2d.fromDegrees(180)),
-    new Pose2d(
-        Units.inchesToMeters(160.373), Units.inchesToMeters(186.857), Rotation2d.fromDegrees(120)),
-    new Pose2d(
-        Units.inchesToMeters(193.116), Units.inchesToMeters(186.858), Rotation2d.fromDegrees(60)),
-    new Pose2d(
-        Units.inchesToMeters(209.489 + 18.885),
-        Units.inchesToMeters(158.500),
+        Units.inchesToMeters(0), // CS1
+        Units.inchesToMeters(238),
         Rotation2d.fromDegrees(0)),
     new Pose2d(
-        Units.inchesToMeters(193.118), Units.inchesToMeters(130.145), Rotation2d.fromDegrees(-60)),
+        Units.inchesToMeters(0), // CS2
+        Units.inchesToMeters(275),
+        Rotation2d.fromDegrees(0)),
     new Pose2d(
-        Units.inchesToMeters(160.375), Units.inchesToMeters(130.144), Rotation2d.fromDegrees(-120))
+        Units.inchesToMeters(0), // CS3
+        Units.inchesToMeters(312),
+        Rotation2d.fromDegrees(0))
   };
 
   // Mapping from pose indices to letters
-  private static final String[] poseLetters = {"F", "FL", "BL", "B", "BR", "FR"};
+  private static final String[] poseLetters = {"L", "C", "R"};
 
   public enum Side {
     LEFT,
@@ -48,18 +44,17 @@ public class SmartDrive extends Command {
     RIGHT
   }
 
-  public SmartDrive(Drive drivetrain, Side side) {
+  public DriveToSource(Drive drivetrain, Side side) {
     this.drivetrain = drivetrain;
     this.side = side;
-
     addRequirements(drivetrain);
   }
 
   @Override
   public void initialize() {
-    Pose2d closestPose = drivetrain.findClosestPose(centerFaces);
-    int closestPoseIndex = getClosestPoseIndex(closestPose, centerFaces);
-    System.out.println("Closest Pose: " + closestPose + ", Index: " + closestPoseIndex);
+    Pose2d closestPose = drivetrain.findClosestPose(sourcePoses);
+    int closestPoseIndex = getClosestPoseIndex(closestPose, sourcePoses);
+    System.out.println("Closest Source: " + closestPose + ", Index: " + closestPoseIndex);
 
     pathCommand = getPathCommand(closestPoseIndex, side);
     if (pathCommand != null) {
@@ -82,15 +77,13 @@ public class SmartDrive extends Command {
   }
 
   private String getPathName(int closestPoseIndex, Side side) {
-    // Implement logic to determine the path name based on the closest pose index and side
-    // For example:
     String poseLetter = poseLetters[closestPoseIndex];
     if (side == Side.LEFT) {
-      return "SD-" + poseLetter + "-L";
+      return "SOURCE-" + poseLetter + "-L";
     } else if (side == Side.CENTER) {
-      return "SD-" + poseLetter + "-C";
+      return "SOURCE-" + poseLetter + "-C";
     } else {
-      return "SD-" + poseLetter + "-R";
+      return "SOURCE-" + poseLetter + "-R";
     }
   }
 
@@ -100,11 +93,11 @@ public class SmartDrive extends Command {
         return i;
       }
     }
-    return -1; // Should not happen if closestPose is guaranteed to be in poses
+    return -1;
   }
 
   @Override
   public boolean isFinished() {
-    return true; // Adjust this based on your command's requirements
+    return true;
   }
 }

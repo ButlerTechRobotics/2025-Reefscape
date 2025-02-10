@@ -21,11 +21,9 @@ import edu.wpi.first.units.measure.LinearVelocity;
 import edu.wpi.first.wpilibj2.command.Command;
 import edu.wpi.first.wpilibj2.command.Commands;
 import edu.wpi.first.wpilibj2.command.sysid.SysIdRoutine;
-import frc.robot.commands.AutoArm;
-import frc.robot.commands.AutoClaw;
 import frc.robot.commands.DriveCommands;
-import frc.robot.commands.DynamicArm;
-import frc.robot.commands.SmartDrive;
+import frc.robot.commands.DriveToReef;
+import frc.robot.commands.SmartArm;
 import frc.robot.generated.TunerConstants;
 import frc.robot.subsystems.arm.Arm;
 import frc.robot.subsystems.arm.extension.Extension;
@@ -188,13 +186,10 @@ public class RobotContainer {
     arm = new Arm(shoulder, extension, wrist);
 
     // Set up the named commands
-    NamedCommands.registerCommand("L1Align", new AutoArm(arm, AutoArm.ArmMode.L1));
-    NamedCommands.registerCommand("L2Align", new AutoArm(arm, AutoArm.ArmMode.L2));
-    NamedCommands.registerCommand("L3Align", new AutoArm(arm, AutoArm.ArmMode.L3));
-    NamedCommands.registerCommand("L4Align", new AutoArm(arm, AutoArm.ArmMode.L4));
+    NamedCommands.registerCommand("Arm-Stow", new SmartArm(arm, SmartArm.Goal.STOW));
     NamedCommands.registerCommand(
-        "StationIntake", new AutoArm(arm, AutoArm.ArmMode.STATION_INTAKE));
-    NamedCommands.registerCommand("Score", new AutoClaw(claw, AutoClaw.ClawMode.FLOOR_INTAKE));
+        "Arm-Station_Intake", new SmartArm(arm, SmartArm.Goal.STATION_INTAKE));
+    NamedCommands.registerCommand("Arm-L4", new SmartArm(arm, SmartArm.Goal.L4));
 
     // Set up auto routines
     autoChooser = new LoggedDashboardChooser<>("Auto Choices", AutoBuilder.buildAutoChooser());
@@ -329,9 +324,12 @@ public class RobotContainer {
     joystick
         .rightBumper()
         .and(joystick.a())
-        .whileTrue(new SmartDrive(drivetrain, SmartDrive.Side.RIGHT));
+        .whileTrue(new DriveToReef(drivetrain, DriveToReef.Side.RIGHT));
 
-    joystick.leftBumper().whileTrue(new DynamicArm(drivetrain, arm, DynamicArm.TargetPose.CS1));
+    joystick
+        .leftBumper()
+        .whileTrue(new SmartArm(arm, SmartArm.Goal.L4))
+        .onFalse(new SmartArm(arm, SmartArm.Goal.STOW));
   }
 
   public Command getAutonomousCommand() {
