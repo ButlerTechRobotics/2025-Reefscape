@@ -8,8 +8,8 @@
       },
       "prevControl": null,
       "nextControl": {
-        "x": 3.050621723049001,
-        "y": 1.9672330501444137
+        "x": 3.0600386402906774,
+        "y": 1.9662300716508274
       },
       "isLocked": false,
       "linkedName": "FR-R"
@@ -20,8 +20,8 @@
         "y": 0.6564549180327879
       },
       "prevControl": {
-        "x": 3.4143716682255194,
-        "y": 2.2510669997269277
+        "x": 3.3197426041735643,
+        "y": 2.1923537756820215
       },
       "nextControl": null,
       "isLocked": false,
@@ -33,7 +33,7 @@
   "pointTowardsZones": [],
   "eventMarkers": [],
   "globalConstraints": {
-    "maxVelocity": 6.0,
+    "maxVelocity": 10000.0,
     "maxAcceleration": 6.0,
     "maxAngularVelocity": 540.0,
     "maxAngularAcceleration": 720.0,

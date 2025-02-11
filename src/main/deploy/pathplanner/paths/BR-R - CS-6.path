@@ -8,8 +8,8 @@
       },
       "prevControl": null,
       "nextControl": {
-        "x": 4.4841807928788135,
-        "y": 2.3566062422970013
+        "x": 4.4540278839148675,
+        "y": 2.365267828125017
       },
       "isLocked": false,
       "linkedName": "BR-R"
@@ -20,8 +20,8 @@
         "y": 0.6564549180327879
       },
       "prevControl": {
-        "x": 3.040912688657893,
-        "y": 1.5683090787805387
+        "x": 3.070853079858722,
+        "y": 1.5259090647802411
       },
       "nextControl": null,
       "isLocked": false,
@@ -56,7 +56,7 @@
     }
   ],
   "globalConstraints": {
-    "maxVelocity": 6.0,
+    "maxVelocity": 10000.0,
     "maxAcceleration": 6.0,
     "maxAngularVelocity": 540.0,
     "maxAngularAcceleration": 720.0,

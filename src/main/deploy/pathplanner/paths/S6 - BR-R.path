@@ -8,8 +8,8 @@
       },
       "prevControl": null,
       "nextControl": {
-        "x": 5.294249999999999,
-        "y": 3.030499999999999
+        "x": 6.033964718963741,
+        "y": 1.8113348702902405
       },
       "isLocked": false,
       "linkedName": "S6"
@@ -20,8 +20,8 @@
         "y": 2.934118852459016
       },
       "prevControl": {
-        "x": 7.133803278688522,
-        "y": 0.7013688524590158
+        "x": 5.951049652532883,
+        "y": 2.1802634869966533
       },
       "nextControl": null,
       "isLocked": false,
@@ -33,7 +33,7 @@
   "pointTowardsZones": [],
   "eventMarkers": [],
   "globalConstraints": {
-    "maxVelocity": 6.0,
+    "maxVelocity": 10000.0,
     "maxAcceleration": 6.0,
     "maxAngularVelocity": 540.0,
     "maxAngularAcceleration": 720.0,
