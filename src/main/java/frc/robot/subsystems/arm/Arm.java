@@ -71,9 +71,13 @@ public class Arm extends SubsystemBase {
 
     switch (currentGoal) {
       case STOW -> {
-        shoulder.setShoulderPosition(Shoulder.ShoulderPosition.STOW);
-        extension.setExtensionPosition(Extension.ExtensionPosition.STOW);
         wrist.setWristPosition(Wrist.WristPosition.STOW);
+        if (wrist.isAtTarget()) {
+          extension.setExtensionPosition(Extension.ExtensionPosition.STOW);
+        }
+        if (shoulder.isAtTarget()) {
+          shoulder.setShoulderPosition(Shoulder.ShoulderPosition.STOW);
+        }
       }
       case FLOOR_INTAKE -> {
         shoulder.setShoulderPosition(Shoulder.ShoulderPosition.FLOOR_INTAKE);
