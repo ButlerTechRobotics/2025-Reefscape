@@ -3,13 +3,13 @@
   "waypoints": [
     {
       "anchor": {
-        "x": 4.992000000000001,
-        "y": 2.8452499999999996
+        "x": 5.0468237704918035,
+        "y": 2.8142418032786884
       },
       "prevControl": null,
       "nextControl": {
-        "x": 4.231659836065574,
-        "y": 1.61547131147541
+        "x": 4.286483606557376,
+        "y": 1.5844631147540988
       },
       "isLocked": false,
       "linkedName": "BR-L"
@@ -49,8 +49,8 @@
   "pointTowardsZones": [],
   "eventMarkers": [],
   "globalConstraints": {
-    "maxVelocity": 5.0,
-    "maxAcceleration": 4.0,
+    "maxVelocity": 10000.0,
+    "maxAcceleration": 6.0,
     "maxAngularVelocity": 540.0,
     "maxAngularAcceleration": 720.0,
     "nominalVoltage": 12.0,

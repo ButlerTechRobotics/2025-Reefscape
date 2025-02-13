@@ -87,6 +87,26 @@ public class Shoulder extends SubsystemBase {
     return inputs.encoderPosition;
   }
 
+  /**
+   * Sets the shoulder to a specific angle.
+   *
+   * @param angle The desired angle in degrees
+   */
+  public void setAngle(Angle angle) {
+    io.setPosition(angle);
+  }
+
+  /**
+   * Creates a command to set the shoulder to a specific angle.
+   *
+   * @param angle The desired angle in degrees
+   * @return Command to set the angle
+   */
+  public Command setAngleCommand(Angle angle) {
+    return Commands.runOnce(() -> setAngle(angle))
+        .withName("SetShoulderAngle(" + angle.in(Degrees) + ")");
+  }
+
   /** Enumeration of available shoulder positions with their corresponding target angles. */
   public enum ShoulderPosition {
     STOP(Degrees.of(0)), // Stop the arm

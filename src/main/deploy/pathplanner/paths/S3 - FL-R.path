@@ -8,8 +8,8 @@
       },
       "prevControl": null,
       "nextControl": {
-        "x": 5.562295081967213,
-        "y": 5.667315573770492
+        "x": 5.395107011199107,
+        "y": 5.534243167060071
       },
       "isLocked": false,
       "linkedName": "S3"
@@ -20,8 +20,8 @@
         "y": 5.083388157894737
       },
       "prevControl": {
-        "x": 4.459426229508197,
-        "y": 5.895081967213115
+        "x": 4.5553278688524586,
+        "y": 5.955020491803278
       },
       "nextControl": null,
       "isLocked": false,
@@ -33,8 +33,8 @@
   "pointTowardsZones": [],
   "eventMarkers": [],
   "globalConstraints": {
-    "maxVelocity": 5.0,
-    "maxAcceleration": 4.0,
+    "maxVelocity": 10000.0,
+    "maxAcceleration": 6.0,
     "maxAngularVelocity": 540.0,
     "maxAngularAcceleration": 720.0,
     "nominalVoltage": 12.0,

@@ -7,7 +7,11 @@
         {
           "type": "path",
           "data": {
+<<<<<<< Updated upstream
             "pathName": "S2 - BL-R"
+=======
+            "pathName": "S1 - BL-R"
+>>>>>>> Stashed changes
           }
         },
         {
@@ -38,6 +42,10 @@
     }
   },
   "resetOdom": true,
+<<<<<<< Updated upstream
   "folder": "REEF FOCUSED",
+=======
+  "folder": "Processor",
+>>>>>>> Stashed changes
   "choreoAuto": false
 }

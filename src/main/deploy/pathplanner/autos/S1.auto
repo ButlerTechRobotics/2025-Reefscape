@@ -38,6 +38,10 @@
     }
   },
   "resetOdom": true,
+<<<<<<< Updated upstream
   "folder": "REEF FOCUSED",
+=======
+  "folder": "Processor",
+>>>>>>> Stashed changes
   "choreoAuto": false
 }

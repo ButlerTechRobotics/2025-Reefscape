@@ -3,13 +3,13 @@
   "waypoints": [
     {
       "anchor": {
-        "x": 0.6473360655670366,
-        "y": 1.3757172131126685
+        "x": 0.6832991803205792,
+        "y": 1.3996926229511688
       },
       "prevControl": null,
       "nextControl": {
-        "x": 1.9899590163934424,
-        "y": 1.111987704918032
+        "x": 2.0259221311469853,
+        "y": 1.1359631147565323
       },
       "isLocked": false,
       "linkedName": "CS-4"
@@ -49,8 +49,8 @@
   "pointTowardsZones": [],
   "eventMarkers": [],
   "globalConstraints": {
-    "maxVelocity": 5.0,
-    "maxAcceleration": 4.0,
+    "maxVelocity": 10000.0,
+    "maxAcceleration": 6.0,
     "maxAngularVelocity": 540.0,
     "maxAngularAcceleration": 720.0,
     "nominalVoltage": 12.0,

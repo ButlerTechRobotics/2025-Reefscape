@@ -1,0 +1,86 @@
+{
+  "version": "2025.0",
+  "waypoints": [
+    {
+      "anchor": {
+        "x": 5.993852459016393,
+        "y": 0.5845286885245912
+      },
+      "prevControl": null,
+      "nextControl": {
+        "x": 4.645267764483436,
+        "y": 1.6819780820918848
+      },
+      "isLocked": false,
+      "linkedName": "P"
+    },
+    {
+      "anchor": {
+        "x": 3.1287909836053918,
+        "y": 3.137909836068004
+      },
+      "prevControl": {
+        "x": 3.6977006104064163,
+        "y": 2.1021262053171816
+      },
+      "nextControl": {
+        "x": 2.5428510212305064,
+        "y": 4.20469969695205
+      },
+      "isLocked": false,
+      "linkedName": null
+    },
+    {
+      "anchor": {
+        "x": 2.109836065572604,
+        "y": 5.8830942622975115
+      },
+      "prevControl": {
+        "x": 2.5300573366687362,
+        "y": 5.104448965854678
+      },
+      "nextControl": {
+        "x": 1.7022540983594892,
+        "y": 6.638319672133577
+      },
+      "isLocked": false,
+      "linkedName": null
+    },
+    {
+      "anchor": {
+        "x": 0.7552254098348993,
+        "y": 6.590368852461446
+      },
+      "prevControl": {
+        "x": 2.0618852459004726,
+        "y": 7.105840163936856
+      },
+      "nextControl": null,
+      "isLocked": false,
+      "linkedName": "CS-1"
+    }
+  ],
+  "rotationTargets": [],
+  "constraintZones": [],
+  "pointTowardsZones": [],
+  "eventMarkers": [],
+  "globalConstraints": {
+    "maxVelocity": 10000.0,
+    "maxAcceleration": 6.0,
+    "maxAngularVelocity": 540.0,
+    "maxAngularAcceleration": 720.0,
+    "nominalVoltage": 12.0,
+    "unlimited": false
+  },
+  "goalEndState": {
+    "velocity": 0,
+    "rotation": -55.0
+  },
+  "reversed": false,
+  "folder": "PROCESSOR",
+  "idealStartingState": {
+    "velocity": 0,
+    "rotation": 90.0
+  },
+  "useDefaultConstraints": true
+}

@@ -3,13 +3,13 @@
   "waypoints": [
     {
       "anchor": {
-        "x": 3.6952499999999997,
-        "y": 2.9817499999999995
+        "x": 3.6270000000000007,
+        "y": 2.8744999999999994
       },
       "prevControl": null,
       "nextControl": {
-        "x": 2.7811475409836066,
-        "y": 2.502561475409837
+        "x": 2.7128975409836076,
+        "y": 2.395311475409837
       },
       "isLocked": false,
       "linkedName": "FR-L"
@@ -33,8 +33,8 @@
   "pointTowardsZones": [],
   "eventMarkers": [],
   "globalConstraints": {
-    "maxVelocity": 5.0,
-    "maxAcceleration": 4.0,
+    "maxVelocity": 10000.0,
+    "maxAcceleration": 6.0,
     "maxAngularVelocity": 540.0,
     "maxAngularAcceleration": 720.0,
     "nominalVoltage": 12.0,

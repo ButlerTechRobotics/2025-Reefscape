@@ -1,0 +1,64 @@
+{
+  "version": "2025.0",
+  "waypoints": [
+    {
+      "anchor": {
+        "x": 5.3105532786885234,
+        "y": 2.934118852459016
+      },
+      "prevControl": null,
+      "nextControl": {
+<<<<<<< HEAD
+        "x": 3.7634999999999996,
+        "y": 1.5777499999999998
+=======
+        "x": 3.788114754098361,
+        "y": 1.4955942622950824
+>>>>>>> 65842ed2cdf938444dd262031f15dc2c2ab8234a
+      },
+      "isLocked": false,
+      "linkedName": "BR-R"
+    },
+    {
+      "anchor": {
+        "x": 1.6672500000000001,
+        "y": 2.465
+      },
+      "prevControl": {
+        "x": 3.0614999999999997,
+        "y": 3.50825
+      },
+      "nextControl": null,
+      "isLocked": false,
+      "linkedName": "D3"
+    }
+  ],
+  "rotationTargets": [
+    {
+      "waypointRelativePos": 0.701417322834639,
+      "rotationDegrees": 0.0
+    }
+  ],
+  "constraintZones": [],
+  "pointTowardsZones": [],
+  "eventMarkers": [],
+  "globalConstraints": {
+    "maxVelocity": 6.0,
+    "maxAcceleration": 6.0,
+    "maxAngularVelocity": 540.0,
+    "maxAngularAcceleration": 720.0,
+    "nominalVoltage": 12.0,
+    "unlimited": false
+  },
+  "goalEndState": {
+    "velocity": 0,
+    "rotation": 35.0
+  },
+  "reversed": false,
+  "folder": "BR-R",
+  "idealStartingState": {
+    "velocity": 0,
+    "rotation": 119.99999999999999
+  },
+  "useDefaultConstraints": true
+}

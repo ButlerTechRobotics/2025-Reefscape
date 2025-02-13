@@ -74,6 +74,15 @@ public class Drive extends SubsystemBase {
 
   private Alert gyroDisconnectedAlert;
 
+  private final double Y_LOCK_P_GAIN = 4.0;
+  private final double MAX_Y_VELOCITY = 2.0; // meters/second
+  private boolean yAxisControlEnabled = false;
+
+  private double targetY = 0;
+  private double currentY = 0;
+  private SwerveRequest.ApplyFieldSpeeds fieldCentric =
+      new SwerveRequest.ApplyFieldSpeeds().withSpeeds(new ChassisSpeeds(targetY - currentY, 0, 0));
+
   /* Blue alliance sees forward as 0 degrees (toward red alliance wall) */
   private static final Rotation2d kBlueAlliancePerspectiveRotation = Rotation2d.kZero;
   /* Red alliance sees forward as 180 degrees (toward blue alliance wall) */
@@ -247,6 +256,43 @@ public class Drive extends SubsystemBase {
         );
   }
 
+  // Add these control methods
+  public void setTargetY(double target) {
+    targetY = target;
+    yAxisControlEnabled = true;
+  }
+
+  public void disableYControl() {
+    yAxisControlEnabled = false;
+  }
+
+  // Add command to move to Y position
+  public Command moveToY(double targetYPosition) {
+    return run(() -> {
+          if (!yAxisControlEnabled) {
+            setTargetY(targetYPosition);
+          }
+
+          currentY = getPose().getY();
+          double error = targetY - currentY;
+          double velocity = error * Y_LOCK_P_GAIN;
+
+          // Limit velocity
+          velocity = Math.min(Math.abs(velocity), MAX_Y_VELOCITY) * Math.signum(velocity);
+
+          // Apply field-centric movement
+          setControl(fieldCentric.withSpeeds(new ChassisSpeeds(0, velocity, 0)));
+
+          Logger.recordOutput("Drive/YControl/Target", targetY);
+          Logger.recordOutput("Drive/YControl/Current", currentY);
+          Logger.recordOutput("Drive/YControl/Error", error);
+          Logger.recordOutput("Drive/YControl/Velocity", velocity);
+        })
+        .until(() -> Math.abs(getPose().getY() - targetY) < 0.05)
+        .finallyDo(() -> disableYControl())
+        .withName("Move to Y=" + targetYPosition);
+  }
+
   /**
    * Returns a command that applies the specified control request to this swerve drivetrain.
    *
@@ -350,7 +396,7 @@ public class Drive extends SubsystemBase {
 
   public Command goToPath(PathPlannerPath path) {
     PathConstraints constraints =
-        new PathConstraints(4.0, 4.0, Units.degreesToRadians(540), Units.degreesToRadians(720));
+        new PathConstraints(5.0, 5.0, Units.degreesToRadians(540), Units.degreesToRadians(720));
     return AutoBuilder.pathfindThenFollowPath(path, constraints);
   }
 

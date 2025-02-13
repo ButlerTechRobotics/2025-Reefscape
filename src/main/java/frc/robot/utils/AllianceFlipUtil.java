@@ -36,6 +36,14 @@ public class AllianceFlipUtil {
         : pose;
   }
 
+  public static Pose2d[] apply(Pose2d[] poses) {
+    Pose2d[] flippedPoses = new Pose2d[poses.length];
+    for (int i = 0; i < poses.length; i++) {
+      flippedPoses[i] = apply(poses[i]);
+    }
+    return flippedPoses;
+  }
+
   public static boolean shouldFlip() {
     return DriverStation.getAlliance().isPresent()
         && DriverStation.getAlliance().get() == DriverStation.Alliance.Red;
