@@ -22,7 +22,7 @@ import edu.wpi.first.wpilibj2.command.Command;
 import edu.wpi.first.wpilibj2.command.Commands;
 import edu.wpi.first.wpilibj2.command.sysid.SysIdRoutine;
 import frc.robot.commands.DriveCommands;
-import frc.robot.commands.DriveToReef;
+import frc.robot.commands.ReefDrive;
 import frc.robot.commands.SmartArm;
 import frc.robot.generated.TunerConstants;
 import frc.robot.subsystems.arm.Arm;
@@ -324,7 +324,7 @@ public class RobotContainer {
     joystick
         .rightBumper()
         .and(joystick.a())
-        .whileTrue(new DriveToReef(drivetrain, DriveToReef.Side.RIGHT));
+        .whileTrue(new ReefDrive(drivetrain, ReefDrive.Side.RIGHT));
 
     joystick
         .leftBumper()
