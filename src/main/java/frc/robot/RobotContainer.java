@@ -330,8 +330,6 @@ public class RobotContainer {
         .leftBumper()
         .whileTrue(new SmartArm(arm, SmartArm.Goal.CORAL_L4BACK))
         .onFalse(new SmartArm(arm, SmartArm.Goal.STOW));
-
-    joystick.leftStick().onTrue(drivetrain.moveToY(2.0));
   }
 
   public Command getAutonomousCommand() {

@@ -255,44 +255,7 @@ public class Drive extends SubsystemBase {
         this // Subsystem for requirements
         );
   }
-
-  // Add these control methods
-  public void setTargetY(double target) {
-    targetY = target;
-    yAxisControlEnabled = true;
-  }
-
-  public void disableYControl() {
-    yAxisControlEnabled = false;
-  }
-
-  // Add command to move to Y position
-  public Command moveToY(double targetYPosition) {
-    return run(() -> {
-          if (!yAxisControlEnabled) {
-            setTargetY(targetYPosition);
-          }
-
-          currentY = getPose().getY();
-          double error = targetY - currentY;
-          double velocity = error * Y_LOCK_P_GAIN;
-
-          // Limit velocity
-          velocity = Math.min(Math.abs(velocity), MAX_Y_VELOCITY) * Math.signum(velocity);
-
-          // Apply field-centric movement
-          setControl(fieldCentric.withSpeeds(new ChassisSpeeds(0, velocity, 0)));
-
-          Logger.recordOutput("Drive/YControl/Target", targetY);
-          Logger.recordOutput("Drive/YControl/Current", currentY);
-          Logger.recordOutput("Drive/YControl/Error", error);
-          Logger.recordOutput("Drive/YControl/Velocity", velocity);
-        })
-        .until(() -> Math.abs(getPose().getY() - targetY) < 0.05)
-        .finallyDo(() -> disableYControl())
-        .withName("Move to Y=" + targetYPosition);
-  }
-
+  
   /**
    * Returns a command that applies the specified control request to this swerve drivetrain.
    *
