@@ -20,6 +20,7 @@ import frc.robot.utils.FieldConstants;
 import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.List;
+import org.littletonrobotics.junction.AutoLogOutput;
 import org.littletonrobotics.junction.Logger;
 
 /**
@@ -36,6 +37,19 @@ public class Vision extends SubsystemBase {
   private final VisionIO[] io;
   private final VisionIOInputsAutoLogged[] inputs;
   private final Alert[] disconnectedAlerts;
+
+  @AutoLogOutput(key = "Vision/PoseEstimateCount")
+  public int getPoseEstimationCount() {
+    int count = 0;
+    for (VisionIOInputs input : inputs) {
+      // Count MT1 estimates
+      count += input.poseEstimateMT1 != null ? 1 : 0;
+      // Count MT2 estimates
+      count += input.poseEstimateMT2 != null ? 1 : 0;
+    }
+    Logger.recordOutput("Vision/PoseEstimateCount/Details", count);
+    return count;
+  }
 
   /**
    * Creates a new Vision subsystem.
