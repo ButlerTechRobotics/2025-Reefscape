@@ -186,10 +186,10 @@ public class RobotContainer {
     arm = new Arm(shoulder, extension, wrist);
 
     // Set up the named commands
-    NamedCommands.registerCommand("Arm-Stow", new SmartArm(arm, SmartArm.Goal.STOW));
+    NamedCommands.registerCommand("Stow", new SmartArm(arm, SmartArm.Goal.STOW));
     NamedCommands.registerCommand(
-        "Arm-Station_Intake", new SmartArm(arm, SmartArm.Goal.STATION_INTAKE));
-    NamedCommands.registerCommand("Arm-L4", new SmartArm(arm, SmartArm.Goal.L4));
+        "Coral_Station_Intake", new SmartArm(arm, SmartArm.Goal.CORAL_STATION_INTAKE));
+    NamedCommands.registerCommand("Coral_L4Back", new SmartArm(arm, SmartArm.Goal.CORAL_L4BACK));
 
     // Set up auto routines
     autoChooser = new LoggedDashboardChooser<>("Auto Choices", AutoBuilder.buildAutoChooser());
@@ -328,7 +328,7 @@ public class RobotContainer {
 
     joystick
         .leftBumper()
-        .whileTrue(new SmartArm(arm, SmartArm.Goal.L4))
+        .whileTrue(new SmartArm(arm, SmartArm.Goal.CORAL_L4BACK))
         .onFalse(new SmartArm(arm, SmartArm.Goal.STOW));
 
     joystick.leftStick().onTrue(drivetrain.moveToY(2.0));

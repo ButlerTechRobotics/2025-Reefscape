@@ -16,16 +16,19 @@ public class SmartArm extends Command {
 
   public enum Goal {
     STOW,
-    FLOOR_INTAKE,
-    STATION_INTAKE,
-    L1,
-    L1Back,
-    L2,
-    L2Back,
-    L3,
-    L3Back,
-    L4,
-    L4Back,
+    CORAL_FLOOR_INTAKE,
+    CORAL_STATION_INTAKE,
+    CORAL_L1,
+    CORAL_L1BACK,
+    CORAL_L2,
+    CORAL_L2BACK,
+    CORAL_L3,
+    CORAL_L3BACK,
+    CORAL_L4BACK,
+    ALGAE_FLOOR_INTAKE,
+    ALGAE_SCORE,
+    ALGAE_L1,
+    ALGAE_L2,
     CLIMB
   }
 
@@ -41,35 +44,44 @@ public class SmartArm extends Command {
       case STOW:
         arm.setGoalCommand(Arm.Goal.STOW).schedule();
         break;
-      case FLOOR_INTAKE:
-        arm.setGoalCommand(Arm.Goal.FLOOR_INTAKE).schedule();
+      case CORAL_FLOOR_INTAKE:
+        arm.setGoalCommand(Arm.Goal.CORAL_FLOOR_INTAKE).schedule();
         break;
-      case STATION_INTAKE:
-        arm.setGoalCommand(Arm.Goal.STATION_INTAKE).schedule();
+      case CORAL_STATION_INTAKE:
+        arm.setGoalCommand(Arm.Goal.CORAL_STATION_INTAKE).schedule();
         break;
-      case L1:
-        arm.setGoalCommand(Arm.Goal.L1).schedule();
+      case CORAL_L1:
+        arm.setGoalCommand(Arm.Goal.CORAL_L1).schedule();
         break;
-      case L1Back:
-        arm.setGoalCommand(Arm.Goal.L1Back).schedule();
+      case CORAL_L1BACK:
+        arm.setGoalCommand(Arm.Goal.CORAL_L1BACK).schedule();
         break;
-      case L2:
-        arm.setGoalCommand(Arm.Goal.L2).schedule();
+      case CORAL_L2:
+        arm.setGoalCommand(Arm.Goal.CORAL_L2).schedule();
         break;
-      case L2Back:
-        arm.setGoalCommand(Arm.Goal.L2Back).schedule();
+      case CORAL_L2BACK:
+        arm.setGoalCommand(Arm.Goal.CORAL_L2BACK).schedule();
         break;
-      case L3:
-        arm.setGoalCommand(Arm.Goal.L3).schedule();
+      case CORAL_L3:
+        arm.setGoalCommand(Arm.Goal.CORAL_L3).schedule();
         break;
-      case L3Back:
-        arm.setGoalCommand(Arm.Goal.L3Back).schedule();
+      case CORAL_L3BACK:
+        arm.setGoalCommand(Arm.Goal.CORAL_L3BACK).schedule();
         break;
-      case L4:
-        arm.setGoalCommand(Arm.Goal.L4).schedule();
+      case CORAL_L4BACK:
+        arm.setGoalCommand(Arm.Goal.CORAL_L4BACK).schedule();
         break;
-      case L4Back:
-        arm.setGoalCommand(Arm.Goal.L4Back).schedule();
+      case ALGAE_FLOOR_INTAKE:
+        arm.setGoalCommand(Arm.Goal.ALGAE_FLOOR_INTAKE).schedule();
+        break;
+      case ALGAE_SCORE:
+        arm.setGoalCommand(Arm.Goal.ALGAE_SCORE).schedule();
+        break;
+      case ALGAE_L1:
+        arm.setGoalCommand(Arm.Goal.ALGAE_L1).schedule();
+        break;
+      case ALGAE_L2:
+        arm.setGoalCommand(Arm.Goal.ALGAE_L2).schedule();
         break;
       case CLIMB:
         arm.setGoalCommand(Arm.Goal.CLIMB).schedule();

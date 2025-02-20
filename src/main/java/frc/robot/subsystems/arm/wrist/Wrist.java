@@ -16,6 +16,7 @@ import edu.wpi.first.wpilibj2.command.Command;
 import edu.wpi.first.wpilibj2.command.Commands;
 import edu.wpi.first.wpilibj2.command.SelectCommand;
 import edu.wpi.first.wpilibj2.command.SubsystemBase;
+
 import java.util.Map;
 import org.littletonrobotics.junction.AutoLogOutput;
 import org.littletonrobotics.junction.Logger;
@@ -108,19 +109,28 @@ public class Wrist extends SubsystemBase {
 
   /** Enumeration of available wrist positions with their corresponding target angles. */
   public enum WristPosition {
-    STOP(Degrees.of(0)), // Stop the arm
-    STOW(Degrees.of(90)), // Stow the arm
-    FLOOR_INTAKE(Degrees.of(0)), // Position for intaking from floor
-    STATION_INTAKE(Degrees.of(0)), // Position for intaking from station
-    L1(Degrees.of(-90)), // Position for scoring in L1
-    L1Back(Degrees.of(130)), // Position for scoring in L1Back
-    L2(Degrees.of(-90)), // Position for scoring in L2
-    L2Back(Degrees.of(110)), // Position for scoring in L2Back
-    L3(Degrees.of(-90)), // Position for scoring in L3
-    L3Back(Degrees.of(110)), // Position for scoring in L3Back
-    L4(Degrees.of(-90)), // Position for scoring in L4
-    L4Back(Degrees.of(130)), // Position for scoring in L4Back
-    CLIMB(Degrees.of(-90)); // Position for climbing
+    // Common positions
+    STOP(Degrees.of(0)),
+    STOW(Degrees.of(90)),
+    CLIMB(Degrees.of(-90)),
+
+    // Coral positions
+    CORAL_FLOOR_INTAKE(Degrees.of(0)),
+    CORAL_STATION_INTAKE(Degrees.of(0)),
+    CORAL_L1(Degrees.of(-90)),
+    CORAL_L1BACK(Degrees.of(130)),
+    CORAL_L2(Degrees.of(-90)),
+    CORAL_L2BACK(Degrees.of(110)),
+    CORAL_L3(Degrees.of(-90)),
+    CORAL_L3BACK(Degrees.of(110)),
+    CORAL_L4(Degrees.of(-90)),
+    CORAL_L4BACK(Degrees.of(130)),
+
+    // Algae positions (all 0)
+    ALGAE_FLOOR_INTAKE(Degrees.of(0)),
+    ALGAE_SCORE(Degrees.of(0)),
+    ALGAE_L1(Degrees.of(0)),
+    ALGAE_L2(Degrees.of(0));
 
     private final Angle targetAngle;
     private final Angle angleTolerance;
@@ -161,25 +171,30 @@ public class Wrist extends SubsystemBase {
 
   // Command that runs the appropriate routine based on the current position
   private final Command currentCommand =
-      new SelectCommand<>(
-          Map.ofEntries(
-              Map.entry(WristPosition.STOP, Commands.runOnce(this::stop).withName("Stop Wrist")),
-              Map.entry(WristPosition.STOW, createPositionCommand(WristPosition.STOW)),
-              Map.entry(
-                  WristPosition.FLOOR_INTAKE, createPositionCommand(WristPosition.FLOOR_INTAKE)),
-              Map.entry(
-                  WristPosition.STATION_INTAKE,
-                  createPositionCommand(WristPosition.STATION_INTAKE)),
-              Map.entry(WristPosition.L1, createPositionCommand(WristPosition.L1)),
-              Map.entry(WristPosition.L1Back, createPositionCommand(WristPosition.L1Back)),
-              Map.entry(WristPosition.L2, createPositionCommand(WristPosition.L2)),
-              Map.entry(WristPosition.L2Back, createPositionCommand(WristPosition.L2Back)),
-              Map.entry(WristPosition.L3, createPositionCommand(WristPosition.L3)),
-              Map.entry(WristPosition.L3Back, createPositionCommand(WristPosition.L3Back)),
-              Map.entry(WristPosition.L4, createPositionCommand(WristPosition.L4)),
-              Map.entry(WristPosition.L4Back, createPositionCommand(WristPosition.L4Back)),
-              Map.entry(WristPosition.CLIMB, createPositionCommand(WristPosition.CLIMB))),
-          this::getMode);
+  new SelectCommand<>(
+      Map.ofEntries(
+          // Common positions
+          Map.entry(WristPosition.STOP, Commands.runOnce(this::stop).withName("Stop Wrist")),
+          Map.entry(WristPosition.STOW, createPositionCommand(WristPosition.STOW)),
+          Map.entry(WristPosition.CLIMB, createPositionCommand(WristPosition.CLIMB)),
+
+          // Coral positions
+          Map.entry(WristPosition.CORAL_FLOOR_INTAKE, createPositionCommand(WristPosition.CORAL_FLOOR_INTAKE)),
+          Map.entry(WristPosition.CORAL_STATION_INTAKE, createPositionCommand(WristPosition.CORAL_STATION_INTAKE)),
+          Map.entry(WristPosition.CORAL_L1, createPositionCommand(WristPosition.CORAL_L1)),
+          Map.entry(WristPosition.CORAL_L1BACK, createPositionCommand(WristPosition.CORAL_L1BACK)),
+          Map.entry(WristPosition.CORAL_L2, createPositionCommand(WristPosition.CORAL_L2)),
+          Map.entry(WristPosition.CORAL_L2BACK, createPositionCommand(WristPosition.CORAL_L2BACK)),
+          Map.entry(WristPosition.CORAL_L3, createPositionCommand(WristPosition.CORAL_L3)),
+          Map.entry(WristPosition.CORAL_L3BACK, createPositionCommand(WristPosition.CORAL_L3BACK)),
+          Map.entry(WristPosition.CORAL_L4BACK, createPositionCommand(WristPosition.CORAL_L4BACK)),
+
+          // Algae positions
+          Map.entry(WristPosition.ALGAE_FLOOR_INTAKE, createPositionCommand(WristPosition.ALGAE_FLOOR_INTAKE)),
+          Map.entry(WristPosition.ALGAE_SCORE, createPositionCommand(WristPosition.ALGAE_SCORE)),
+          Map.entry(WristPosition.ALGAE_L1, createPositionCommand(WristPosition.ALGAE_L1)),
+          Map.entry(WristPosition.ALGAE_L2, createPositionCommand(WristPosition.ALGAE_L2))),
+      this::getMode);
 
   /**
    * Creates a command for a specific wrist position that moves the wrist and checks the target
@@ -242,66 +257,94 @@ public class Wrist extends SubsystemBase {
   }
 
   /**
-   * @return Command to move the wrist to floor intake position
+   * @return Command to move the wrist to coral floor intake position
    */
-  public final Command intake() {
-    return setPositionCommand(WristPosition.FLOOR_INTAKE);
+  public final Command coralFloorIntake() {
+    return setPositionCommand(WristPosition.CORAL_FLOOR_INTAKE);
   }
 
   /**
-   * @return Command to move the wrist to L1 scoring position
+   * @return Command to move the wrist to coral station intake position
    */
-  public final Command L1() {
-    return setPositionCommand(WristPosition.L1);
+  public final Command coralStationIntake() {
+    return setPositionCommand(WristPosition.CORAL_STATION_INTAKE);
   }
 
   /**
-   * @return Command to move the wrist to L1Back scoring position
+   * @return Command to move the wrist to coral L1 scoring position
    */
-  public final Command L1Back() {
-    return setPositionCommand(WristPosition.L1Back);
+  public final Command coralL1() {
+    return setPositionCommand(WristPosition.CORAL_L1);
   }
 
   /**
-   * @return Command to move the wrist to L2 scoring position
+   * @return Command to move the wrist to coral L1 back scoring position
    */
-  public final Command L2() {
-    return setPositionCommand(WristPosition.L2);
+  public final Command coralL1Back() {
+    return setPositionCommand(WristPosition.CORAL_L1BACK);
   }
 
   /**
-   * @return Command to move the wrist to L2Back scoring position
+   * @return Command to move the wrist to coral L2 scoring position
    */
-  public final Command L2Back() {
-    return setPositionCommand(WristPosition.L2Back);
+  public final Command coralL2() {
+    return setPositionCommand(WristPosition.CORAL_L2);
   }
 
   /**
-   * @return Command to move the wrist to L3 scoring position
+   * @return Command to move the wrist to coral L2 back scoring position
    */
-  public final Command L3() {
-    return setPositionCommand(WristPosition.L3);
+  public final Command coralL2Back() {
+    return setPositionCommand(WristPosition.CORAL_L2BACK);
   }
 
   /**
-   * @return Command to move the wrist to L3Back scoring position
+   * @return Command to move the wrist to coral L3 scoring position
    */
-  public final Command L3Back() {
-    return setPositionCommand(WristPosition.L3Back);
+  public final Command coralL3() {
+    return setPositionCommand(WristPosition.CORAL_L3);
   }
 
   /**
-   * @return Command to move the wrist to L4 scoring position
+   * @return Command to move the wrist to coral L3 back scoring position
    */
-  public final Command L4() {
-    return setPositionCommand(WristPosition.L4);
+  public final Command coralL3Back() {
+    return setPositionCommand(WristPosition.CORAL_L3BACK);
   }
 
   /**
-   * @return Command to move the wrist to L4Back scoring position
+   * @return Command to move the wrist to coral L4 back scoring position
    */
-  public final Command L4Back() {
-    return setPositionCommand(WristPosition.L4Back);
+  public final Command coralL4Back() {
+    return setPositionCommand(WristPosition.CORAL_L4BACK);
+  }
+
+  /**
+   * @return Command to move the wrist to algae floor intake position
+   */
+  public final Command algaeFloorIntake() {
+    return setPositionCommand(WristPosition.ALGAE_FLOOR_INTAKE);
+  }
+
+  /**
+   * @return Command to move the wrist to algae score position
+   */
+  public final Command algaeScore() {
+    return setPositionCommand(WristPosition.ALGAE_SCORE);
+  }
+
+  /**
+   * @return Command to move the wrist to algae L1 position
+   */
+  public final Command algaeL1() {
+    return setPositionCommand(WristPosition.ALGAE_L1);
+  }
+
+  /**
+   * @return Command to move the wrist to algae L2 position
+   */
+  public final Command algaeL2() {
+    return setPositionCommand(WristPosition.ALGAE_L2);
   }
 
   /**
