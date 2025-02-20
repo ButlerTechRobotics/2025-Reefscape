@@ -16,7 +16,6 @@ import edu.wpi.first.wpilibj2.command.Command;
 import edu.wpi.first.wpilibj2.command.Commands;
 import edu.wpi.first.wpilibj2.command.SelectCommand;
 import edu.wpi.first.wpilibj2.command.SubsystemBase;
-
 import java.util.Map;
 import org.littletonrobotics.junction.AutoLogOutput;
 import org.littletonrobotics.junction.Logger;
@@ -171,30 +170,52 @@ public class Shoulder extends SubsystemBase {
 
   // Command that runs the appropriate routine based on the current position
   private final Command currentCommand =
-  new SelectCommand<>(
-      Map.ofEntries(
-          // Common positions
-          Map.entry(ShoulderPosition.STOP, Commands.runOnce(this::stop).withName("Stop Shoulder")),
-          Map.entry(ShoulderPosition.STOW, createPositionCommand(ShoulderPosition.STOW)),
-          Map.entry(ShoulderPosition.CLIMB, createPositionCommand(ShoulderPosition.CLIMB)),
+      new SelectCommand<>(
+          Map.ofEntries(
+              // Common positions
+              Map.entry(
+                  ShoulderPosition.STOP, Commands.runOnce(this::stop).withName("Stop Shoulder")),
+              Map.entry(ShoulderPosition.STOW, createPositionCommand(ShoulderPosition.STOW)),
+              Map.entry(ShoulderPosition.CLIMB, createPositionCommand(ShoulderPosition.CLIMB)),
 
-          // Coral positions
-          Map.entry(ShoulderPosition.CORAL_FLOOR_INTAKE, createPositionCommand(ShoulderPosition.CORAL_FLOOR_INTAKE)),
-          Map.entry(ShoulderPosition.CORAL_STATION_INTAKE, createPositionCommand(ShoulderPosition.CORAL_STATION_INTAKE)),
-          Map.entry(ShoulderPosition.CORAL_L1, createPositionCommand(ShoulderPosition.CORAL_L1)),
-          Map.entry(ShoulderPosition.CORAL_L1BACK, createPositionCommand(ShoulderPosition.CORAL_L1BACK)),
-          Map.entry(ShoulderPosition.CORAL_L2, createPositionCommand(ShoulderPosition.CORAL_L2)),
-          Map.entry(ShoulderPosition.CORAL_L2BACK, createPositionCommand(ShoulderPosition.CORAL_L2BACK)),
-          Map.entry(ShoulderPosition.CORAL_L3, createPositionCommand(ShoulderPosition.CORAL_L3)),
-          Map.entry(ShoulderPosition.CORAL_L3BACK, createPositionCommand(ShoulderPosition.CORAL_L3BACK)),
-          Map.entry(ShoulderPosition.CORAL_L4BACK, createPositionCommand(ShoulderPosition.CORAL_L4BACK)),
+              // Coral positions
+              Map.entry(
+                  ShoulderPosition.CORAL_FLOOR_INTAKE,
+                  createPositionCommand(ShoulderPosition.CORAL_FLOOR_INTAKE)),
+              Map.entry(
+                  ShoulderPosition.CORAL_STATION_INTAKE,
+                  createPositionCommand(ShoulderPosition.CORAL_STATION_INTAKE)),
+              Map.entry(
+                  ShoulderPosition.CORAL_L1, createPositionCommand(ShoulderPosition.CORAL_L1)),
+              Map.entry(
+                  ShoulderPosition.CORAL_L1BACK,
+                  createPositionCommand(ShoulderPosition.CORAL_L1BACK)),
+              Map.entry(
+                  ShoulderPosition.CORAL_L2, createPositionCommand(ShoulderPosition.CORAL_L2)),
+              Map.entry(
+                  ShoulderPosition.CORAL_L2BACK,
+                  createPositionCommand(ShoulderPosition.CORAL_L2BACK)),
+              Map.entry(
+                  ShoulderPosition.CORAL_L3, createPositionCommand(ShoulderPosition.CORAL_L3)),
+              Map.entry(
+                  ShoulderPosition.CORAL_L3BACK,
+                  createPositionCommand(ShoulderPosition.CORAL_L3BACK)),
+              Map.entry(
+                  ShoulderPosition.CORAL_L4BACK,
+                  createPositionCommand(ShoulderPosition.CORAL_L4BACK)),
 
-          // Algae positions
-          Map.entry(ShoulderPosition.ALGAE_FLOOR_INTAKE, createPositionCommand(ShoulderPosition.ALGAE_FLOOR_INTAKE)),
-          Map.entry(ShoulderPosition.ALGAE_SCORE, createPositionCommand(ShoulderPosition.ALGAE_SCORE)),
-          Map.entry(ShoulderPosition.ALGAE_L1, createPositionCommand(ShoulderPosition.ALGAE_L1)),
-          Map.entry(ShoulderPosition.ALGAE_L2, createPositionCommand(ShoulderPosition.ALGAE_L2))),
-      this::getMode);
+              // Algae positions
+              Map.entry(
+                  ShoulderPosition.ALGAE_FLOOR_INTAKE,
+                  createPositionCommand(ShoulderPosition.ALGAE_FLOOR_INTAKE)),
+              Map.entry(
+                  ShoulderPosition.ALGAE_SCORE,
+                  createPositionCommand(ShoulderPosition.ALGAE_SCORE)),
+              Map.entry(
+                  ShoulderPosition.ALGAE_L1, createPositionCommand(ShoulderPosition.ALGAE_L1)),
+              Map.entry(
+                  ShoulderPosition.ALGAE_L2, createPositionCommand(ShoulderPosition.ALGAE_L2))),
+          this::getMode);
 
   /**
    * Creates a command for a specific shoulder position that moves the shoulder and checks the

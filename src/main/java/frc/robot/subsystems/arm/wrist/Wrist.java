@@ -16,7 +16,6 @@ import edu.wpi.first.wpilibj2.command.Command;
 import edu.wpi.first.wpilibj2.command.Commands;
 import edu.wpi.first.wpilibj2.command.SelectCommand;
 import edu.wpi.first.wpilibj2.command.SubsystemBase;
-
 import java.util.Map;
 import org.littletonrobotics.junction.AutoLogOutput;
 import org.littletonrobotics.junction.Logger;
@@ -171,30 +170,41 @@ public class Wrist extends SubsystemBase {
 
   // Command that runs the appropriate routine based on the current position
   private final Command currentCommand =
-  new SelectCommand<>(
-      Map.ofEntries(
-          // Common positions
-          Map.entry(WristPosition.STOP, Commands.runOnce(this::stop).withName("Stop Wrist")),
-          Map.entry(WristPosition.STOW, createPositionCommand(WristPosition.STOW)),
-          Map.entry(WristPosition.CLIMB, createPositionCommand(WristPosition.CLIMB)),
+      new SelectCommand<>(
+          Map.ofEntries(
+              // Common positions
+              Map.entry(WristPosition.STOP, Commands.runOnce(this::stop).withName("Stop Wrist")),
+              Map.entry(WristPosition.STOW, createPositionCommand(WristPosition.STOW)),
+              Map.entry(WristPosition.CLIMB, createPositionCommand(WristPosition.CLIMB)),
 
-          // Coral positions
-          Map.entry(WristPosition.CORAL_FLOOR_INTAKE, createPositionCommand(WristPosition.CORAL_FLOOR_INTAKE)),
-          Map.entry(WristPosition.CORAL_STATION_INTAKE, createPositionCommand(WristPosition.CORAL_STATION_INTAKE)),
-          Map.entry(WristPosition.CORAL_L1, createPositionCommand(WristPosition.CORAL_L1)),
-          Map.entry(WristPosition.CORAL_L1BACK, createPositionCommand(WristPosition.CORAL_L1BACK)),
-          Map.entry(WristPosition.CORAL_L2, createPositionCommand(WristPosition.CORAL_L2)),
-          Map.entry(WristPosition.CORAL_L2BACK, createPositionCommand(WristPosition.CORAL_L2BACK)),
-          Map.entry(WristPosition.CORAL_L3, createPositionCommand(WristPosition.CORAL_L3)),
-          Map.entry(WristPosition.CORAL_L3BACK, createPositionCommand(WristPosition.CORAL_L3BACK)),
-          Map.entry(WristPosition.CORAL_L4BACK, createPositionCommand(WristPosition.CORAL_L4BACK)),
+              // Coral positions
+              Map.entry(
+                  WristPosition.CORAL_FLOOR_INTAKE,
+                  createPositionCommand(WristPosition.CORAL_FLOOR_INTAKE)),
+              Map.entry(
+                  WristPosition.CORAL_STATION_INTAKE,
+                  createPositionCommand(WristPosition.CORAL_STATION_INTAKE)),
+              Map.entry(WristPosition.CORAL_L1, createPositionCommand(WristPosition.CORAL_L1)),
+              Map.entry(
+                  WristPosition.CORAL_L1BACK, createPositionCommand(WristPosition.CORAL_L1BACK)),
+              Map.entry(WristPosition.CORAL_L2, createPositionCommand(WristPosition.CORAL_L2)),
+              Map.entry(
+                  WristPosition.CORAL_L2BACK, createPositionCommand(WristPosition.CORAL_L2BACK)),
+              Map.entry(WristPosition.CORAL_L3, createPositionCommand(WristPosition.CORAL_L3)),
+              Map.entry(
+                  WristPosition.CORAL_L3BACK, createPositionCommand(WristPosition.CORAL_L3BACK)),
+              Map.entry(
+                  WristPosition.CORAL_L4BACK, createPositionCommand(WristPosition.CORAL_L4BACK)),
 
-          // Algae positions
-          Map.entry(WristPosition.ALGAE_FLOOR_INTAKE, createPositionCommand(WristPosition.ALGAE_FLOOR_INTAKE)),
-          Map.entry(WristPosition.ALGAE_SCORE, createPositionCommand(WristPosition.ALGAE_SCORE)),
-          Map.entry(WristPosition.ALGAE_L1, createPositionCommand(WristPosition.ALGAE_L1)),
-          Map.entry(WristPosition.ALGAE_L2, createPositionCommand(WristPosition.ALGAE_L2))),
-      this::getMode);
+              // Algae positions
+              Map.entry(
+                  WristPosition.ALGAE_FLOOR_INTAKE,
+                  createPositionCommand(WristPosition.ALGAE_FLOOR_INTAKE)),
+              Map.entry(
+                  WristPosition.ALGAE_SCORE, createPositionCommand(WristPosition.ALGAE_SCORE)),
+              Map.entry(WristPosition.ALGAE_L1, createPositionCommand(WristPosition.ALGAE_L1)),
+              Map.entry(WristPosition.ALGAE_L2, createPositionCommand(WristPosition.ALGAE_L2))),
+          this::getMode);
 
   /**
    * Creates a command for a specific wrist position that moves the wrist and checks the target

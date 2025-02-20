@@ -170,30 +170,52 @@ public class Extension extends SubsystemBase {
 
   // Command that runs the appropriate routine based on the current distance
   private final Command currentCommand =
-  new SelectCommand<>(
-      Map.ofEntries(
-          // Common positions
-          Map.entry(ExtensionPosition.STOP, Commands.runOnce(this::stop).withName("Stop Extension")),
-          Map.entry(ExtensionPosition.STOW, createPositionCommand(ExtensionPosition.STOW)),
-          Map.entry(ExtensionPosition.CLIMB, createPositionCommand(ExtensionPosition.CLIMB)),
+      new SelectCommand<>(
+          Map.ofEntries(
+              // Common positions
+              Map.entry(
+                  ExtensionPosition.STOP, Commands.runOnce(this::stop).withName("Stop Extension")),
+              Map.entry(ExtensionPosition.STOW, createPositionCommand(ExtensionPosition.STOW)),
+              Map.entry(ExtensionPosition.CLIMB, createPositionCommand(ExtensionPosition.CLIMB)),
 
-          // Coral positions
-          Map.entry(ExtensionPosition.CORAL_FLOOR_INTAKE, createPositionCommand(ExtensionPosition.CORAL_FLOOR_INTAKE)),
-          Map.entry(ExtensionPosition.CORAL_STATION_INTAKE, createPositionCommand(ExtensionPosition.CORAL_STATION_INTAKE)),
-          Map.entry(ExtensionPosition.CORAL_L1, createPositionCommand(ExtensionPosition.CORAL_L1)),
-          Map.entry(ExtensionPosition.CORAL_L1BACK, createPositionCommand(ExtensionPosition.CORAL_L1BACK)),
-          Map.entry(ExtensionPosition.CORAL_L2, createPositionCommand(ExtensionPosition.CORAL_L2)),
-          Map.entry(ExtensionPosition.CORAL_L2BACK, createPositionCommand(ExtensionPosition.CORAL_L2BACK)),
-          Map.entry(ExtensionPosition.CORAL_L3, createPositionCommand(ExtensionPosition.CORAL_L3)),
-          Map.entry(ExtensionPosition.CORAL_L3BACK, createPositionCommand(ExtensionPosition.CORAL_L3BACK)),
-          Map.entry(ExtensionPosition.CORAL_L4BACK, createPositionCommand(ExtensionPosition.CORAL_L4BACK)),
+              // Coral positions
+              Map.entry(
+                  ExtensionPosition.CORAL_FLOOR_INTAKE,
+                  createPositionCommand(ExtensionPosition.CORAL_FLOOR_INTAKE)),
+              Map.entry(
+                  ExtensionPosition.CORAL_STATION_INTAKE,
+                  createPositionCommand(ExtensionPosition.CORAL_STATION_INTAKE)),
+              Map.entry(
+                  ExtensionPosition.CORAL_L1, createPositionCommand(ExtensionPosition.CORAL_L1)),
+              Map.entry(
+                  ExtensionPosition.CORAL_L1BACK,
+                  createPositionCommand(ExtensionPosition.CORAL_L1BACK)),
+              Map.entry(
+                  ExtensionPosition.CORAL_L2, createPositionCommand(ExtensionPosition.CORAL_L2)),
+              Map.entry(
+                  ExtensionPosition.CORAL_L2BACK,
+                  createPositionCommand(ExtensionPosition.CORAL_L2BACK)),
+              Map.entry(
+                  ExtensionPosition.CORAL_L3, createPositionCommand(ExtensionPosition.CORAL_L3)),
+              Map.entry(
+                  ExtensionPosition.CORAL_L3BACK,
+                  createPositionCommand(ExtensionPosition.CORAL_L3BACK)),
+              Map.entry(
+                  ExtensionPosition.CORAL_L4BACK,
+                  createPositionCommand(ExtensionPosition.CORAL_L4BACK)),
 
-          // Algae positions
-          Map.entry(ExtensionPosition.ALGAE_FLOOR_INTAKE, createPositionCommand(ExtensionPosition.ALGAE_FLOOR_INTAKE)),
-          Map.entry(ExtensionPosition.ALGAE_SCORE, createPositionCommand(ExtensionPosition.ALGAE_SCORE)),
-          Map.entry(ExtensionPosition.ALGAE_L1, createPositionCommand(ExtensionPosition.ALGAE_L1)),
-          Map.entry(ExtensionPosition.ALGAE_L2, createPositionCommand(ExtensionPosition.ALGAE_L2))),
-      this::getMode);
+              // Algae positions
+              Map.entry(
+                  ExtensionPosition.ALGAE_FLOOR_INTAKE,
+                  createPositionCommand(ExtensionPosition.ALGAE_FLOOR_INTAKE)),
+              Map.entry(
+                  ExtensionPosition.ALGAE_SCORE,
+                  createPositionCommand(ExtensionPosition.ALGAE_SCORE)),
+              Map.entry(
+                  ExtensionPosition.ALGAE_L1, createPositionCommand(ExtensionPosition.ALGAE_L1)),
+              Map.entry(
+                  ExtensionPosition.ALGAE_L2, createPositionCommand(ExtensionPosition.ALGAE_L2))),
+          this::getMode);
 
   /**
    * Creates a command for a specific arm distance that moves the arm and checks the target
@@ -239,113 +261,113 @@ public class Extension extends SubsystemBase {
         .withName("SetExtensionPosition(" + distance.toString() + ")");
   }
 
-    /** Factory methods for common distance commands */
-  
+  /** Factory methods for common distance commands */
+
   /**
    * @return Command to stop the extension
    */
   public final Command stopCommand() {
     return setPositionCommand(ExtensionPosition.STOP);
   }
-  
+
   /**
    * @return Command to move the extension to stow position
    */
   public final Command stow() {
     return setPositionCommand(ExtensionPosition.STOW);
   }
-  
+
   /**
    * @return Command to move the extension to coral floor intake position
    */
   public final Command coralFloorIntake() {
     return setPositionCommand(ExtensionPosition.CORAL_FLOOR_INTAKE);
   }
-  
+
   /**
    * @return Command to move the extension to coral station intake position
    */
   public final Command coralStationIntake() {
     return setPositionCommand(ExtensionPosition.CORAL_STATION_INTAKE);
   }
-  
+
   /**
    * @return Command to move the extension to CORAL_L1 position
    */
   public final Command coralL1() {
     return setPositionCommand(ExtensionPosition.CORAL_L1);
   }
-  
+
   /**
    * @return Command to move the extension to CORAL_L1BACK position
    */
   public final Command coralL1Back() {
     return setPositionCommand(ExtensionPosition.CORAL_L1BACK);
   }
-  
+
   /**
    * @return Command to move the extension to CORAL_L2 position
    */
   public final Command coralL2() {
     return setPositionCommand(ExtensionPosition.CORAL_L2);
   }
-  
+
   /**
    * @return Command to move the extension to CORAL_L2BACK position
    */
   public final Command coralL2Back() {
     return setPositionCommand(ExtensionPosition.CORAL_L2BACK);
   }
-  
+
   /**
    * @return Command to move the extension to CORAL_L3 position
    */
   public final Command coralL3() {
     return setPositionCommand(ExtensionPosition.CORAL_L3);
   }
-  
+
   /**
    * @return Command to move the extension to CORAL_L3BACK position
    */
   public final Command coralL3Back() {
     return setPositionCommand(ExtensionPosition.CORAL_L3BACK);
   }
-  
+
   /**
    * @return Command to move the extension to CORAL_L4BACK position
    */
   public final Command coralL4Back() {
     return setPositionCommand(ExtensionPosition.CORAL_L4BACK);
   }
-  
+
   /**
    * @return Command to move the extension to ALGAE_FLOOR_INTAKE position
    */
   public final Command algaeFloorIntake() {
     return setPositionCommand(ExtensionPosition.ALGAE_FLOOR_INTAKE);
   }
-  
+
   /**
    * @return Command to move the extension to ALGAE_SCORE position
    */
   public final Command algaeScore() {
     return setPositionCommand(ExtensionPosition.ALGAE_SCORE);
   }
-  
+
   /**
    * @return Command to move the extension to ALGAE_L1 position
    */
   public final Command algaeL1() {
     return setPositionCommand(ExtensionPosition.ALGAE_L1);
   }
-  
+
   /**
    * @return Command to move the extension to ALGAE_L2 position
    */
   public final Command algaeL2() {
     return setPositionCommand(ExtensionPosition.ALGAE_L2);
   }
-  
+
   /**
    * @return Command to move the extension to climb position
    */

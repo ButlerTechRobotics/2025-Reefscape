@@ -54,15 +54,13 @@ import frc.robot.subsystems.vision.VisionIOPhotonVisionSIM;
 import frc.robot.utils.ButtonBox;
 import frc.robot.utils.TunableController;
 import frc.robot.utils.TunableController.TunableControllerType;
-
-
 import org.littletonrobotics.junction.networktables.LoggedDashboardChooser;
 
 public class RobotContainer {
   private LinearVelocity MaxSpeed = TunerConstants.kSpeedAt12Volts;
   private final TunableController joystick =
       new TunableController(0).withControllerType(TunableControllerType.CUBIC);
-private final ButtonBox buttonBox = new ButtonBox(1);
+  private final ButtonBox buttonBox = new ButtonBox(1);
 
   private final LoggedDashboardChooser<Command> autoChooser;
 
@@ -330,9 +328,7 @@ private final ButtonBox buttonBox = new ButtonBox(1);
         .and(joystick.a())
         .whileTrue(new ReefDrive(drivetrain, ReefDrive.Side.RIGHT));
 
-    buttonBox
-        .backL4Button()
-        .onTrue(new SmartArm(arm, SmartArm.Goal.CORAL_L4BACK));
+    buttonBox.backL4Button().onTrue(new SmartArm(arm, SmartArm.Goal.CORAL_L4BACK));
   }
 
   public Command getAutonomousCommand() {
