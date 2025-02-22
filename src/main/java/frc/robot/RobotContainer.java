@@ -7,13 +7,18 @@
 
 package frc.robot;
 
+import static edu.wpi.first.units.Units.Inches;
+
 import com.ctre.phoenix6.swerve.SwerveModule.DriveRequestType;
 import com.ctre.phoenix6.swerve.SwerveRequest;
 import com.pathplanner.lib.auto.AutoBuilder;
 import com.pathplanner.lib.auto.NamedCommands;
 import edu.wpi.first.math.geometry.Pose2d;
+import edu.wpi.first.math.geometry.Rotation2d;
 import edu.wpi.first.math.geometry.Rotation3d;
+import edu.wpi.first.math.geometry.Transform2d;
 import edu.wpi.first.math.geometry.Transform3d;
+import edu.wpi.first.math.geometry.Translation2d;
 import edu.wpi.first.math.geometry.Translation3d;
 import edu.wpi.first.math.trajectory.TrapezoidProfile;
 import edu.wpi.first.math.util.Units;
@@ -46,12 +51,12 @@ import frc.robot.subsystems.drive.Drive;
 import frc.robot.subsystems.drive.DriveIO;
 import frc.robot.subsystems.drive.DriveIOCTRE;
 import frc.robot.subsystems.drive.requests.ProfiledFieldCentricFacingAngle;
-import frc.robot.subsystems.drive.requests.SwerveSetpointGen;
 import frc.robot.subsystems.vision.Vision;
 import frc.robot.subsystems.vision.VisionIO;
 import frc.robot.subsystems.vision.VisionIOPhotonVision;
 import frc.robot.subsystems.vision.VisionIOPhotonVisionSIM;
 import frc.robot.utils.ButtonBox;
+import frc.robot.utils.FieldConstants;
 import frc.robot.utils.TunableController;
 import frc.robot.utils.TunableController.TunableControllerType;
 import org.littletonrobotics.junction.networktables.LoggedDashboardChooser;
@@ -67,13 +72,6 @@ public class RobotContainer {
   public final Drive drivetrain;
   public final Claw claw;
   public final Arm arm;
-
-  // CTRE Default Drive Request
-  private final SwerveRequest.FieldCentric drive =
-      new SwerveRequest.FieldCentric()
-          .withDeadband(MaxSpeed.times(0.1))
-          .withRotationalDeadband(Constants.MaxAngularRate.times(0.1)) // Add a 10% deadband
-          .withDriveRequestType(DriveRequestType.OpenLoopVoltage);
 
   /* Setting up bindings for necessary control of the swerve drive platform */
   private final SwerveRequest.SwerveDriveBrake brake = new SwerveRequest.SwerveDriveBrake();
@@ -216,24 +214,22 @@ public class RobotContainer {
   private void configureBindings() {
     // Note that X is defined as forward according to WPILib convention,
     // and Y is defined as to the left according to WPILib convention.
+
+    // Custom Swerve Request that use PathPlanner Setpoint Generator. Tuning NEEDED. Instructions
+    // can be found here
+    // https://hemlock5712.github.io/Swerve-Setup/talonfx-swerve-tuning.html
     drivetrain.setDefaultCommand(
         // Drivetrain will execute this command periodically
         drivetrain.applyRequest(
             () ->
-                drive
+                drivetrain
+                    .setpointGen
                     .withVelocityX(
                         MaxSpeed.times(
-                            -joystick
-                                .customLeft()
-                                .getY())) // Drive forward with negative Y (forward)
-                    .withVelocityY(
-                        MaxSpeed.times(
-                            -joystick.customLeft().getX())) // Drive left with negative X (left)
-                    .withRotationalRate(
-                        Constants.MaxAngularRate.times(
-                            -joystick
-                                .customRight()
-                                .getX())))); // Drive counterclockwise with negative X (left)
+                            -joystick.getLeftY())) // Drive forward with negative Y (forward)
+                    .withVelocityY(MaxSpeed.times(-joystick.getLeftX()))
+                    .withRotationalRate(Constants.MaxAngularRate.times(-joystick.getRightX()))
+                    .withOperatorForwardDirection(drivetrain.getOperatorForwardDirection())));
 
     // joystick.a().onTrue(Commands.runOnce(() -> drivetrain.resetPose(Pose2d.kZero)));
     // joystick
@@ -243,30 +239,6 @@ public class RobotContainer {
     //             () ->
     //                 point.withModuleDirection(
     //                     new Rotation2d(-joystick.getLeftY(), -joystick.getLeftX()))));
-
-    // Custom Swerve Request that use PathPlanner Setpoint Generator. Tuning NEEDED. Instructions
-    // can be found here
-    // https://hemlock5712.github.io/Swerve-Setup/talonfx-swerve-tuning.html
-    SwerveSetpointGen setpointGen =
-        new SwerveSetpointGen(
-                drivetrain.getChassisSpeeds(),
-                drivetrain.getModuleStates(),
-                drivetrain::getRotation)
-            .withDeadband(MaxSpeed.times(0.1))
-            .withRotationalDeadband(Constants.MaxAngularRate.times(0.1))
-            .withDriveRequestType(DriveRequestType.OpenLoopVoltage);
-    joystick
-        .x()
-        .whileTrue(
-            drivetrain.applyRequest(
-                () ->
-                    setpointGen
-                        .withVelocityX(
-                            MaxSpeed.times(
-                                -joystick.getLeftY())) // Drive forward with negative Y (forward)
-                        .withVelocityY(MaxSpeed.times(-joystick.getLeftX()))
-                        .withRotationalRate(Constants.MaxAngularRate.times(-joystick.getRightX()))
-                        .withOperatorForwardDirection(drivetrain.getOperatorForwardDirection())));
 
     // Custom Swerve Request that use ProfiledFieldCentricFacingAngle. Allows you to face specific
     // direction while driving
@@ -329,6 +301,21 @@ public class RobotContainer {
         .whileTrue(new ReefDrive(drivetrain, ReefDrive.Side.RIGHT));
 
     buttonBox.backL4Button().onTrue(new SmartArm(arm, SmartArm.Goal.CORAL_L4BACK));
+
+    joystick
+        .povLeft()
+        .whileTrue(
+            Commands.run(
+                () ->
+                    DriveCommands.driveToPointMA(
+                        FieldConstants.CoralStation.leftCenterFace.transformBy(
+                            new Transform2d(
+                                new Translation2d(Constants.robotScoringOffset, Inches.of(1.8)),
+                                Rotation2d.kZero)),
+                        drivetrain,
+                        Constants.robotScoringOffset,
+                        true),
+                drivetrain));
   }
 
   public Command getAutonomousCommand() {

@@ -9,6 +9,7 @@ package frc.robot;
 
 import static edu.wpi.first.units.Units.Kilogram;
 import static edu.wpi.first.units.Units.KilogramSquareMeters;
+import static edu.wpi.first.units.Units.Meters;
 import static edu.wpi.first.units.Units.MetersPerSecond;
 import static edu.wpi.first.units.Units.RotationsPerSecond;
 
@@ -20,6 +21,7 @@ import edu.wpi.first.math.geometry.Translation2d;
 import edu.wpi.first.math.system.plant.DCMotor;
 import edu.wpi.first.math.util.Units;
 import edu.wpi.first.units.measure.AngularVelocity;
+import edu.wpi.first.units.measure.Distance;
 import edu.wpi.first.units.measure.Mass;
 import edu.wpi.first.units.measure.MomentOfInertia;
 import edu.wpi.first.wpilibj.RobotBase;
@@ -33,6 +35,9 @@ import frc.robot.generated.TunerConstants;
 public final class Constants {
 
   public static final Mode simMode = Mode.SIM;
+
+  public static final Distance maxDistanceReefLineup = Meters.of(4.0); // Example value
+  public static final Distance robotScoringOffset = Meters.of(0.1);
 
   public static final AngularVelocity MaxAngularRate = RotationsPerSecond.of(0.75);
   public static final AngularVelocity MaxModuleRate = RotationsPerSecond.of(20.0);
