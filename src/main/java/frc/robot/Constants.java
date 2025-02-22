@@ -7,6 +7,7 @@
 
 package frc.robot;
 
+import static edu.wpi.first.units.Units.Inches;
 import static edu.wpi.first.units.Units.Kilogram;
 import static edu.wpi.first.units.Units.KilogramSquareMeters;
 import static edu.wpi.first.units.Units.Meters;
@@ -34,10 +35,12 @@ import frc.robot.generated.TunerConstants;
  */
 public final class Constants {
 
+  public static final double loopPeriodSecs = 0.02;
   public static final Mode simMode = Mode.SIM;
+  public static final boolean tuningMode = true;
 
-  public static final Distance maxDistanceReefLineup = Meters.of(4.0); // Example value
-  public static final Distance robotScoringOffset = Meters.of(0.1);
+  public static final Distance maxDistanceReefLineup = Inches.of(48);
+  public static final Distance robotScoringOffset = Inches.of(34.5).div(2);
 
   public static final AngularVelocity MaxAngularRate = RotationsPerSecond.of(0.75);
   public static final AngularVelocity MaxModuleRate = RotationsPerSecond.of(20.0);

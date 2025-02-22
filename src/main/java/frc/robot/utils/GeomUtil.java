@@ -65,6 +65,12 @@ public class GeomUtil {
         pose.getTranslation().unaryMinus().rotateBy(rotationInverse), rotationInverse);
   }
 
+  public static Pose2d flipRotation(Pose2d pose) {
+
+    return new Pose2d(pose.getTranslation(), pose.getRotation().rotateBy(Rotation2d.fromDegrees(180)));
+
+  }
+
   /**
    * Converts a Transform2d to a Pose2d to be used as a position or as the start of a kinematic
    * chain

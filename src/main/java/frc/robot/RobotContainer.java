@@ -14,6 +14,7 @@ import com.ctre.phoenix6.swerve.SwerveRequest;
 import com.pathplanner.lib.auto.AutoBuilder;
 import com.pathplanner.lib.auto.NamedCommands;
 import edu.wpi.first.math.geometry.Pose2d;
+import edu.wpi.first.math.geometry.Pose3d;
 import edu.wpi.first.math.geometry.Rotation2d;
 import edu.wpi.first.math.geometry.Rotation3d;
 import edu.wpi.first.math.geometry.Transform2d;
@@ -57,6 +58,7 @@ import frc.robot.subsystems.vision.VisionIOPhotonVision;
 import frc.robot.subsystems.vision.VisionIOPhotonVisionSIM;
 import frc.robot.utils.ButtonBox;
 import frc.robot.utils.FieldConstants;
+import frc.robot.utils.FieldConstants.ReefHeight;
 import frc.robot.utils.TunableController;
 import frc.robot.utils.TunableController.TunableControllerType;
 import org.littletonrobotics.junction.networktables.LoggedDashboardChooser;
@@ -302,19 +304,21 @@ public class RobotContainer {
 
     buttonBox.backL4Button().onTrue(new SmartArm(arm, SmartArm.Goal.CORAL_L4BACK));
 
+    Pose3d reefBranch = FieldConstants.Reef.branchPositions.get(4).get(ReefHeight.L1);
     joystick
         .povLeft()
         .whileTrue(
             Commands.run(
                 () ->
                     DriveCommands.driveToPointMA(
-                        FieldConstants.CoralStation.leftCenterFace.transformBy(
-                            new Transform2d(
-                                new Translation2d(Constants.robotScoringOffset, Inches.of(1.8)),
-                                Rotation2d.kZero)),
-                        drivetrain,
-                        Constants.robotScoringOffset,
-                        true),
+                        reefBranch
+                            .toPose2d()
+                            .transformBy(
+                                new Transform2d(
+                                    Inches.of(2.25).plus(Constants.robotScoringOffset),
+                                    Inches.of(1.8),
+                                    Rotation2d.k180deg)),
+                        drivetrain),
                 drivetrain));
   }
 

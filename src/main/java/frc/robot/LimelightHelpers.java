@@ -7,7 +7,7 @@
 
 package frc.robot;
 
-import static edu.wpi.first.units.Units.DegreesPerSecond;
+import static edu.wpi.first.units.Units.RadiansPerSecond;
 
 import com.fasterxml.jackson.annotation.JsonFormat;
 import com.fasterxml.jackson.annotation.JsonFormat.Shape;
@@ -27,6 +27,7 @@ import edu.wpi.first.networktables.NetworkTable;
 import edu.wpi.first.networktables.NetworkTableEntry;
 import edu.wpi.first.networktables.NetworkTableInstance;
 import edu.wpi.first.networktables.TimestampedDoubleArray;
+import edu.wpi.first.units.measure.AngularVelocity;
 import frc.robot.subsystems.drive.Drive.VisionParameters;
 import java.io.IOException;
 import java.net.HttpURLConnection;
@@ -492,12 +493,12 @@ public class LimelightHelpers {
       double avgTagDist,
       double avgTagArea,
       double ambiguity,
-      double yawVelocityRadPerSec,
+      AngularVelocity yawVelocity,
       Pose2d robotPose,
       boolean isMegaTag2) {
 
     public PoseEstimate() {
-      this(new Pose3d(), 0, 0, 0, 0, 0, 0, 0, 0, Pose2d.kZero, false);
+      this(new Pose3d(), 0, 0, 0, 0, 0, 0, 0, RadiansPerSecond.of(0), Pose2d.kZero, false);
     }
 
     public PoseEstimate setVisionParams(VisionParameters visionParams) {
@@ -510,7 +511,7 @@ public class LimelightHelpers {
           avgTagDist,
           avgTagArea,
           ambiguity,
-          visionParams.gyroRate().in(DegreesPerSecond),
+          visionParams.gyroRate(),
           visionParams.robotPose(),
           isMegaTag2);
     }
@@ -745,7 +746,7 @@ public class LimelightHelpers {
             tagDist,
             tagArea,
             ambiguity,
-            0.0,
+            RadiansPerSecond.of(0),
             Pose2d.kZero,
             isMegaTag2),
         rawFiducials);
@@ -1298,6 +1299,9 @@ public class LimelightHelpers {
   public static IMUData getIMUData(String limelightName) {
     double[] imuData = getLimelightNTDoubleArray(limelightName, "imu");
     if (imuData == null || imuData.length < 10) {
+      System.err.printf(
+          "Invalid IMU data from %s: %s%n",
+          limelightName, imuData == null ? "null" : "insufficient length " + imuData.length);
       return new IMUData(); // Returns object with all zeros
     }
     return new IMUData(imuData);
@@ -1381,17 +1385,41 @@ public class LimelightHelpers {
     setLimelightNTDoubleArray(limelightName, "crop", entries);
   }
 
+  public enum IMUMode {
+    EXTERNAL(0), // Use external IMU yaw only
+    EXTERNAL_FUSED(1), // Use external IMU yaw and configure internal IMU
+    INTERNAL(2); // Use internal IMU only
+
+    private final int value;
+
+    IMUMode(int value) {
+      this.value = value;
+    }
+
+    public int getValue() {
+      return value;
+    }
+  }
+
   /**
-   * Configures the IMU mode for MegaTag2 Localization
+   * Configures the IMU mode for MegaTag2 Localization <br>
+   * <br>
+   * EXTERNAL - Use external IMU yaw submitted via SetRobotOrientation() for MT2 localization. The
+   * internal IMU is ignored entirely. <br>
+   * <br>
+   * EXTERNAL_FUSED - Use external IMU yaw submitted via SetRobotOrientation(), and configure the
+   * LL4 internal IMU’s fused yaw to match the submitted yaw value. <br>
+   * <br>
+   * INTERNAL - Use internal IMU for MT2 localization. External imu data is ignored entirely
    *
    * @param limelightName Name/identifier of the Limelight
    * @param mode IMU mode.
    */
-  public static void SetIMUMode(String limelightName, int mode) {
-    if (mode < 0) {
-      throw new IllegalArgumentException("IMU mode must be non-negative");
+  public static void SetIMUMode(String limelightName, IMUMode mode) {
+    if (mode == null) {
+      throw new IllegalArgumentException("IMU mode cannot be null");
     }
-    setLimelightNTDouble(limelightName, "imumode_set", mode);
+    setLimelightNTDouble(limelightName, "imumode_set", mode.getValue());
   }
 
   /** Sets 3D offset point for easy 3D targeting. */
