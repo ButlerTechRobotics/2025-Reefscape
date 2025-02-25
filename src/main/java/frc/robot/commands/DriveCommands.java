@@ -153,7 +153,7 @@ public class DriveCommands extends Command {
     double frontDifference = Math.abs(currentRotation.minus(targetRotation).getRadians());
 
     // Calculate angular difference if using back of robot (flipped 180 degrees)
-    Rotation2d flippedRotation = currentRotation.rotateBy(Rotation2d.fromDegrees(180));
+    Rotation2d flippedRotation = currentRotation.plus(Rotation2d.fromDegrees(180));
     double backDifference = Math.abs(flippedRotation.minus(targetRotation).getRadians());
 
     // Return true if back is closer
