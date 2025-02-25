@@ -7,17 +7,12 @@
 
 package frc.robot;
 
-import static edu.wpi.first.units.Units.Inches;
-
 import com.ctre.phoenix6.swerve.SwerveModule.DriveRequestType;
 import com.ctre.phoenix6.swerve.SwerveRequest;
 import com.pathplanner.lib.auto.AutoBuilder;
 import com.pathplanner.lib.auto.NamedCommands;
 import edu.wpi.first.math.geometry.Pose2d;
-import edu.wpi.first.math.geometry.Pose3d;
-import edu.wpi.first.math.geometry.Rotation2d;
 import edu.wpi.first.math.geometry.Rotation3d;
-import edu.wpi.first.math.geometry.Transform2d;
 import edu.wpi.first.math.geometry.Transform3d;
 import edu.wpi.first.math.geometry.Translation3d;
 import edu.wpi.first.math.trajectory.TrapezoidProfile;
@@ -26,8 +21,10 @@ import edu.wpi.first.units.measure.LinearVelocity;
 import edu.wpi.first.wpilibj2.command.Command;
 import edu.wpi.first.wpilibj2.command.Commands;
 import edu.wpi.first.wpilibj2.command.sysid.SysIdRoutine;
+import frc.robot.commands.AutoScore;
 import frc.robot.commands.DriveCommands;
 import frc.robot.commands.ReefDrive;
+import frc.robot.commands.ReefDrive.Side;
 import frc.robot.commands.SmartArm;
 import frc.robot.generated.TunerConstants;
 import frc.robot.subsystems.arm.Arm;
@@ -56,8 +53,6 @@ import frc.robot.subsystems.vision.VisionIO;
 import frc.robot.subsystems.vision.VisionIOPhotonVision;
 import frc.robot.subsystems.vision.VisionIOPhotonVisionSIM;
 import frc.robot.utils.ButtonBox;
-import frc.robot.utils.FieldConstants;
-import frc.robot.utils.FieldConstants.ReefHeight;
 import frc.robot.utils.TunableController;
 import frc.robot.utils.TunableController.TunableControllerType;
 import org.littletonrobotics.junction.networktables.LoggedDashboardChooser;
@@ -303,22 +298,7 @@ public class RobotContainer {
 
     buttonBox.backL4Button().onTrue(new SmartArm(arm, SmartArm.Goal.CORAL_L4BACK));
 
-    Pose3d reefBranch = FieldConstants.Reef.branchPositions.get(4).get(ReefHeight.L1);
-    joystick
-        .povLeft()
-        .whileTrue(
-            Commands.run(
-                () ->
-                    DriveCommands.driveToPointMA(
-                        reefBranch
-                            .toPose2d()
-                            .transformBy(
-                                new Transform2d(
-                                    Inches.of(2.25).plus(Constants.robotScoringOffset),
-                                    Inches.of(1.8),
-                                    Rotation2d.k180deg)),
-                        drivetrain),
-                drivetrain));
+    joystick.povLeft().whileTrue(AutoScore.scoreAtL4(drivetrain, arm, Side.LEFT));
   }
 
   public Command getAutonomousCommand() {
