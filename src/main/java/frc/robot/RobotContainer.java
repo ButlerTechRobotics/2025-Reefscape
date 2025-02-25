@@ -19,7 +19,6 @@ import edu.wpi.first.math.geometry.Rotation2d;
 import edu.wpi.first.math.geometry.Rotation3d;
 import edu.wpi.first.math.geometry.Transform2d;
 import edu.wpi.first.math.geometry.Transform3d;
-import edu.wpi.first.math.geometry.Translation2d;
 import edu.wpi.first.math.geometry.Translation3d;
 import edu.wpi.first.math.trajectory.TrapezoidProfile;
 import edu.wpi.first.math.util.Units;
@@ -230,10 +229,10 @@ public class RobotContainer {
                         MaxSpeed.times(
                             -joystick.getLeftY())) // Drive forward with negative Y (forward)
                     .withVelocityY(MaxSpeed.times(-joystick.getLeftX()))
-                    .withRotationalRate(Constants.MaxAngularRate.times(-joystick.getRightX()))
+                    .withRotationalRate(Constants.MaxAngularRate.times(joystick.getRightX()))
                     .withOperatorForwardDirection(drivetrain.getOperatorForwardDirection())));
 
-    // joystick.a().onTrue(Commands.runOnce(() -> drivetrain.resetPose(Pose2d.kZero)));
+    joystick.start().onTrue(Commands.runOnce(() -> drivetrain.resetPose(Pose2d.kZero)));
     // joystick
     //     .b()
     //     .whileTrue(

@@ -7,7 +7,6 @@
 
 package frc.robot.commands;
 
-import static edu.wpi.first.units.Units.Inches;
 import static edu.wpi.first.units.Units.Meters;
 import static edu.wpi.first.units.Units.Radians;
 import static edu.wpi.first.units.Units.Rotations;
@@ -128,18 +127,37 @@ public class DriveCommands extends Command {
                     })));
   }
 
-    public static void driveToPointMA(Pose2d target, Drive drive) {
-    driveToPointMA(target, drive, Constants.robotScoringOffset, false);
+  public static void driveToPointMA(Pose2d target, Drive drive) {
+    driveToPointMA(target, drive, Constants.robotScoringOffset);
   }
 
-  public static void driveToPointMA(Pose2d target, Drive drive, boolean isBackOfRobot) {
-    driveToPointMA(target, drive, Constants.robotScoringOffset, isBackOfRobot);
-  }
+  public static void driveToPointMA(Pose2d target, Drive drive, Distance offset) {
+    Pose2d robotPose = drive.getPose();
 
-  public static void driveToPointMA(
-      Pose2d target, Drive drive, Distance offset, boolean isBackOfRobot) {
-    Pose2d newTarget = getDriveTarget(drive.getPose(), target, offset, isBackOfRobot);
+    // Calculate whether front or back of robot is closer to target rotation
+    boolean useBackOfRobot = isBackSideCloser(robotPose.getRotation(), target.getRotation());
+
+    Pose2d newTarget = getDriveTarget(robotPose, target, offset, useBackOfRobot);
     driveToPoint(newTarget, drive);
+  }
+
+  /**
+   * Determines if the back side of the robot is closer to the target rotation than the front.
+   *
+   * @param currentRotation Current robot rotation
+   * @param targetRotation Target rotation
+   * @return true if the back of the robot is closer to the target rotation
+   */
+  public static boolean isBackSideCloser(Rotation2d currentRotation, Rotation2d targetRotation) {
+    // Calculate angular difference if using front of robot
+    double frontDifference = Math.abs(currentRotation.minus(targetRotation).getRadians());
+
+    // Calculate angular difference if using back of robot (flipped 180 degrees)
+    Rotation2d flippedRotation = currentRotation.rotateBy(Rotation2d.fromDegrees(180));
+    double backDifference = Math.abs(flippedRotation.minus(targetRotation).getRadians());
+
+    // Return true if back is closer
+    return backDifference < frontDifference;
   }
 
   /** Get drive target. */

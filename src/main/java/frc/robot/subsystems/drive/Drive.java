@@ -333,6 +333,10 @@ public class Drive extends SubsystemBase {
     updateWithTime();
   }
 
+  public void stop() {
+    setControl(brakeRequest);
+  }
+  
   public void resetPose(Pose2d pose) {
     if (estimatorTrigger.getAsBoolean()) {
       poseEstimator.resetPose(pose);
