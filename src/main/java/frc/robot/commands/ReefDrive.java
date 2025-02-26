@@ -1,3 +1,10 @@
+// Copyright (c) 2025 FRC 325/144 & 5712
+// https://hemlock5712.github.io/Swerve-Setup/home.html
+//
+// Use of this source code is governed by an MIT-style
+// license that can be found in the LICENSE file at
+// the root directory of this project.
+
 package frc.robot.commands;
 
 import static edu.wpi.first.units.Units.Inches;
@@ -8,9 +15,9 @@ import edu.wpi.first.math.geometry.Rotation2d;
 import edu.wpi.first.math.geometry.Transform2d;
 import edu.wpi.first.wpilibj2.command.Command;
 import frc.robot.Constants;
+import frc.robot.subsystems.drive.Drive;
 import frc.robot.utils.FieldConstants;
 import frc.robot.utils.FieldConstants.ReefHeight;
-import frc.robot.subsystems.drive.Drive;
 
 public class ReefDrive extends Command {
   private final Drive drivetrain;
@@ -37,7 +44,7 @@ public class ReefDrive extends Command {
     Pose2d closestCenterface = null;
     int closestIndex = -1;
     double minDistance = Double.MAX_VALUE;
-    
+
     for (int i = 0; i < FieldConstants.Reef.centerFaces.length; i++) {
       Pose2d centerface = FieldConstants.Reef.centerFaces[i];
       double distance = currentPose.getTranslation().getDistance(centerface.getTranslation());
@@ -47,9 +54,9 @@ public class ReefDrive extends Command {
         closestIndex = i;
       }
     }
-    
+
     System.out.println("Closest Centerface Index: " + closestIndex);
-    
+
     // Determine target based on side parameter
     if (side == Side.CENTER) {
       // If CENTER, align with the centerface
@@ -65,22 +72,23 @@ public class ReefDrive extends Command {
         // For RIGHT side, use the right branch (even indices in branchPositions)
         branchIndex = closestIndex * 2;
       }
-      
+
       // Get the appropriate branch position at L1 height
       Pose3d reefBranch = FieldConstants.Reef.branchPositions.get(branchIndex).get(ReefHeight.L1);
-      
+
       // Apply offset similar to the example in the joystick code
-      targetPose = reefBranch
-          .toPose2d()
-          .transformBy(
-              new Transform2d(
-                  Inches.of(2.25).plus(Constants.robotScoringOffset),
-                  side == Side.LEFT ? Inches.of(1.8).unaryMinus() : Inches.of(1.8),
-                  Rotation2d.k180deg));
-                  
+      targetPose =
+          reefBranch
+              .toPose2d()
+              .transformBy(
+                  new Transform2d(
+                      Inches.of(2.25).plus(Constants.robotScoringOffset),
+                      side == Side.LEFT ? Inches.of(1.8).unaryMinus() : Inches.of(1.8),
+                      Rotation2d.k180deg));
+
       hasTarget = true;
     }
-    
+
     if (!hasTarget) {
       System.out.println("Failed to determine target pose");
     }

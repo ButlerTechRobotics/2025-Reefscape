@@ -12,7 +12,7 @@ import com.ctre.phoenix6.StatusCode;
 import com.ctre.phoenix6.StatusSignal;
 import com.ctre.phoenix6.configs.TalonFXConfiguration;
 import com.ctre.phoenix6.controls.Follower;
-import com.ctre.phoenix6.controls.PositionVoltage;
+import com.ctre.phoenix6.controls.PositionTorqueCurrentFOC;
 import com.ctre.phoenix6.hardware.CANcoder;
 import com.ctre.phoenix6.hardware.TalonFX;
 import com.ctre.phoenix6.signals.NeutralModeValue;
@@ -25,69 +25,92 @@ import edu.wpi.first.units.measure.Voltage;
 /**
  * CTRE-based implementation of the ShoulderIO interface for controlling a robot shoulder mechanism.
  * This implementation uses TalonFX motors and a CANcoder for position feedback. The shoulder
- * consists of a leader motor, a follower motor, and an encoder for precise angular positioning.
+ * consists of four motors (back-right leader, back-left follower, front-right follower, front-left
+ * follower) and an encoder for precise angular positioning.
  */
 public class ShoulderIOCTRE implements ShoulderIO {
   /** The gear ratio between the motor and the shoulder mechanism */
-  public static final double GEAR_RATIO = 150;
+  public static final double GEAR_RATIO = 135;
 
-  /** The leader TalonFX motor controller (CAN ID: 20) */
-  public final TalonFX leader = new TalonFX(20);
-  /** The follower TalonFX motor controller (CAN ID: 21) */
-  public final TalonFX follower = new TalonFX(21);
+  /** The back-right leader TalonFX motor controller (CAN ID: 20) */
+  public final TalonFX brLeader = new TalonFX(16);
+  /** The back-left follower TalonFX motor controller (CAN ID: 21) */
+  public final TalonFX blFollower = new TalonFX(15);
+  /** The front-right follower TalonFX motor controller (CAN ID: 22) */
+  public final TalonFX frFollower = new TalonFX(14);
+  /** The front-left follower TalonFX motor controller (CAN ID: 23) */
+  public final TalonFX flFollower = new TalonFX(13);
 
-  /** The CANcoder for position feedback (CAN ID: 22) */
-  public final CANcoder encoder = new CANcoder(22);
+  /** The CANcoder for position feedback (CAN ID: 24) */
+  public final CANcoder encoder = new CANcoder(17);
 
   // Status signals for monitoring motor and encoder states
-  private final StatusSignal<Angle> leaderPosition = leader.getPosition();
-  private final StatusSignal<Angle> leaderRotorPosition = leader.getRotorPosition();
-  private final StatusSignal<AngularVelocity> leaderVelocity = leader.getVelocity();
-  private final StatusSignal<AngularVelocity> leaderRotorVelocity = leader.getRotorVelocity();
-  private final StatusSignal<Voltage> leaderAppliedVolts = leader.getMotorVoltage();
-  private final StatusSignal<Current> leaderStatorCurrent = leader.getStatorCurrent();
-  private final StatusSignal<Current> followerStatorCurrent = follower.getStatorCurrent();
-  private final StatusSignal<Current> leaderSupplyCurrent = leader.getSupplyCurrent();
-  private final StatusSignal<Current> followerSupplyCurrent = follower.getSupplyCurrent();
+  private final StatusSignal<Angle> brLeaderPosition = brLeader.getPosition();
+  private final StatusSignal<Angle> brLeaderRotorPosition = brLeader.getRotorPosition();
+  private final StatusSignal<AngularVelocity> brLeaderVelocity = brLeader.getVelocity();
+  private final StatusSignal<AngularVelocity> brLeaderRotorVelocity = brLeader.getRotorVelocity();
+  private final StatusSignal<Voltage> brLeaderAppliedVolts = brLeader.getMotorVoltage();
+
+  // Current signals for all motors
+  private final StatusSignal<Current> brLeaderStatorCurrent = brLeader.getStatorCurrent();
+  private final StatusSignal<Current> blFollowerStatorCurrent = blFollower.getStatorCurrent();
+  private final StatusSignal<Current> frFollowerStatorCurrent = frFollower.getStatorCurrent();
+  private final StatusSignal<Current> flFollowerStatorCurrent = flFollower.getStatorCurrent();
+
+  private final StatusSignal<Current> brLeaderSupplyCurrent = brLeader.getSupplyCurrent();
+  private final StatusSignal<Current> blFollowerSupplyCurrent = blFollower.getSupplyCurrent();
+  private final StatusSignal<Current> frFollowerSupplyCurrent = frFollower.getSupplyCurrent();
+  private final StatusSignal<Current> flFollowerSupplyCurrent = flFollower.getSupplyCurrent();
+
   private final StatusSignal<Angle> encoderPosition = encoder.getPosition();
   private final StatusSignal<AngularVelocity> encoderVelocity = encoder.getVelocity();
 
   // Debouncers for connection status (filters out brief disconnections)
-  private final Debouncer leaderDebounce = new Debouncer(0.5);
-  private final Debouncer followerDebounce = new Debouncer(0.5);
+  private final Debouncer brLeaderDebounce = new Debouncer(0.5);
+  private final Debouncer blFollowerDebounce = new Debouncer(0.5);
+  private final Debouncer frFollowerDebounce = new Debouncer(0.5);
+  private final Debouncer flFollowerDebounce = new Debouncer(0.5);
   private final Debouncer encoderDebounce = new Debouncer(0.5);
 
   /**
    * Constructs a new ShoulderIOCTRE instance and initializes all hardware components. This includes
-   * configuring both motors, setting up the follower relationship, and optimizing CAN bus
+   * configuring all four motors, setting up the follower relationships, and optimizing CAN bus
    * utilization for all devices.
    */
   public ShoulderIOCTRE() {
-    // Set up follower to mirror leader
-    follower.setControl(new Follower(leader.getDeviceID(), false));
+    // Set up all three followers to mirror the leader
+    blFollower.setControl(new Follower(brLeader.getDeviceID(), false));
+    frFollower.setControl(new Follower(brLeader.getDeviceID(), false));
+    flFollower.setControl(new Follower(brLeader.getDeviceID(), false));
 
-    // Configure both motors with identical settings
+    // Configure leader motor with appropriate settings
     TalonFXConfiguration config = createMotorConfiguration();
-    leader.getConfigurator().apply(config);
+    brLeader.getConfigurator().apply(config);
 
     // Configure update frequencies for all status signals
     BaseStatusSignal.setUpdateFrequencyForAll(
         50.0, // 50Hz update rate
-        leaderPosition,
-        leaderRotorPosition,
-        leaderVelocity,
-        leaderRotorVelocity,
-        leaderAppliedVolts,
-        leaderStatorCurrent,
-        followerStatorCurrent,
-        leaderSupplyCurrent,
-        followerSupplyCurrent,
+        brLeaderPosition,
+        brLeaderRotorPosition,
+        brLeaderVelocity,
+        brLeaderRotorVelocity,
+        brLeaderAppliedVolts,
+        brLeaderStatorCurrent,
+        blFollowerStatorCurrent,
+        frFollowerStatorCurrent,
+        flFollowerStatorCurrent,
+        brLeaderSupplyCurrent,
+        blFollowerSupplyCurrent,
+        frFollowerSupplyCurrent,
+        flFollowerSupplyCurrent,
         encoderPosition,
         encoderVelocity);
 
     // Optimize CAN bus usage for all devices
-    leader.optimizeBusUtilization(4, 0.1);
-    follower.optimizeBusUtilization(4, 0.1);
+    brLeader.optimizeBusUtilization(4, 0.1);
+    blFollower.optimizeBusUtilization(4, 0.1);
+    frFollower.optimizeBusUtilization(4, 0.1);
+    flFollower.optimizeBusUtilization(4, 0.1);
     encoder.optimizeBusUtilization(4, 0.1);
   }
 
@@ -103,13 +126,13 @@ public class ShoulderIOCTRE implements ShoulderIO {
     config.MotorOutput.NeutralMode = NeutralModeValue.Coast;
 
     // Configure PID and feedforward gains
-    config.Slot0.kP = 620; // Proportional gain
+    config.Slot0.kP = 0; // Proportional gain
     config.Slot0.kI = 0; // Integral gain
-    config.Slot0.kD = 11; // Derivative gain
-    config.Slot0.kS = 0.08; // Static friction compensation
+    config.Slot0.kD = 0; // Derivative gain
+    config.Slot0.kS = 0; // Static friction compensation
     config.Slot0.kV = 0; // Velocity feedforward
     config.Slot0.kA = 0; // Acceleration feedforward
-    config.Slot0.kG = 0.0001; // Gravity feedforward
+    config.Slot0.kG = 0; // Gravity feedforward
 
     // Use the CANcoder as the remote feedback device
     config.Feedback.withRemoteCANcoder(encoder);
@@ -118,7 +141,7 @@ public class ShoulderIOCTRE implements ShoulderIO {
 
   /**
    * Updates the shoulder's input values with the latest sensor readings. This includes position,
-   * velocity, voltage, and current measurements from both motors and the encoder, as well as
+   * velocity, voltage, and current measurements from all motors and the encoder, as well as
    * connection status for all devices.
    *
    * @param inputs The ShoulderIOInputs object to update with the latest values
@@ -126,41 +149,55 @@ public class ShoulderIOCTRE implements ShoulderIO {
   @Override
   public void updateInputs(ShoulderIOInputs inputs) {
     // Refresh all sensor data
-    StatusCode leaderStatus =
+    StatusCode brLeaderStatus =
         BaseStatusSignal.refreshAll(
-            leaderPosition,
-            leaderRotorPosition,
-            leaderVelocity,
-            leaderRotorVelocity,
-            leaderAppliedVolts,
-            leaderStatorCurrent,
-            leaderSupplyCurrent);
+            brLeaderPosition,
+            brLeaderRotorPosition,
+            brLeaderVelocity,
+            brLeaderRotorVelocity,
+            brLeaderAppliedVolts,
+            brLeaderStatorCurrent,
+            brLeaderSupplyCurrent);
 
-    StatusCode followerStatus =
-        BaseStatusSignal.refreshAll(followerStatorCurrent, followerSupplyCurrent);
+    StatusCode blFollowerStatus =
+        BaseStatusSignal.refreshAll(blFollowerStatorCurrent, blFollowerSupplyCurrent);
+    StatusCode frFollowerStatus =
+        BaseStatusSignal.refreshAll(frFollowerStatorCurrent, frFollowerSupplyCurrent);
+    StatusCode flFollowerStatus =
+        BaseStatusSignal.refreshAll(flFollowerStatorCurrent, flFollowerSupplyCurrent);
 
     StatusCode encoderStatus = BaseStatusSignal.refreshAll(encoderPosition, encoderVelocity);
 
     // Update connection status with debouncing
-    inputs.leaderConnected = leaderDebounce.calculate(leaderStatus.isOK());
-    inputs.followerConnected = followerDebounce.calculate(followerStatus.isOK());
+    inputs.brLeaderConnected = brLeaderDebounce.calculate(brLeaderStatus.isOK());
+    inputs.blFollowerConnected = blFollowerDebounce.calculate(blFollowerStatus.isOK());
+    inputs.frFollowerConnected = frFollowerDebounce.calculate(frFollowerStatus.isOK());
+    inputs.flFollowerConnected = flFollowerDebounce.calculate(flFollowerStatus.isOK());
     inputs.encoderConnected = encoderDebounce.calculate(encoderStatus.isOK());
 
     // Update position and velocity measurements
-    inputs.leaderPosition = leaderPosition.getValue();
-    inputs.leaderRotorPosition = leaderRotorPosition.getValue();
-    inputs.leaderVelocity = leaderVelocity.getValue();
-    inputs.leaderRotorVelocity = leaderRotorVelocity.getValue();
+    inputs.brLeaderPosition = brLeaderPosition.getValue();
+    inputs.brLeaderRotorPosition = brLeaderRotorPosition.getValue();
+    inputs.brLeaderVelocity = brLeaderVelocity.getValue();
+    inputs.brLeaderRotorVelocity = brLeaderRotorVelocity.getValue();
 
     inputs.encoderPosition = encoderPosition.getValue();
     inputs.encoderVelocity = encoderVelocity.getValue();
 
     // Update voltage and current measurements
-    inputs.appliedVoltage = leaderAppliedVolts.getValue();
-    inputs.leaderStatorCurrent = leaderStatorCurrent.getValue();
-    inputs.followerStatorCurrent = followerStatorCurrent.getValue();
-    inputs.leaderSupplyCurrent = leaderSupplyCurrent.getValue();
-    inputs.followerSupplyCurrent = followerSupplyCurrent.getValue();
+    inputs.appliedVoltage = brLeaderAppliedVolts.getValue();
+
+    // Update stator currents for all motors
+    inputs.brLeaderStatorCurrent = brLeaderStatorCurrent.getValue();
+    inputs.blFollowerStatorCurrent = blFollowerStatorCurrent.getValue();
+    inputs.frFollowerStatorCurrent = frFollowerStatorCurrent.getValue();
+    inputs.flFollowerStatorCurrent = flFollowerStatorCurrent.getValue();
+
+    // Update supply currents for all motors
+    inputs.brLeaderSupplyCurrent = brLeaderSupplyCurrent.getValue();
+    inputs.blFollowerSupplyCurrent = blFollowerSupplyCurrent.getValue();
+    inputs.frFollowerSupplyCurrent = frFollowerSupplyCurrent.getValue();
+    inputs.flFollowerSupplyCurrent = flFollowerSupplyCurrent.getValue();
 
     // Calculate shoulder angle using encoder position
     inputs.shoulderAngle = inputs.encoderPosition;
@@ -175,15 +212,15 @@ public class ShoulderIOCTRE implements ShoulderIO {
   @Override
   public void setPosition(Angle angle) {
     // Convert desired angle to encoder rotations
-    leader.setControl(new PositionVoltage(angle));
+    brLeader.setControl(new PositionTorqueCurrentFOC(angle));
   }
 
   /**
-   * Stops all shoulder movement by stopping the leader motor. The follower will also stop due to
+   * Stops all shoulder movement by stopping the leader motor. All followers will also stop due to
    * the follower relationship.
    */
   @Override
   public void stop() {
-    leader.stopMotor();
+    brLeader.stopMotor();
   }
 }

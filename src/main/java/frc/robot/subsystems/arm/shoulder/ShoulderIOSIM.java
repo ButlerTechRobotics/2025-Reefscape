@@ -33,7 +33,7 @@ import edu.wpi.first.wpilibj.simulation.SingleJointedArmSim;
  * Simulation implementation of the shoulder subsystem. This class extends ShoulderIOCTRE to provide
  * a physics-based simulation of the shoulder mechanism using WPILib's simulation classes.
  *
- * <p>The simulation models: - Dual Kraken X60 FOC motors - Realistic shoulder physics including
+ * <p>The simulation models: - Quad Kraken X60 FOC motors - Realistic shoulder physics including
  * gravity and moment of inertia - Position and velocity feedback through simulated encoders -
  * Battery voltage effects - Motion limits (0° to 180°)
  */
@@ -42,10 +42,14 @@ public class ShoulderIOSIM extends ShoulderIOCTRE {
   /** Physics simulation model for the shoulder mechanism */
   private final SingleJointedArmSim motorSimModel;
 
-  /** Simulation state for the leader motor */
-  private final TalonFXSimState leaderSim;
-  /** Simulation state for the follower motor */
-  private final TalonFXSimState followerSim;
+  /** Simulation state for the back-right leader motor */
+  private final TalonFXSimState brLeaderSim;
+  /** Simulation state for the back-left follower motor */
+  private final TalonFXSimState blFollowerSim;
+  /** Simulation state for the front-right follower motor */
+  private final TalonFXSimState frFollowerSim;
+  /** Simulation state for the front-left follower motor */
+  private final TalonFXSimState flFollowerSim;
   /** Simulation state for the CANcoder */
   private final CANcoderSimState encoderSim;
 
@@ -54,12 +58,14 @@ public class ShoulderIOSIM extends ShoulderIOCTRE {
     super(); // Initialize hardware interface components
 
     // Get simulation states for all hardware
-    leaderSim = leader.getSimState();
-    followerSim = follower.getSimState();
+    brLeaderSim = brLeader.getSimState();
+    blFollowerSim = blFollower.getSimState();
+    frFollowerSim = frFollower.getSimState();
+    flFollowerSim = flFollower.getSimState();
     encoderSim = encoder.getSimState();
 
-    // Configure dual Kraken X60 FOC motors
-    DCMotor motor = DCMotor.getKrakenX60Foc(2);
+    // Configure quad Kraken X60 FOC motors
+    DCMotor motor = DCMotor.getKrakenX60Foc(4);
 
     // Define shoulder physical properties
     Distance armLength = Inches.of(24);
@@ -82,7 +88,7 @@ public class ShoulderIOSIM extends ShoulderIOCTRE {
             Degrees.of(0).in(Radians), // Lower limit (0°)
             Degrees.of(180).in(Radians), // Upper limit (180)
             true, // Enable gravity simulation
-            Degrees.of(0).in(Radians)); // Start at 90°
+            Degrees.of(0).in(Radians)); // Start at 0°
   }
 
   /**
@@ -96,12 +102,14 @@ public class ShoulderIOSIM extends ShoulderIOCTRE {
     super.updateInputs(inputs);
 
     // Simulate battery voltage effects on all devices
-    leaderSim.setSupplyVoltage(RobotController.getBatteryVoltage());
-    followerSim.setSupplyVoltage(RobotController.getBatteryVoltage());
+    brLeaderSim.setSupplyVoltage(RobotController.getBatteryVoltage());
+    blFollowerSim.setSupplyVoltage(RobotController.getBatteryVoltage());
+    frFollowerSim.setSupplyVoltage(RobotController.getBatteryVoltage());
+    flFollowerSim.setSupplyVoltage(RobotController.getBatteryVoltage());
     encoderSim.setSupplyVoltage(RobotController.getBatteryVoltage());
 
     // Update physics simulation
-    motorSimModel.setInputVoltage(leaderSim.getMotorVoltage());
+    motorSimModel.setInputVoltage(brLeaderSim.getMotorVoltage());
     motorSimModel.update(0.020); // Simulate 20ms timestep (50Hz)
 
     // Get position and velocity from physics simulation
@@ -109,8 +117,8 @@ public class ShoulderIOSIM extends ShoulderIOCTRE {
     AngularVelocity velocity = RadiansPerSecond.of(motorSimModel.getVelocityRadPerSec());
 
     // Update simulated motor encoder readings (accounts for gear ratio)
-    leaderSim.setRawRotorPosition(position.times(GEAR_RATIO));
-    leaderSim.setRotorVelocity(velocity.times(GEAR_RATIO));
+    brLeaderSim.setRawRotorPosition(position.times(GEAR_RATIO));
+    brLeaderSim.setRotorVelocity(velocity.times(GEAR_RATIO));
 
     // Update simulated CANcoder readings (direct angle measurement)
     encoderSim.setRawPosition(position);

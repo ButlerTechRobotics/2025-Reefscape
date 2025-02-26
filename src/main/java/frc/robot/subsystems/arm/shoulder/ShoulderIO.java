@@ -21,31 +21,46 @@ import org.littletonrobotics.junction.AutoLog;
 public interface ShoulderIO {
   @AutoLog
   public static class ShoulderIOInputs {
-    public boolean leaderConnected = false;
-    public boolean followerConnected = false;
+    // Connection status for all motors
+    public boolean brLeaderConnected = false;
+    public boolean blFollowerConnected = false;
+    public boolean frFollowerConnected = false;
+    public boolean flFollowerConnected = false;
     public boolean encoderConnected = false;
 
-    public Angle leaderPosition = Rotations.of(0);
-    public Angle leaderRotorPosition = Rotations.of(0);
+    // Position measurements
+    public Angle brLeaderPosition = Rotations.of(0);
+    public Angle brLeaderRotorPosition = Rotations.of(0);
     public Angle encoderPosition = Rotations.of(0);
 
-    public AngularVelocity leaderVelocity = RotationsPerSecond.of(0);
-    public AngularVelocity leaderRotorVelocity = RotationsPerSecond.of(0);
+    // Velocity measurements
+    public AngularVelocity brLeaderVelocity = RotationsPerSecond.of(0);
+    public AngularVelocity brLeaderRotorVelocity = RotationsPerSecond.of(0);
     public AngularVelocity encoderVelocity = RotationsPerSecond.of(0);
 
+    // Voltage and current measurements
     public Voltage appliedVoltage = Volts.of(0.0);
-    public Current leaderStatorCurrent = Amps.of(0);
-    public Current followerStatorCurrent = Amps.of(0);
-    public Current leaderSupplyCurrent = Amps.of(0);
-    public Current followerSupplyCurrent = Amps.of(0);
 
+    // Stator currents for all motors
+    public Current brLeaderStatorCurrent = Amps.of(0);
+    public Current blFollowerStatorCurrent = Amps.of(0);
+    public Current frFollowerStatorCurrent = Amps.of(0);
+    public Current flFollowerStatorCurrent = Amps.of(0);
+
+    // Supply currents for all motors
+    public Current brLeaderSupplyCurrent = Amps.of(0);
+    public Current blFollowerSupplyCurrent = Amps.of(0);
+    public Current frFollowerSupplyCurrent = Amps.of(0);
+    public Current flFollowerSupplyCurrent = Amps.of(0);
+
+    // Derived angle measurement
     public Angle shoulderAngle = Rotations.of(0);
   }
 
   /** Updates the set of loggable inputs. */
   public default void updateInputs(ShoulderIOInputs inputs) {}
 
-  /** Run closed loop at the specified velocity. */
+  /** Run closed loop at the specified position. */
   public default void setPosition(Angle angle) {}
 
   /** Stop in open loop. */

@@ -21,7 +21,7 @@ import org.littletonrobotics.junction.AutoLogOutput;
 import org.littletonrobotics.junction.Logger;
 
 /**
- * The Shoulder subsystem controls a dual-motor shoulder mechanism for game piece manipulation. It
+ * The Shoulder subsystem controls a quad-motor shoulder mechanism for game piece manipulation. It
  * supports multiple positions for different game actions and provides both open-loop and
  * closed-loop control options.
  */
@@ -34,10 +34,14 @@ public class Shoulder extends SubsystemBase {
   private ShoulderPosition currentMode = ShoulderPosition.STOW;
 
   // Alerts for motor connection status
-  private final Alert leaderMotorAlert =
-      new Alert("Shoulder leader motor isn't connected", AlertType.kError);
-  private final Alert followerMotorAlert =
-      new Alert("Shoulder follower motor isn't connected", AlertType.kError);
+  private final Alert brLeaderMotorAlert =
+      new Alert("Shoulder back-right leader motor isn't connected", AlertType.kError);
+  private final Alert blFollowerMotorAlert =
+      new Alert("Shoulder back-left follower motor isn't connected", AlertType.kError);
+  private final Alert frFollowerMotorAlert =
+      new Alert("Shoulder front-right follower motor isn't connected", AlertType.kError);
+  private final Alert flFollowerMotorAlert =
+      new Alert("Shoulder front-left follower motor isn't connected", AlertType.kError);
   private final Alert encoderAlert =
       new Alert("Shoulder encoder isn't connected", AlertType.kError);
 
@@ -58,8 +62,10 @@ public class Shoulder extends SubsystemBase {
     Logger.processInputs("Shoulder", inputs);
 
     // Update motor connection status alerts
-    leaderMotorAlert.set(!inputs.leaderConnected);
-    followerMotorAlert.set(!inputs.followerConnected);
+    brLeaderMotorAlert.set(!inputs.brLeaderConnected);
+    blFollowerMotorAlert.set(!inputs.blFollowerConnected);
+    frFollowerMotorAlert.set(!inputs.frFollowerConnected);
+    flFollowerMotorAlert.set(!inputs.flFollowerConnected);
     encoderAlert.set(!inputs.encoderConnected);
   }
 

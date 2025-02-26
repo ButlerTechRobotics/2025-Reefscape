@@ -130,71 +130,71 @@ public class DriveCommands extends Command {
   public static void driveToPointMA(Pose2d target, Drive drive) {
     driveToPointMA(target, drive, Constants.robotScoringOffset);
   }
-  
+
   public static void driveToPointMA(Pose2d target, Drive drive, Distance offset) {
     Pose2d robotPose = drive.getPose();
-  
-    // Get the properly oriented target based on which side of the robot is closer to target rotation
+
+    // Get the properly oriented target based on which side of the robot is closer to target
+    // rotation
     Pose2d orientedTarget = getOptimalOrientedTarget(robotPose, target);
-    
+
     // Calculate approach path using the oriented target
     Pose2d newTarget = getDriveTarget(robotPose, orientedTarget, offset);
     driveToPoint(newTarget, drive);
   }
 
   /**
- * Gets the optimal target pose based on whether front or back of robot should face the target.
- *
- * @param robotPose Current robot pose
- * @param targetPose Target pose
- * @return Modified target pose oriented for optimal approach
- */
-public static Pose2d getOptimalOrientedTarget(Pose2d robotPose, Pose2d targetPose) {
-  Rotation2d currentRotation = robotPose.getRotation();
-  Rotation2d targetRotation = targetPose.getRotation();
-  
-  // Calculate angular difference if using front of robot
-  double frontDifference = Math.abs(currentRotation.minus(targetRotation).getRadians());
+   * Gets the optimal target pose based on whether front or back of robot should face the target.
+   *
+   * @param robotPose Current robot pose
+   * @param targetPose Target pose
+   * @return Modified target pose oriented for optimal approach
+   */
+  public static Pose2d getOptimalOrientedTarget(Pose2d robotPose, Pose2d targetPose) {
+    Rotation2d currentRotation = robotPose.getRotation();
+    Rotation2d targetRotation = targetPose.getRotation();
 
-  // Calculate angular difference if using back of robot (flipped 180 degrees)
-  Rotation2d flippedRotation = currentRotation.plus(Rotation2d.fromDegrees(180));
-  double backDifference = Math.abs(flippedRotation.minus(targetRotation).getRadians());
+    // Calculate angular difference if using front of robot
+    double frontDifference = Math.abs(currentRotation.minus(targetRotation).getRadians());
 
-  // If back is closer, flip the target rotation
-  if (backDifference < frontDifference) {
-    return GeomUtil.flipRotation(targetPose);
+    // Calculate angular difference if using back of robot (flipped 180 degrees)
+    Rotation2d flippedRotation = currentRotation.plus(Rotation2d.fromDegrees(180));
+    double backDifference = Math.abs(flippedRotation.minus(targetRotation).getRadians());
+
+    // If back is closer, flip the target rotation
+    if (backDifference < frontDifference) {
+      return GeomUtil.flipRotation(targetPose);
+    }
+
+    // Otherwise, use the original target
+    return targetPose;
   }
-  
-  // Otherwise, use the original target
-  return targetPose;
-}
 
-/** Get drive target. */
-private static Pose2d getDriveTarget(
-    Pose2d robot, Pose2d goal, Distance robotOffset) {
+  /** Get drive target. */
+  private static Pose2d getDriveTarget(Pose2d robot, Pose2d goal, Distance robotOffset) {
 
-  // Final line up
-  var offset = robot.relativeTo(goal);
-  double yDistance = Math.abs(offset.getY());
-  double xDistance = Math.abs(offset.getX());
+    // Final line up
+    var offset = robot.relativeTo(goal);
+    double yDistance = Math.abs(offset.getY());
+    double xDistance = Math.abs(offset.getX());
 
-  double shiftXT =
-      MathUtil.clamp(
-          (yDistance / (Reef.faceLength.in(Meters) * 2))
-              + ((xDistance - 0.3) / (Reef.faceLength.in(Meters) * 3)),
-          0.0,
-          1.0);
-  double shiftYT = MathUtil.clamp(offset.getX() / Reef.faceLength.in(Meters), 0.0, 1.0);
+    double shiftXT =
+        MathUtil.clamp(
+            (yDistance / (Reef.faceLength.in(Meters) * 2))
+                + ((xDistance - 0.3) / (Reef.faceLength.in(Meters) * 3)),
+            0.0,
+            1.0);
+    double shiftYT = MathUtil.clamp(offset.getX() / Reef.faceLength.in(Meters), 0.0, 1.0);
 
-  Pose2d goalPose =
-      goal.transformBy(
-          GeomUtil.toTransform2d(
-              -shiftXT * Constants.maxDistanceReefLineup.in(Meters),
-              Math.copySign(
-                  shiftYT * Constants.maxDistanceReefLineup.in(Meters) * 0.8, offset.getY())));
+    Pose2d goalPose =
+        goal.transformBy(
+            GeomUtil.toTransform2d(
+                -shiftXT * Constants.maxDistanceReefLineup.in(Meters),
+                Math.copySign(
+                    shiftYT * Constants.maxDistanceReefLineup.in(Meters) * 0.8, offset.getY())));
 
-  return goalPose;
-}
+    return goalPose;
+  }
 
   public static void driveToPoint(Pose2d target, Drive drive) {
     driveToPoint(target, drive, Constants.robotScoringOffset);

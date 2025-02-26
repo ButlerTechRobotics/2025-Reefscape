@@ -91,8 +91,8 @@ public class RobotContainer {
                 "FL-Camera",
                 new Transform3d(
                     new Translation3d(
-                        Units.inchesToMeters(10.5),
-                        Units.inchesToMeters(10.5),
+                        Units.inchesToMeters(13),
+                        Units.inchesToMeters(11.5),
                         Units.inchesToMeters(9.0)),
                     new Rotation3d(0, Math.toRadians(10), Math.toRadians(30))),
                 drivetrain::getVisionParameters),
@@ -100,10 +100,28 @@ public class RobotContainer {
                 "FR-Camera",
                 new Transform3d(
                     new Translation3d(
-                        Units.inchesToMeters(10.5),
-                        Units.inchesToMeters(-10.5),
+                        Units.inchesToMeters(13),
+                        Units.inchesToMeters(-11.5),
                         Units.inchesToMeters(9.0)),
-                    new Rotation3d(0, Math.toRadians(10), Math.toRadians(-30))),
+                    new Rotation3d(0, Math.toRadians(10), Math.toRadians(330))),
+                drivetrain::getVisionParameters),
+            new VisionIOPhotonVision(
+                "BL-Camera",
+                new Transform3d(
+                    new Translation3d(
+                        Units.inchesToMeters(-13),
+                        Units.inchesToMeters(11.5),
+                        Units.inchesToMeters(9.0)),
+                    new Rotation3d(0, Math.toRadians(10), Math.toRadians(210))),
+                drivetrain::getVisionParameters),
+            new VisionIOPhotonVision(
+                "BR-Camera",
+                new Transform3d(
+                    new Translation3d(
+                        Units.inchesToMeters(-13),
+                        Units.inchesToMeters(-11.5),
+                        Units.inchesToMeters(9.0)),
+                    new Rotation3d(0, Math.toRadians(10), Math.toRadians(150))),
                 drivetrain::getVisionParameters));
 
         claw = new Claw(new ClawIOCTRE());
@@ -119,40 +137,40 @@ public class RobotContainer {
         new Vision(
             drivetrain::addVisionData,
             new VisionIOPhotonVisionSIM(
-                "BL-Camera",
-                new Transform3d(
-                    new Translation3d(
-                        Units.inchesToMeters(-10.5),
-                        Units.inchesToMeters(10.5),
-                        Units.inchesToMeters(6.5)),
-                    new Rotation3d(0, Math.toRadians(10), Math.toRadians(150))),
-                drivetrain::getVisionParameters),
-            new VisionIOPhotonVisionSIM(
-                "BR-Camera",
-                new Transform3d(
-                    new Translation3d(
-                        Units.inchesToMeters(-10.5),
-                        Units.inchesToMeters(-10.5),
-                        Units.inchesToMeters(6.5)),
-                    new Rotation3d(0, Math.toRadians(10), Math.toRadians(210))),
-                drivetrain::getVisionParameters),
-            new VisionIOPhotonVisionSIM(
                 "FL-Camera",
                 new Transform3d(
                     new Translation3d(
-                        Units.inchesToMeters(10.375),
-                        Units.inchesToMeters(10.375),
-                        Units.inchesToMeters(10.25)),
+                        Units.inchesToMeters(13),
+                        Units.inchesToMeters(11.5),
+                        Units.inchesToMeters(9.0)),
                     new Rotation3d(0, Math.toRadians(10), Math.toRadians(30))),
                 drivetrain::getVisionParameters),
             new VisionIOPhotonVisionSIM(
                 "FR-Camera",
                 new Transform3d(
                     new Translation3d(
-                        Units.inchesToMeters(-10.375),
-                        Units.inchesToMeters(-10.375),
-                        Units.inchesToMeters(10.25)),
+                        Units.inchesToMeters(13),
+                        Units.inchesToMeters(-11.5),
+                        Units.inchesToMeters(9.0)),
                     new Rotation3d(0, Math.toRadians(10), Math.toRadians(330))),
+                drivetrain::getVisionParameters),
+            new VisionIOPhotonVisionSIM(
+                "BL-Camera",
+                new Transform3d(
+                    new Translation3d(
+                        Units.inchesToMeters(-13),
+                        Units.inchesToMeters(11.5),
+                        Units.inchesToMeters(9.0)),
+                    new Rotation3d(0, Math.toRadians(10), Math.toRadians(210))),
+                drivetrain::getVisionParameters),
+            new VisionIOPhotonVisionSIM(
+                "BR-Camera",
+                new Transform3d(
+                    new Translation3d(
+                        Units.inchesToMeters(-13),
+                        Units.inchesToMeters(-11.5),
+                        Units.inchesToMeters(9.0)),
+                    new Rotation3d(0, Math.toRadians(10), Math.toRadians(150))),
                 drivetrain::getVisionParameters));
 
         claw = new Claw(new ClawIOSIM());
@@ -224,7 +242,7 @@ public class RobotContainer {
                         MaxSpeed.times(
                             -joystick.getLeftY())) // Drive forward with negative Y (forward)
                     .withVelocityY(MaxSpeed.times(-joystick.getLeftX()))
-                    .withRotationalRate(Constants.MaxAngularRate.times(joystick.getRightX()))
+                    .withRotationalRate(Constants.MaxAngularRate.times(-joystick.getRightX()))
                     .withOperatorForwardDirection(drivetrain.getOperatorForwardDirection())));
 
     joystick.start().onTrue(Commands.runOnce(() -> drivetrain.resetPose(Pose2d.kZero)));

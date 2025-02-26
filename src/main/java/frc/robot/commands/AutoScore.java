@@ -16,10 +16,10 @@ import edu.wpi.first.math.geometry.Rotation2d;
 import edu.wpi.first.math.geometry.Transform2d;
 import edu.wpi.first.wpilibj2.command.Command;
 import frc.robot.Constants;
+import frc.robot.subsystems.arm.Arm;
+import frc.robot.subsystems.drive.Drive;
 import frc.robot.utils.FieldConstants;
 import frc.robot.utils.FieldConstants.ReefHeight;
-import frc.robot.subsystems.drive.Drive;
-import frc.robot.subsystems.arm.Arm;
 
 public class AutoScore extends Command {
   private final Drive drivetrain;
@@ -32,29 +32,23 @@ public class AutoScore extends Command {
 
   /**
    * Creates a command to automatically drive to and score at a reef.
-   * 
+   *
    * @param drivetrain The drive subsystem
    * @param arm The arm subsystem
    * @param side The scoring position (LEFT, CENTER, RIGHT)
    * @param height The scoring height (L1, L2, L3, L4)
    */
-  public AutoScore(
-      Drive drivetrain, 
-      Arm arm, 
-      ReefDrive.Side side, 
-      ReefHeight height) {
+  public AutoScore(Drive drivetrain, Arm arm, ReefDrive.Side side, ReefHeight height) {
     this.drivetrain = drivetrain;
     this.arm = arm;
     this.side = side;
     this.height = height;
-    
+
     addRequirements(drivetrain);
     // Note: Not requiring arm since SmartArm will handle that
   }
-  
-  /**
-   * Determines the appropriate SmartArm goal based on height and orientation
-   */
+
+  /** Determines the appropriate SmartArm goal based on height and orientation */
   private SmartArm.Goal determineArmGoal() {
     // Map ReefHeight to the appropriate SmartArm.Goal based on whether using back side
     if (!isUsingBackSide) {
@@ -97,7 +91,7 @@ public class AutoScore extends Command {
     Pose2d closestCenterface = null;
     int closestIndex = -1;
     double minDistance = 4.0;
-    
+
     for (int i = 0; i < FieldConstants.Reef.centerFaces.length; i++) {
       Pose2d centerface = FieldConstants.Reef.centerFaces[i];
       double distance = currentPose.getTranslation().getDistance(centerface.getTranslation());
@@ -107,9 +101,9 @@ public class AutoScore extends Command {
         closestIndex = i;
       }
     }
-    
+
     System.out.println("Closest Centerface Index: " + closestIndex);
-    
+
     // Determine target based on side parameter
     if (side == ReefDrive.Side.CENTER) {
       // If CENTER, align with the centerface
@@ -125,35 +119,37 @@ public class AutoScore extends Command {
         // For RIGHT side, use the right branch (even indices in branchPositions)
         branchIndex = closestIndex * 2;
       }
-      
+
       // Get the appropriate branch position at the specified height
       Pose3d reefBranch = FieldConstants.Reef.branchPositions.get(branchIndex).get(height);
-      
+
       // Apply offset similar to the example in the joystick code
-      targetPose = reefBranch
-          .toPose2d()
-          .transformBy(
-              new Transform2d(
-                  Inches.of(2.25).plus(Constants.robotScoringOffset),
-                  side == ReefDrive.Side.LEFT ? Inches.of(1.8).unaryMinus() : Inches.of(1.8),
-                  Rotation2d.fromDegrees(0))); // Neutral rotation, back/front will be determined dynamically
-      
+      targetPose =
+          reefBranch
+              .toPose2d()
+              .transformBy(
+                  new Transform2d(
+                      Inches.of(2.25).plus(Constants.robotScoringOffset),
+                      side == ReefDrive.Side.LEFT ? Inches.of(1.8).unaryMinus() : Inches.of(1.8),
+                      Rotation2d.fromDegrees(
+                          0))); // Neutral rotation, back/front will be determined dynamically
+
       hasTarget = true;
     }
-    
+
     if (!hasTarget) {
       System.out.println("Failed to determine target pose");
     } else {
       System.out.println("Target Pose: " + targetPose);
       System.out.println("Scoring at height: " + height);
-      
+
       // Determine whether to use back or front based on current robot pose
-      isUsingBackSide = DriveCommands.isBackSideCloser(
-          drivetrain.getPose().getRotation(), 
-          targetPose.getRotation());
-      
+      // isUsingBackSide =
+      //     DriveCommands.isBackSideCloser(
+      //         drivetrain.getPose().getRotation(), targetPose.getRotation());
+
       System.out.println("Using robot back side: " + isUsingBackSide);
-      
+
       // Deploy arm immediately with the correct goal
       SmartArm.Goal armGoal = determineArmGoal();
       new SmartArm(arm, armGoal).schedule();
@@ -164,7 +160,7 @@ public class AutoScore extends Command {
   @Override
   public void execute() {
     if (hasTarget) {
-      // Drive to the point using the driveToPointMA method which automatically 
+      // Drive to the point using the driveToPointMA method which automatically
       // determines whether to use front or back of robot
       DriveCommands.driveToPointMA(targetPose, drivetrain, Meters.of(0));
     }
@@ -174,7 +170,7 @@ public class AutoScore extends Command {
   public void end(boolean interrupted) {
     // Stop the drivetrain when the command ends
     drivetrain.stop();
-    
+
     if (interrupted) {
       // If interrupted, make sure the arm is in a safe position
       new SmartArm(arm, SmartArm.Goal.STOW).schedule();
@@ -187,31 +183,25 @@ public class AutoScore extends Command {
     // we should let the command continue running until it's manually ended
     return false;
   }
-  
-  /**
-   * Factory method to create a command for scoring at L1 height
-   */
+
+  /** Factory method to create a command for scoring at L1 height */
   public static AutoScore scoreAtL1(Drive drivetrain, Arm arm, ReefDrive.Side side) {
     return new AutoScore(drivetrain, arm, side, ReefHeight.L1);
   }
-  
-  /**
-   * Factory method to create a command for scoring at L2 height
-   */
+
+  /** Factory method to create a command for scoring at L2 height */
   public static AutoScore scoreAtL2(Drive drivetrain, Arm arm, ReefDrive.Side side) {
     return new AutoScore(drivetrain, arm, side, ReefHeight.L2);
   }
-  
-  /**
-   * Factory method to create a command for scoring at L3 height
-   */
+
+  /** Factory method to create a command for scoring at L3 height */
   public static AutoScore scoreAtL3(Drive drivetrain, Arm arm, ReefDrive.Side side) {
     return new AutoScore(drivetrain, arm, side, ReefHeight.L3);
   }
-  
+
   /**
-   * Factory method to create a command for scoring at L4 height
-   * Note: L4 is only available when using the back side of the robot
+   * Factory method to create a command for scoring at L4 height Note: L4 is only available when
+   * using the back side of the robot
    */
   public static AutoScore scoreAtL4(Drive drivetrain, Arm arm, ReefDrive.Side side) {
     return new AutoScore(drivetrain, arm, side, ReefHeight.L4);
