@@ -134,13 +134,13 @@ public class DriveCommands extends Command {
   public static void driveToPointMA(Pose2d target, Drive drive, Distance offset) {
     Pose2d robotPose = drive.getPose();
 
+    // Calculate approach path using the oriented target
     // Get the properly oriented target based on which side of the robot is closer to target
     // rotation
     Pose2d orientedTarget = getOptimalOrientedTarget(robotPose, target);
-
-    // Calculate approach path using the oriented target
     Pose2d newTarget = getDriveTarget(robotPose, orientedTarget, offset);
-    driveToPoint(newTarget, drive);
+
+    driveToPoint(orientedTarget, drive);
   }
 
   /**
