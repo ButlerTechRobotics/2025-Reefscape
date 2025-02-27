@@ -74,83 +74,84 @@ public class Arm extends SubsystemBase {
 
     switch (currentGoal) {
       case STOW -> {
-        wrist.setWristPosition(Wrist.WristPosition.STOW);
-        if (wrist.isAtTarget()) {
-          extension.setExtensionPosition(Extension.ExtensionPosition.STOW);
-        }
-        if (shoulder.isAtTarget()) {
-          shoulder.setShoulderPosition(Shoulder.ShoulderPosition.STOW);
-        }
+        // wrist.stow();
+        // if (wrist.isAtTarget()) {
+        //   extension.stow();
+        // }
+        // if (shoulder.isAtTarget()) {
+        //   shoulder.stow();
+        // }
+        shoulder.stow();
       }
       case CORAL_FLOOR_INTAKE -> {
-        shoulder.setShoulderPosition(Shoulder.ShoulderPosition.CORAL_FLOOR_INTAKE);
-        extension.setExtensionPosition(Extension.ExtensionPosition.CORAL_FLOOR_INTAKE);
-        wrist.setWristPosition(Wrist.WristPosition.CORAL_FLOOR_INTAKE);
+        shoulder.coralFloorIntake();
+        extension.coralFloorIntake();
+        wrist.coralFloorIntake();
       }
       case CORAL_STATION_INTAKE -> {
-        shoulder.setShoulderPosition(Shoulder.ShoulderPosition.CORAL_STATION_INTAKE);
-        extension.setExtensionPosition(Extension.ExtensionPosition.CORAL_STATION_INTAKE);
-        wrist.setWristPosition(Wrist.WristPosition.CORAL_STATION_INTAKE);
+        shoulder.coralStationIntake();
+        extension.coralStationIntake();
+        wrist.coralStationIntake();
       }
       case CORAL_L1 -> {
-        shoulder.setShoulderPosition(Shoulder.ShoulderPosition.CORAL_L1);
-        extension.setExtensionPosition(Extension.ExtensionPosition.CORAL_L1);
-        wrist.setWristPosition(Wrist.WristPosition.CORAL_L1);
+        shoulder.coralL1();
+        extension.coralL1();
+        wrist.coralL1();
       }
       case CORAL_L1BACK -> {
-        shoulder.setShoulderPosition(Shoulder.ShoulderPosition.CORAL_L1BACK);
-        extension.setExtensionPosition(Extension.ExtensionPosition.CORAL_L1BACK);
-        wrist.setWristPosition(Wrist.WristPosition.CORAL_L1BACK);
+        shoulder.coralL1Back();
+        extension.coralL1Back();
+        wrist.coralL1Back();
       }
       case CORAL_L2 -> {
-        shoulder.setShoulderPosition(Shoulder.ShoulderPosition.CORAL_L2);
-        extension.setExtensionPosition(Extension.ExtensionPosition.CORAL_L2);
-        wrist.setWristPosition(Wrist.WristPosition.CORAL_L2);
+        shoulder.coralL2();
+        extension.coralL2();
+        wrist.coralL2();
       }
       case CORAL_L2BACK -> {
-        shoulder.setShoulderPosition(Shoulder.ShoulderPosition.CORAL_L2BACK);
-        extension.setExtensionPosition(Extension.ExtensionPosition.CORAL_L2BACK);
-        wrist.setWristPosition(Wrist.WristPosition.CORAL_L2BACK);
+        shoulder.coralL2Back();
+        extension.coralL2Back();
+        wrist.coralL2Back();
       }
       case CORAL_L3 -> {
-        shoulder.setShoulderPosition(Shoulder.ShoulderPosition.CORAL_L3);
-        extension.setExtensionPosition(Extension.ExtensionPosition.CORAL_L3);
-        wrist.setWristPosition(Wrist.WristPosition.CORAL_L3);
+        shoulder.coralL3();
+        extension.coralL3();
+        wrist.coralL3();
       }
       case CORAL_L3BACK -> {
-        shoulder.setShoulderPosition(Shoulder.ShoulderPosition.CORAL_L3BACK);
-        extension.setExtensionPosition(Extension.ExtensionPosition.CORAL_L3BACK);
-        wrist.setWristPosition(Wrist.WristPosition.CORAL_L3BACK);
+        shoulder.coralL3Back();
+        extension.coralL3Back();
+        wrist.coralL3Back();
       }
       case CORAL_L4BACK -> {
-        shoulder.setShoulderPosition(Shoulder.ShoulderPosition.CORAL_L4BACK);
-        extension.setExtensionPosition(Extension.ExtensionPosition.CORAL_L4BACK);
-        wrist.setWristPosition(Wrist.WristPosition.CORAL_L4BACK);
+        shoulder.coralL4Back();
+        extension.coralL4Back();
+        wrist.coralL4Back();
       }
       case ALGAE_FLOOR_INTAKE -> {
-        shoulder.setShoulderPosition(Shoulder.ShoulderPosition.ALGAE_FLOOR_INTAKE);
-        extension.setExtensionPosition(Extension.ExtensionPosition.ALGAE_FLOOR_INTAKE);
-        wrist.setWristPosition(Wrist.WristPosition.ALGAE_FLOOR_INTAKE);
+        shoulder.algaeFloorIntake();
+        extension.algaeFloorIntake();
+        wrist.algaeFloorIntake();
       }
       case ALGAE_SCORE -> {
-        shoulder.setShoulderPosition(Shoulder.ShoulderPosition.ALGAE_SCORE);
-        extension.setExtensionPosition(Extension.ExtensionPosition.ALGAE_SCORE);
-        wrist.setWristPosition(Wrist.WristPosition.ALGAE_SCORE);
+        shoulder.algaeScore();
+        extension.algaeScore();
+        wrist.algaeScore();
       }
       case ALGAE_L1 -> {
-        shoulder.setShoulderPosition(Shoulder.ShoulderPosition.ALGAE_L1);
-        extension.setExtensionPosition(Extension.ExtensionPosition.ALGAE_L1);
-        wrist.setWristPosition(Wrist.WristPosition.ALGAE_L1);
+        shoulder.algaeL1();
+        extension.algaeL1();
+        wrist.algaeL1();
       }
       case ALGAE_L2 -> {
-        shoulder.setShoulderPosition(Shoulder.ShoulderPosition.ALGAE_L2);
-        extension.setExtensionPosition(Extension.ExtensionPosition.ALGAE_L2);
-        wrist.setWristPosition(Wrist.WristPosition.ALGAE_L2);
+        shoulder.algaeL2();
+        extension.algaeL2();
+        wrist.algaeL2();
       }
       case CLIMB -> {
-        shoulder.setShoulderPosition(Shoulder.ShoulderPosition.CLIMB);
-        extension.setExtensionPosition(Extension.ExtensionPosition.CLIMB);
-        wrist.setWristPosition(Wrist.WristPosition.CLIMB);
+        shoulder.climb();
+        extension.climb();
+        wrist.climb();
       }
     }
     shoulder.periodic();

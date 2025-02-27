@@ -84,9 +84,9 @@ public class ShoulderIOCTRE implements ShoulderIO {
    */
   public ShoulderIOCTRE() {
     // Set up all three followers to mirror the leader
-    blFollower.setControl(new Follower(brLeader.getDeviceID(), false));
+    blFollower.setControl(new Follower(brLeader.getDeviceID(), true));
     frFollower.setControl(new Follower(brLeader.getDeviceID(), false));
-    flFollower.setControl(new Follower(brLeader.getDeviceID(), false));
+    flFollower.setControl(new Follower(brLeader.getDeviceID(), true));
 
     // Configure leader motor with appropriate settings
     TalonFXConfiguration config = createMotorConfiguration();
@@ -131,7 +131,7 @@ public class ShoulderIOCTRE implements ShoulderIO {
   private TalonFXConfiguration createMotorConfiguration() {
     var config = new TalonFXConfiguration();
     // Set motor to coast when stopped
-    config.MotorOutput.NeutralMode = NeutralModeValue.Brake;
+    config.MotorOutput.NeutralMode = NeutralModeValue.Coast;
     config.Feedback.SensorToMechanismRatio = 0.0;
     config.TorqueCurrent.PeakForwardTorqueCurrent = 120.0;
     config.TorqueCurrent.PeakReverseTorqueCurrent = -120.0;
@@ -140,13 +140,13 @@ public class ShoulderIOCTRE implements ShoulderIO {
     config.MotorOutput.Inverted = InvertedValue.CounterClockwise_Positive;
 
     // Configure PID and feedforward gains
-    config.Slot0.kP = 620; // Proportional gain
+    config.Slot0.kP = 0; // Proportional gain
     config.Slot0.kI = 0; // Integral gain
-    config.Slot0.kD = 11; // Derivative gain
-    config.Slot0.kS = 0.08; // Static friction compensation
+    config.Slot0.kD = 0; // Derivative gain
+    config.Slot0.kS = 0; // Static friction compensation
     config.Slot0.kV = 0; // Velocity feedforward
     config.Slot0.kA = 0; // Acceleration feedforward
-    config.Slot0.kG = 0.0001; // Gravity feedforward
+    config.Slot0.kG = 0; // Gravity feedforward
 
     // Use the CANcoder as the remote feedback device
     config.Feedback.withRemoteCANcoder(encoder);

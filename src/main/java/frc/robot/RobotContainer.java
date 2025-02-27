@@ -21,10 +21,8 @@ import edu.wpi.first.units.measure.LinearVelocity;
 import edu.wpi.first.wpilibj2.command.Command;
 import edu.wpi.first.wpilibj2.command.Commands;
 import edu.wpi.first.wpilibj2.command.sysid.SysIdRoutine;
-import frc.robot.commands.AutoScore;
 import frc.robot.commands.DriveCommands;
 import frc.robot.commands.ReefDrive;
-import frc.robot.commands.ReefDrive.Side;
 import frc.robot.commands.SmartArm;
 import frc.robot.generated.TunerConstants;
 import frc.robot.subsystems.arm.Arm;
@@ -52,7 +50,6 @@ import frc.robot.subsystems.vision.Vision;
 import frc.robot.subsystems.vision.VisionIO;
 import frc.robot.subsystems.vision.VisionIOPhotonVision;
 import frc.robot.subsystems.vision.VisionIOPhotonVisionSIM;
-import frc.robot.utils.ButtonBox;
 import frc.robot.utils.TunableController;
 import frc.robot.utils.TunableController.TunableControllerType;
 import org.littletonrobotics.junction.networktables.LoggedDashboardChooser;
@@ -60,8 +57,7 @@ import org.littletonrobotics.junction.networktables.LoggedDashboardChooser;
 public class RobotContainer {
   private LinearVelocity MaxSpeed = TunerConstants.kSpeedAt12Volts;
   private final TunableController joystick =
-      new TunableController(0).withControllerType(TunableControllerType.CUBIC);
-  private final ButtonBox buttonBox = new ButtonBox(1);
+      new TunableController(0).withControllerType(TunableControllerType.QUADRATIC);
 
   private final LoggedDashboardChooser<Command> autoChooser;
 
@@ -314,9 +310,10 @@ public class RobotContainer {
         .and(joystick.a())
         .whileTrue(new ReefDrive(drivetrain, ReefDrive.Side.RIGHT));
 
-    buttonBox.backL4Button().onTrue(new SmartArm(arm, SmartArm.Goal.CORAL_L4BACK));
+    joystick.povLeft().onTrue(new SmartArm(arm, SmartArm.Goal.CORAL_L4BACK));
+    joystick.povRight().onTrue(new SmartArm(arm, SmartArm.Goal.STOW));
 
-    joystick.povLeft().whileTrue(AutoScore.scoreAtL4(drivetrain, arm, Side.RIGHT));
+    // joystick.povLeft().whileTrue(AutoScore.scoreAtL4(drivetrain, arm, Side.RIGHT));
   }
 
   public Command getAutonomousCommand() {

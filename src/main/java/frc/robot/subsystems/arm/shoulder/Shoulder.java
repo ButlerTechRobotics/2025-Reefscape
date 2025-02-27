@@ -166,9 +166,7 @@ public class Shoulder extends SubsystemBase {
    */
   public void setShoulderPosition(ShoulderPosition position) {
     if (currentMode != position) {
-      if (currentCommand != null) {
-        currentCommand.cancel();
-      }
+      currentCommand.cancel();
       currentMode = position;
       currentCommand.schedule();
     }
