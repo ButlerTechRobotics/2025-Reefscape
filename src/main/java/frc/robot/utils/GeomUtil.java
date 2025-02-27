@@ -66,7 +66,6 @@ public class GeomUtil {
   }
 
   public static Pose2d flipRotation(Pose2d pose) {
-
     return new Pose2d(
         pose.getTranslation(), pose.getRotation().rotateBy(Rotation2d.fromDegrees(180)));
   }

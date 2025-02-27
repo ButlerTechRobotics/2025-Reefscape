@@ -144,13 +144,13 @@ public class DriveCommands extends Command {
   }
 
   /**
-   * Gets the optimal target pose based on whether front or back of robot should face the target.
+   * Determines if the robot's back side is closer to the target orientation.
    *
    * @param robotPose Current robot pose
    * @param targetPose Target pose
-   * @return Modified target pose oriented for optimal approach
+   * @return true if the back side of the robot is closer to the target orientation
    */
-  public static Pose2d getOptimalOrientedTarget(Pose2d robotPose, Pose2d targetPose) {
+  public static boolean isBackSideCloser(Pose2d robotPose, Pose2d targetPose) {
     Rotation2d currentRotation = robotPose.getRotation();
     Rotation2d targetRotation = targetPose.getRotation();
 
@@ -161,8 +161,23 @@ public class DriveCommands extends Command {
     Rotation2d flippedRotation = currentRotation.plus(Rotation2d.fromDegrees(180));
     double backDifference = Math.abs(flippedRotation.minus(targetRotation).getRadians());
 
+    // Return true if back side is closer
+    return backDifference < frontDifference;
+  }
+
+  /**
+   * Gets the optimal target pose based on whether front or back of robot should face the target.
+   *
+   * @param robotPose Current robot pose
+   * @param targetPose Target pose
+   * @return Modified target pose oriented for optimal approach
+   */
+  public static Pose2d getOptimalOrientedTarget(Pose2d robotPose, Pose2d targetPose) {
+    // Use the helper method to check if back side is closer
+    boolean useBackSide = isBackSideCloser(robotPose, targetPose);
+
     // If back is closer, flip the target rotation
-    if (backDifference < frontDifference) {
+    if (useBackSide) {
       return GeomUtil.flipRotation(targetPose);
     }
 

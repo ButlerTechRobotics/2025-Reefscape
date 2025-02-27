@@ -51,7 +51,7 @@ public class AutoScore extends Command {
   /** Determines the appropriate SmartArm goal based on height and orientation */
   private SmartArm.Goal determineArmGoal() {
     // Map ReefHeight to the appropriate SmartArm.Goal based on whether using back side
-    if (!isUsingBackSide) {
+    if (isUsingBackSide) {
       // Forward-facing goals
       switch (height) {
         case L1:
@@ -144,9 +144,7 @@ public class AutoScore extends Command {
       System.out.println("Scoring at height: " + height);
 
       // Determine whether to use back or front based on current robot pose
-      // isUsingBackSide =
-      //     DriveCommands.isBackSideCloser(
-      //         drivetrain.getPose().getRotation(), targetPose.getRotation());
+      isUsingBackSide = DriveCommands.isBackSideCloser(drivetrain.getPose(), targetPose);
 
       System.out.println("Using robot back side: " + isUsingBackSide);
 

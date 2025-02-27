@@ -8,11 +8,12 @@
 package frc.robot.subsystems.arm.shoulder;
 
 import com.ctre.phoenix6.BaseStatusSignal;
+import com.ctre.phoenix6.CANBus;
 import com.ctre.phoenix6.StatusCode;
 import com.ctre.phoenix6.StatusSignal;
 import com.ctre.phoenix6.configs.TalonFXConfiguration;
 import com.ctre.phoenix6.controls.Follower;
-import com.ctre.phoenix6.controls.PositionTorqueCurrentFOC;
+import com.ctre.phoenix6.controls.PositionVoltage;
 import com.ctre.phoenix6.hardware.CANcoder;
 import com.ctre.phoenix6.hardware.TalonFX;
 import com.ctre.phoenix6.signals.InvertedValue;
@@ -33,17 +34,20 @@ public class ShoulderIOCTRE implements ShoulderIO {
   /** The gear ratio between the motor and the shoulder mechanism */
   public static final double GEAR_RATIO = 135;
 
-  /** The back-right leader TalonFX motor controller (CAN ID: 20) */
-  public final TalonFX brLeader = new TalonFX(16);
-  /** The back-left follower TalonFX motor controller (CAN ID: 21) */
-  public final TalonFX blFollower = new TalonFX(15);
-  /** The front-right follower TalonFX motor controller (CAN ID: 22) */
-  public final TalonFX frFollower = new TalonFX(14);
-  /** The front-left follower TalonFX motor controller (CAN ID: 23) */
-  public final TalonFX flFollower = new TalonFX(13);
+  /** CAN bus that the devices are located on */
+  public static final CANBus kCANBus = new CANBus("CANivore");
 
-  /** The CANcoder for position feedback (CAN ID: 24) */
-  public final CANcoder encoder = new CANcoder(17);
+  /** The back-right leader TalonFX motor controller (CAN ID: 16) */
+  public final TalonFX brLeader = new TalonFX(16, kCANBus);
+  /** The back-left follower TalonFX motor controller (CAN ID: 15) */
+  public final TalonFX blFollower = new TalonFX(15, kCANBus);
+  /** The front-right follower TalonFX motor controller (CAN ID: 14) */
+  public final TalonFX frFollower = new TalonFX(14, kCANBus);
+  /** The front-left follower TalonFX motor controller (CAN ID: 13) */
+  public final TalonFX flFollower = new TalonFX(13, kCANBus);
+
+  /** The CANcoder for position feedback (CAN ID: 17) */
+  public final CANcoder encoder = new CANcoder(17, kCANBus);
 
   // Status signals for monitoring motor and encoder states
   private final StatusSignal<Angle> brLeaderPosition = brLeader.getPosition();
@@ -86,7 +90,10 @@ public class ShoulderIOCTRE implements ShoulderIO {
 
     // Configure leader motor with appropriate settings
     TalonFXConfiguration config = createMotorConfiguration();
-    brLeader.getConfigurator().apply(config);
+    for (int i = 0; i < 4; i++) {
+      boolean statusOK = brLeader.getConfigurator().apply(config, 0.1) == StatusCode.OK;
+      if (statusOK) break;
+    }
 
     // Configure update frequencies for all status signals
     BaseStatusSignal.setUpdateFrequencyForAll(
@@ -124,22 +131,22 @@ public class ShoulderIOCTRE implements ShoulderIO {
   private TalonFXConfiguration createMotorConfiguration() {
     var config = new TalonFXConfiguration();
     // Set motor to coast when stopped
-    config.MotorOutput.NeutralMode = NeutralModeValue.Coast;
+    config.MotorOutput.NeutralMode = NeutralModeValue.Brake;
     config.Feedback.SensorToMechanismRatio = 0.0;
     config.TorqueCurrent.PeakForwardTorqueCurrent = 120.0;
     config.TorqueCurrent.PeakReverseTorqueCurrent = -120.0;
     config.CurrentLimits.StatorCurrentLimit = 80.0;
     config.CurrentLimits.StatorCurrentLimitEnable = true;
-    config.MotorOutput.Inverted = InvertedValue.Clockwise_Positive;
+    config.MotorOutput.Inverted = InvertedValue.CounterClockwise_Positive;
 
     // Configure PID and feedforward gains
-    config.Slot0.kP = 0; // Proportional gain
+    config.Slot0.kP = 620; // Proportional gain
     config.Slot0.kI = 0; // Integral gain
-    config.Slot0.kD = 0; // Derivative gain
-    config.Slot0.kS = 0; // Static friction compensation
+    config.Slot0.kD = 11; // Derivative gain
+    config.Slot0.kS = 0.08; // Static friction compensation
     config.Slot0.kV = 0; // Velocity feedforward
     config.Slot0.kA = 0; // Acceleration feedforward
-    config.Slot0.kG = 0; // Gravity feedforward
+    config.Slot0.kG = 0.0001; // Gravity feedforward
 
     // Use the CANcoder as the remote feedback device
     config.Feedback.withRemoteCANcoder(encoder);
@@ -219,7 +226,7 @@ public class ShoulderIOCTRE implements ShoulderIO {
   @Override
   public void setPosition(Angle angle) {
     // Convert desired angle to encoder rotations
-    brLeader.setControl(new PositionTorqueCurrentFOC(angle));
+    brLeader.setControl(new PositionVoltage(angle));
   }
 
   /**

@@ -316,7 +316,7 @@ public class RobotContainer {
 
     buttonBox.backL4Button().onTrue(new SmartArm(arm, SmartArm.Goal.CORAL_L4BACK));
 
-    joystick.povLeft().whileTrue(AutoScore.scoreAtL4(drivetrain, arm, Side.LEFT));
+    joystick.povLeft().whileTrue(AutoScore.scoreAtL4(drivetrain, arm, Side.RIGHT));
   }
 
   public Command getAutonomousCommand() {
