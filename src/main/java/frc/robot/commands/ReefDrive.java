@@ -16,6 +16,7 @@ import edu.wpi.first.math.geometry.Transform2d;
 import edu.wpi.first.wpilibj2.command.Command;
 import frc.robot.Constants;
 import frc.robot.subsystems.drive.Drive;
+import frc.robot.utils.AllianceFlipUtil;
 import frc.robot.utils.FieldConstants;
 import frc.robot.utils.FieldConstants.ReefHeight;
 
@@ -78,13 +79,14 @@ public class ReefDrive extends Command {
 
       // Apply offset similar to the example in the joystick code
       targetPose =
-          reefBranch
-              .toPose2d()
-              .transformBy(
-                  new Transform2d(
-                      Inches.of(2.25).plus(Constants.robotScoringOffset),
-                      side == Side.LEFT ? Inches.of(1.8).unaryMinus() : Inches.of(1.8),
-                      Rotation2d.k180deg));
+          AllianceFlipUtil.apply(
+              reefBranch
+                  .toPose2d()
+                  .transformBy(
+                      new Transform2d(
+                          Inches.of(2.25).plus(Constants.robotScoringOffset),
+                          side == Side.LEFT ? Inches.of(1.8).unaryMinus() : Inches.of(1.8),
+                          Rotation2d.k180deg)));
 
       hasTarget = true;
     }

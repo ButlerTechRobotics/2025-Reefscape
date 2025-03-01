@@ -69,6 +69,18 @@ public class RobotContainer {
   private final SwerveRequest.SwerveDriveBrake brake = new SwerveRequest.SwerveDriveBrake();
   private final SwerveRequest.PointWheelsAt point = new SwerveRequest.PointWheelsAt();
 
+  // Add deadband constant - adjust this value as needed (0.05 to 0.15 is typical)
+  private static final double JOYSTICK_DEADBAND = 0.1;
+
+  // Add this helper method to apply deadband
+  private double applyDeadband(double value, double deadband) {
+    if (Math.abs(value) < deadband) {
+      return 0.0;
+    }
+    // Scale the value to maintain full range from deadband to 1.0
+    return Math.copySign((Math.abs(value) - deadband) / (1.0 - deadband), value);
+  }
+
   public RobotContainer() {
     // Declare component subsystems (not visible outside constructor)
     Extension extension = null;
@@ -236,10 +248,14 @@ public class RobotContainer {
                     .setpointGen
                     .withVelocityX(
                         MaxSpeed.times(
-                            -joystick.getLeftY())) // Drive forward with negative Y (forward)
-                    .withVelocityY(MaxSpeed.times(-joystick.getLeftX()))
-                    .withRotationalRate(Constants.MaxAngularRate.times(-joystick.getRightX()))
-                    .withOperatorForwardDirection(drivetrain.getOperatorForwardDirection())));
+                            applyDeadband(
+                                joystick.getLeftY(),
+                                JOYSTICK_DEADBAND))) // Drive forward with negative Y
+                    .withVelocityY(
+                        MaxSpeed.times(applyDeadband(joystick.getLeftX(), JOYSTICK_DEADBAND)))
+                    .withRotationalRate(
+                        Constants.MaxAngularRate.times(
+                            -applyDeadband(joystick.getRightX(), JOYSTICK_DEADBAND)))));
 
     joystick.start().onTrue(Commands.runOnce(() -> drivetrain.resetPose(Pose2d.kZero)));
     // joystick
@@ -312,7 +328,6 @@ public class RobotContainer {
 
     joystick.povLeft().onTrue(new SmartArm(arm, SmartArm.Goal.CORAL_L4BACK));
     joystick.povRight().onTrue(new SmartArm(arm, SmartArm.Goal.STOW));
-
     // joystick.povLeft().whileTrue(AutoScore.scoreAtL4(drivetrain, arm, Side.RIGHT));
   }
 

@@ -81,82 +81,82 @@ public class Arm extends SubsystemBase {
         // if (shoulder.isAtTarget()) {
         //   shoulder.stow();
         // }
-        shoulder.stow();
+        shoulder.stow().schedule();
+        extension.stow().schedule();
+        wrist.stow().schedule();
       }
       case CORAL_FLOOR_INTAKE -> {
-        shoulder.coralFloorIntake();
-        extension.coralFloorIntake();
-        wrist.coralFloorIntake();
+        shoulder.coralFloorIntake().schedule();
+        extension.coralFloorIntake().schedule();
+        wrist.coralFloorIntake().schedule();
       }
       case CORAL_STATION_INTAKE -> {
-        shoulder.coralStationIntake();
-        extension.coralStationIntake();
-        wrist.coralStationIntake();
+        shoulder.coralStationIntake().schedule();
+        extension.coralStationIntake().schedule();
+        wrist.coralStationIntake().schedule();
       }
       case CORAL_L1 -> {
-        shoulder.coralL1();
-        extension.coralL1();
-        wrist.coralL1();
+        shoulder.coralL1().schedule();
+        extension.coralL1().schedule();
+        wrist.coralL1().schedule();
       }
       case CORAL_L1BACK -> {
-        shoulder.coralL1Back();
-        extension.coralL1Back();
-        wrist.coralL1Back();
+        shoulder.coralL1Back().schedule();
+        extension.coralL1Back().schedule();
+        wrist.coralL1Back().schedule();
       }
       case CORAL_L2 -> {
-        shoulder.coralL2();
-        extension.coralL2();
-        wrist.coralL2();
+        shoulder.coralL2().schedule();
+        extension.coralL2().schedule();
+        wrist.coralL2().schedule();
       }
       case CORAL_L2BACK -> {
-        shoulder.coralL2Back();
-        extension.coralL2Back();
-        wrist.coralL2Back();
+        shoulder.coralL2Back().schedule();
+        extension.coralL2Back().schedule();
+        wrist.coralL2Back().schedule();
       }
       case CORAL_L3 -> {
-        shoulder.coralL3();
-        extension.coralL3();
-        wrist.coralL3();
+        shoulder.coralL3().schedule();
+        extension.coralL3().schedule();
+        wrist.coralL3().schedule();
       }
       case CORAL_L3BACK -> {
-        shoulder.coralL3Back();
-        extension.coralL3Back();
-        wrist.coralL3Back();
+        shoulder.coralL3Back().schedule();
+        extension.coralL3Back().schedule();
+        wrist.coralL3Back().schedule();
       }
       case CORAL_L4BACK -> {
-        shoulder.coralL4Back();
-        extension.coralL4Back();
-        wrist.coralL4Back();
+        System.out.println("Setting arm to CORAL_L4BACK position");
+        shoulder.coralL4Back().schedule();
+        extension.coralL4Back().schedule();
+        wrist.coralL4Back().schedule();
       }
       case ALGAE_FLOOR_INTAKE -> {
-        shoulder.algaeFloorIntake();
-        extension.algaeFloorIntake();
-        wrist.algaeFloorIntake();
+        shoulder.algaeFloorIntake().schedule();
+        extension.algaeFloorIntake().schedule();
+        wrist.algaeFloorIntake().schedule();
       }
       case ALGAE_SCORE -> {
-        shoulder.algaeScore();
-        extension.algaeScore();
-        wrist.algaeScore();
+        shoulder.algaeScore().schedule();
+        extension.algaeScore().schedule();
+        wrist.algaeScore().schedule();
       }
       case ALGAE_L1 -> {
-        shoulder.algaeL1();
-        extension.algaeL1();
-        wrist.algaeL1();
+        shoulder.algaeL1().schedule();
+        extension.algaeL1().schedule();
+        wrist.algaeL1().schedule();
       }
       case ALGAE_L2 -> {
-        shoulder.algaeL2();
-        extension.algaeL2();
-        wrist.algaeL2();
+        shoulder.algaeL2().schedule();
+        extension.algaeL2().schedule();
+        wrist.algaeL2().schedule();
       }
       case CLIMB -> {
-        shoulder.climb();
-        extension.climb();
-        wrist.climb();
+        shoulder.climb().schedule();
+        extension.climb().schedule();
+        wrist.climb().schedule();
       }
     }
-    shoulder.periodic();
-    extension.periodic();
-    wrist.periodic();
 
     Logger.recordOutput("Arm/GoalState", desiredGoal);
     Logger.recordOutput("Arm/CurrentState", currentGoal);

@@ -40,9 +40,6 @@ public class ExtensionIOCTRE implements ExtensionIO {
   /** The follower TalonFX motor controller (CAN ID: 31) */
   public final TalonFX follower = new TalonFX(31);
 
-  /** The CANcoder for position feedback (CAN ID: 32) */
-  public final CANcoder encoder = new CANcoder(32);
-
   // Status signals for monitoring motor and encoder states
   private final StatusSignal<Angle> leaderPosition = leader.getPosition();
   private final StatusSignal<Angle> leaderRotorPosition = leader.getRotorPosition();
@@ -53,13 +50,10 @@ public class ExtensionIOCTRE implements ExtensionIO {
   private final StatusSignal<Current> followerStatorCurrent = follower.getStatorCurrent();
   private final StatusSignal<Current> leaderSupplyCurrent = leader.getSupplyCurrent();
   private final StatusSignal<Current> followerSupplyCurrent = follower.getSupplyCurrent();
-  private final StatusSignal<Angle> encoderPosition = encoder.getPosition();
-  private final StatusSignal<AngularVelocity> encoderVelocity = encoder.getVelocity();
 
   // Debouncers for connection status (filters out brief disconnections)
   private final Debouncer leaderDebounce = new Debouncer(0.5);
   private final Debouncer followerDebounce = new Debouncer(0.5);
-  private final Debouncer encoderDebounce = new Debouncer(0.5);
 
   /**
    * The radius of the extension pulley/drum, used for converting between rotations and linear
@@ -91,14 +85,11 @@ public class ExtensionIOCTRE implements ExtensionIO {
         leaderStatorCurrent,
         followerStatorCurrent,
         leaderSupplyCurrent,
-        followerSupplyCurrent,
-        encoderPosition,
-        encoderVelocity);
+        followerSupplyCurrent);
 
     // Optimize CAN bus usage for all devices
     leader.optimizeBusUtilization(4, 0.1);
     follower.optimizeBusUtilization(4, 0.1);
-    encoder.optimizeBusUtilization(4, 0.1);
   }
 
   /**
@@ -113,16 +104,14 @@ public class ExtensionIOCTRE implements ExtensionIO {
     config.MotorOutput.NeutralMode = NeutralModeValue.Coast;
 
     // Configure PID and feedforward gains
-    config.Slot0.kP = 24; // Proportional gain
+    config.Slot0.kP = 0; // Proportional gain
     config.Slot0.kI = 0; // Integral gain
-    config.Slot0.kD = 1.6; // Derivative gain
-    config.Slot0.kS = 0.1; // Static friction compensation
+    config.Slot0.kD = 0; // Derivative gain
+    config.Slot0.kS = 0; // Static friction compensation
     config.Slot0.kV = 0; // Velocity feedforward
     config.Slot0.kA = 0; // Acceleration feedforward
-    config.Slot0.kG = 0.7297; // Gravity feedforward
+    config.Slot0.kG = 0; // Gravity feedforward
 
-    // Use the CANcoder as the remote feedback device
-    config.Feedback.withRemoteCANcoder(encoder);
     return config;
   }
 
@@ -149,21 +138,15 @@ public class ExtensionIOCTRE implements ExtensionIO {
     StatusCode followerStatus =
         BaseStatusSignal.refreshAll(followerStatorCurrent, followerSupplyCurrent);
 
-    StatusCode encoderStatus = BaseStatusSignal.refreshAll(encoderPosition, encoderVelocity);
-
     // Update connection status with debouncing
     inputs.leaderConnected = leaderDebounce.calculate(leaderStatus.isOK());
     inputs.followerConnected = followerDebounce.calculate(followerStatus.isOK());
-    inputs.encoderConnected = encoderDebounce.calculate(encoderStatus.isOK());
 
     // Update position and velocity measurements
     inputs.leaderPosition = leaderPosition.getValue();
     inputs.leaderRotorPosition = leaderRotorPosition.getValue();
     inputs.leaderVelocity = leaderVelocity.getValue();
     inputs.leaderRotorVelocity = leaderRotorVelocity.getValue();
-
-    inputs.encoderPosition = encoderPosition.getValue();
-    inputs.encoderVelocity = encoderVelocity.getValue();
 
     // Update voltage and current measurements
     inputs.appliedVoltage = leaderAppliedVolts.getValue();
@@ -175,7 +158,7 @@ public class ExtensionIOCTRE implements ExtensionIO {
     // Calculate actual extension distance using encoder position
     // Note: Using gear ratio of 1 since encoder rotations match extension movement
     inputs.extensionDistance =
-        Conversions.rotationsToMeters(inputs.encoderPosition, 1, extensionRadius);
+        Conversions.rotationsToMeters(inputs.leaderPosition, 1, extensionRadius);
   }
 
   /**

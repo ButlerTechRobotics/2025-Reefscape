@@ -161,16 +161,16 @@ public class Shoulder extends SubsystemBase {
   }
 
   /**
-   * Sets a new shoulder mode and schedules the corresponding command.
+   * Sets a new shoulder position and schedules the corresponding command.
    *
-   * @param position The desired ShoulderMode
+   * @param position The desired ShoulderPosition
    */
-  public void setShoulderMode(ShoulderPosition mode) {
-    if (currentMode != mode) {
+  public void setShoulderPosition(ShoulderPosition position) {
+    if (currentMode != position) {
       if (currentCommand != null) {
         currentCommand.cancel();
       }
-      currentMode = mode;
+      currentMode = position;
       currentCommand.schedule();
     }
   }
@@ -258,14 +258,14 @@ public class Shoulder extends SubsystemBase {
   }
 
   /**
-   * Creates a command to set the shoulder to a specific mode.
+   * Creates a command to set the shoulder to a specific position.
    *
-   * @param mode The desired shoulder mode
-   * @return Command to set the mode
+   * @param position The desired shoulder position
+   * @return Command to set the position
    */
-  private Command setPositionCommand(ShoulderPosition mode) {
-    return Commands.runOnce(() -> setShoulderMode(mode))
-        .withName("SetShoulderMode(" + mode.toString() + ")");
+  private Command setPositionCommand(ShoulderPosition position) {
+    return Commands.runOnce(() -> setShoulderPosition(position))
+        .withName("SetShoulderPosition(" + position.toString() + ")");
   }
 
   /** Factory methods for common position commands */

@@ -38,16 +38,16 @@ public class ShoulderIOCTRE implements ShoulderIO {
   public static final CANBus kCANBus = new CANBus("CANivore");
 
   /** The back-right leader TalonFX motor controller (CAN ID: 16) */
-  public final TalonFX brLeader = new TalonFX(16, kCANBus);
+  public final TalonFX brLeader = new TalonFX(23, kCANBus);
   /** The back-left follower TalonFX motor controller (CAN ID: 15) */
-  public final TalonFX blFollower = new TalonFX(15, kCANBus);
+  public final TalonFX blFollower = new TalonFX(22, kCANBus);
   /** The front-right follower TalonFX motor controller (CAN ID: 14) */
-  public final TalonFX frFollower = new TalonFX(14, kCANBus);
+  public final TalonFX frFollower = new TalonFX(21, kCANBus);
   /** The front-left follower TalonFX motor controller (CAN ID: 13) */
-  public final TalonFX flFollower = new TalonFX(13, kCANBus);
+  public final TalonFX flFollower = new TalonFX(20, kCANBus);
 
   /** The CANcoder for position feedback (CAN ID: 17) */
-  public final CANcoder encoder = new CANcoder(17, kCANBus);
+  public final CANcoder encoder = new CANcoder(24, kCANBus);
 
   // Status signals for monitoring motor and encoder states
   private final StatusSignal<Angle> brLeaderPosition = brLeader.getPosition();
@@ -132,7 +132,7 @@ public class ShoulderIOCTRE implements ShoulderIO {
     var config = new TalonFXConfiguration();
     // Set motor to coast when stopped
     config.MotorOutput.NeutralMode = NeutralModeValue.Coast;
-    config.Feedback.SensorToMechanismRatio = 0.0;
+    config.Feedback.SensorToMechanismRatio = (82.0 / 18.0); // 82:18 gear ratio
     config.TorqueCurrent.PeakForwardTorqueCurrent = 120.0;
     config.TorqueCurrent.PeakReverseTorqueCurrent = -120.0;
     config.CurrentLimits.StatorCurrentLimit = 80.0;

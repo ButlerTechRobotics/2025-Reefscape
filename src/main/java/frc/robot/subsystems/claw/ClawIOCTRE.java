@@ -23,9 +23,9 @@ import edu.wpi.first.units.measure.Current;
 import edu.wpi.first.units.measure.Voltage;
 
 public class ClawIOCTRE implements ClawIO {
-  public static final double GEAR_RATIO = 1.5;
+  public static final double GEAR_RATIO = 1.0;
 
-  public final TalonFX leader = new TalonFX(32);
+  public final TalonFX leader = new TalonFX(42);
 
   private final VoltageOut m_voltReq = new VoltageOut(0.0);
 
@@ -36,7 +36,6 @@ public class ClawIOCTRE implements ClawIO {
   private final StatusSignal<Current> leaderSupplyCurrent = leader.getSupplyCurrent();
 
   private final Debouncer leaderDebounce = new Debouncer(0.5);
-  private final Debouncer encoderDebounce = new Debouncer(0.5);
 
   public ClawIOCTRE() {
     var config = new TalonFXConfiguration();

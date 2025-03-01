@@ -44,8 +44,6 @@ public class WristIOSIM extends WristIOCTRE {
 
   /** Simulation state for the leader motor */
   private final TalonFXSimState leaderSim;
-  /** Simulation state for the follower motor */
-  private final TalonFXSimState followerSim;
   /** Simulation state for the CANcoder */
   private final CANcoderSimState encoderSim;
 
@@ -55,7 +53,6 @@ public class WristIOSIM extends WristIOCTRE {
 
     // Get simulation states for all hardware
     leaderSim = leader.getSimState();
-    followerSim = follower.getSimState();
     encoderSim = encoder.getSimState();
 
     // Configure dual Kraken X60 FOC motors
@@ -98,7 +95,6 @@ public class WristIOSIM extends WristIOCTRE {
 
     // Simulate battery voltage effects on all devices
     leaderSim.setSupplyVoltage(RobotController.getBatteryVoltage());
-    followerSim.setSupplyVoltage(RobotController.getBatteryVoltage());
     encoderSim.setSupplyVoltage(RobotController.getBatteryVoltage());
 
     // Update physics simulation

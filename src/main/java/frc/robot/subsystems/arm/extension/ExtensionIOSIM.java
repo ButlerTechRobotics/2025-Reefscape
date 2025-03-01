@@ -13,7 +13,6 @@ import static edu.wpi.first.units.Units.Meters;
 import static edu.wpi.first.units.Units.MetersPerSecond;
 import static edu.wpi.first.units.Units.Pounds;
 
-import com.ctre.phoenix6.sim.CANcoderSimState;
 import com.ctre.phoenix6.sim.TalonFXSimState;
 import edu.wpi.first.math.numbers.N1;
 import edu.wpi.first.math.numbers.N2;
@@ -31,7 +30,7 @@ import frc.robot.utils.Conversions;
  * provide a physics-based simulation of the extension mechanism using WPILib's simulation classes.
  *
  * <p>The simulation models: - Dual Kraken X60 FOC motors - Realistic extension physics including
- * gravity - Position and velocity feedback through simulated encoders - Battery voltage effects
+ * gravity - Position and velocity feedback through simulated motors - Battery voltage effects
  */
 public class ExtensionIOSIM extends ExtensionIOCTRE {
 
@@ -42,8 +41,6 @@ public class ExtensionIOSIM extends ExtensionIOCTRE {
   private final TalonFXSimState leaderSim;
   /** Simulation state for the follower motor */
   private final TalonFXSimState followerSim;
-  /** Simulation state for the CANcoder */
-  private final CANcoderSimState encoderSim;
 
   /**
    * Constructs a new ExtensionIOSIM instance. Initializes the physics simulation with realistic
@@ -56,7 +53,6 @@ public class ExtensionIOSIM extends ExtensionIOCTRE {
     // Get simulation states for all hardware
     leaderSim = leader.getSimState();
     followerSim = follower.getSimState();
-    encoderSim = encoder.getSimState();
 
     // Configure dual Kraken X60 FOC motors
     DCMotor motor = DCMotor.getKrakenX60Foc(2);
@@ -93,18 +89,17 @@ public class ExtensionIOSIM extends ExtensionIOCTRE {
     // Simulate battery voltage effects on all devices
     leaderSim.setSupplyVoltage(RobotController.getBatteryVoltage());
     followerSim.setSupplyVoltage(RobotController.getBatteryVoltage());
-    encoderSim.setSupplyVoltage(RobotController.getBatteryVoltage());
 
     // Update physics simulation
     motorSimModel.setInputVoltage(leaderSim.getMotorVoltage());
     motorSimModel.update(0.020); // Simulate 20ms timestep (50Hz)
 
-    // Convert linear position/velocity to rotational units for based on encoder
+    // Convert linear position/velocity to rotational units for based on leader
     Angle position =
         Conversions.metersToRotations(
             Meters.of(motorSimModel.getPositionMeters()), 1, extensionRadius);
 
-    // Convert linear velocity to angular velocity based on encoder
+    // Convert linear velocity to angular velocity based on leader
     AngularVelocity velocity =
         Conversions.metersToRotationsVel(
             MetersPerSecond.of(motorSimModel.getVelocityMetersPerSecond()), 1, extensionRadius);
@@ -112,9 +107,5 @@ public class ExtensionIOSIM extends ExtensionIOCTRE {
     // Update simulated motor readings converts through gear ratio
     leaderSim.setRawRotorPosition(position.times(GEAR_RATIO));
     leaderSim.setRotorVelocity(velocity.times(GEAR_RATIO));
-
-    // Update simulated CANcoder readings
-    encoderSim.setRawPosition(position);
-    encoderSim.setVelocity(velocity);
   }
 }

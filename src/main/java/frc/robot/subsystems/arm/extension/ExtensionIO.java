@@ -25,15 +25,12 @@ public interface ExtensionIO {
   public static class ExtensionIOInputs {
     public boolean leaderConnected = false;
     public boolean followerConnected = false;
-    public boolean encoderConnected = false;
 
     public Angle leaderPosition = Rotations.of(0);
     public Angle leaderRotorPosition = Rotations.of(0);
-    public Angle encoderPosition = Rotations.of(0);
 
     public AngularVelocity leaderVelocity = RotationsPerSecond.of(0);
     public AngularVelocity leaderRotorVelocity = RotationsPerSecond.of(0);
-    public AngularVelocity encoderVelocity = RotationsPerSecond.of(0);
 
     public Voltage appliedVoltage = Volts.of(0.0);
     public Current leaderStatorCurrent = Amps.of(0);

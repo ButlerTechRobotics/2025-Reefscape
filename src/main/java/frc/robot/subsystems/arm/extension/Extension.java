@@ -38,8 +38,6 @@ public class Extension extends SubsystemBase {
       new Alert("Extension leader motor isn't connected", AlertType.kError);
   private final Alert followerMotorAlert =
       new Alert("Extension follower motor isn't connected", AlertType.kError);
-  private final Alert encoderAlert =
-      new Alert("Extension encoder isn't connected", AlertType.kError);
 
   /**
    * Creates a new Extension subsystem with the specified hardware interface.
@@ -60,7 +58,6 @@ public class Extension extends SubsystemBase {
     // Update motor connection status alerts
     leaderMotorAlert.set(!inputs.leaderConnected);
     followerMotorAlert.set(!inputs.followerConnected);
-    encoderAlert.set(!inputs.encoderConnected);
   }
 
   /**
