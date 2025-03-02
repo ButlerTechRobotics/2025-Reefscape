@@ -7,166 +7,92 @@
 
 package frc.robot.subsystems.claw;
 
-import static edu.wpi.first.units.Units.*;
+import static edu.wpi.first.units.Units.Volts;
 
 import edu.wpi.first.units.measure.Angle;
 import edu.wpi.first.units.measure.Voltage;
 import edu.wpi.first.wpilibj.Alert;
-import edu.wpi.first.wpilibj.Alert.AlertType;
 import edu.wpi.first.wpilibj2.command.Command;
 import edu.wpi.first.wpilibj2.command.Commands;
-import edu.wpi.first.wpilibj2.command.SelectCommand;
 import edu.wpi.first.wpilibj2.command.SubsystemBase;
-import java.util.Map;
 import org.littletonrobotics.junction.AutoLogOutput;
 import org.littletonrobotics.junction.Logger;
 
-/**
- * The Claw subsystem controls a motor-driven claw mechanism for game piece manipulation. It
- * supports multiple speeds for different game actions and provides open-loop control.
- */
+/** Simple claw subsystem for game piece manipulation. */
 public class Claw extends SubsystemBase {
-  // Hardware interface and inputs
+  // Hardware and inputs
   private final ClawIO io;
-  private final ClawIOInputsAutoLogged inputs;
+  private final ClawIOInputsAutoLogged inputs = new ClawIOInputsAutoLogged();
+  private final Alert motorAlert = new Alert("Claw motor disconnected", Alert.AlertType.kError);
 
-  // Alerts for motor connection status
-  private final Alert motorAlert = new Alert("Claw motor isn't connected", AlertType.kError);
+  // Constants for voltages
+  private static final Voltage STOP_VOLTAGE = Volts.of(0);
+  private static final Voltage INTAKE_VOLTAGE = Volts.of(12);
+  private static final Voltage OUTTAKE_VOLTAGE = Volts.of(-12);
 
-  // Current claw position mode
-  private ClawMode currentMode = ClawMode.NONE;
+  // Track current state
+  private String currentState = "STOPPED";
 
-  /**
-   * Creates a new Claw subsystem with the specified hardware interface.
-   *
-   * @param io The hardware interface implementation for the claw
-   */
   public Claw(ClawIO io) {
     this.io = io;
-    this.inputs = new ClawIOInputsAutoLogged();
   }
 
   @Override
   public void periodic() {
-    // Update and log inputs from hardware
+    // Update inputs and alerts
     io.updateInputs(inputs);
     Logger.processInputs("Claw", inputs);
-
-    // Update motor connection status alerts
     motorAlert.set(!inputs.leaderConnected);
   }
 
-  /** Stops the claw motor. */
-  public void stop() {
-    io.stop();
+  /** Sets the claw voltage directly */
+  private void setVoltage(Voltage voltage, String stateName) {
+    if (voltage.equals(STOP_VOLTAGE)) {
+      io.stop();
+    } else {
+      io.setVoltage(voltage);
+    }
+    currentState = stateName;
+    Logger.recordOutput("Claw/State", currentState);
+    Logger.recordOutput("Claw/Voltage", voltage.in(Volts));
   }
 
   /**
-   * Returns the current position of the claw.
-   *
-   * @return The current angular position
+   * @return Current claw position
    */
   @AutoLogOutput
   public Angle getPosition() {
     return inputs.leaderPosition;
   }
 
-  /** Enumeration of available claw positions with their corresponding target angles. */
-  public enum ClawMode {
-    NONE(Voltage.ofBaseUnits(0, Volts)), // Stowed position
-    FLOOR_INTAKE(Voltage.ofBaseUnits(3, Volts)), // Position for floor intake
-    STATION_INTAKE(Voltage.ofBaseUnits(2, Volts)), // Position for station intake
-    OUTTAKE(Voltage.ofBaseUnits(6, Volts)); // Position for gripping at level 1
-
-    private final Voltage voltage;
-
-    ClawMode(Voltage voltage) {
-      this.voltage = voltage;
-    }
-  }
-
   /**
-   * Gets the current claw position mode.
-   *
-   * @return The current ClawMode
+   * @return Current claw state
    */
-  public ClawMode getMode() {
-    return currentMode;
+  @AutoLogOutput(key = "Claw/CurrentState")
+  public String getState() {
+    return currentState;
   }
 
+  // Command factory methods - simpler implementations with clear names
+
   /**
-   * Sets a new claw position and schedules the corresponding command.
-   *
-   * @param position The desired ClawMode
+   * @return Command to run intake at floor
    */
-  public void setClawMode(ClawMode position) {
-    currentCommand.cancel();
-    currentMode = position;
-    currentCommand.schedule();
-  }
-
-  // Command that runs the appropriate routine based on the current position
-  private final Command currentCommand =
-      new SelectCommand<>(
-          Map.of(
-              ClawMode.NONE,
-              Commands.runOnce(this::stop).withName("Stop Claw"),
-              ClawMode.FLOOR_INTAKE,
-              createVoltageCommand(ClawMode.FLOOR_INTAKE),
-              ClawMode.STATION_INTAKE,
-              createVoltageCommand(ClawMode.STATION_INTAKE),
-              ClawMode.OUTTAKE,
-              createVoltageCommand(ClawMode.OUTTAKE)),
-          this::getMode);
-
-  /**
-   * Creates a command for a specific claw voltage that spins the claw and checks the target
-   * voltage.
-   *
-   * @param voltage The claw voltage to create a command for
-   * @return A command that implements the claw movement
-   */
-  private Command createVoltageCommand(ClawMode voltage) {
-    return Commands.runOnce(() -> io.setVoltage(voltage.voltage))
-        .withName("Set volts to " + voltage.toString());
+  public Command intake() {
+    return Commands.runOnce(() -> setVoltage(INTAKE_VOLTAGE, "INTAKE"), this);
   }
 
   /**
-   * Creates a command to set the claw to a specific voltage.
-   *
-   * @param voltage The desired claw voltage
-   * @return Command to set the voltage
-   */
-  public Command setVoltageCommand(ClawMode voltage) {
-    return Commands.runOnce(() -> setClawMode(voltage))
-        .withName("SetClawMode(" + voltage.toString() + ")");
-  }
-
-  /**
-   * @return Command to set claw to floor intake position
-   */
-  public Command floorIntake() {
-    return setVoltageCommand(ClawMode.FLOOR_INTAKE);
-  }
-
-  /**
-   * @return Command to set claw to station intake position
-   */
-  public Command stationIntake() {
-    return setVoltageCommand(ClawMode.STATION_INTAKE);
-  }
-
-  /**
-   * @return Command to set claw to l1 scoring position
+   * @return Command to outtake/eject game piece
    */
   public Command outtake() {
-    return setVoltageCommand(ClawMode.OUTTAKE);
+    return Commands.runOnce(() -> setVoltage(OUTTAKE_VOLTAGE, "OUTTAKE"), this);
   }
 
   /**
    * @return Command to stop the claw
    */
-  public Command stopCommand() {
-    return setVoltageCommand(ClawMode.NONE);
+  public Command stop() {
+    return Commands.runOnce(() -> setVoltage(STOP_VOLTAGE, "STOPPED"), this);
   }
 }

@@ -11,7 +11,6 @@ import com.ctre.phoenix6.BaseStatusSignal;
 import com.ctre.phoenix6.StatusCode;
 import com.ctre.phoenix6.StatusSignal;
 import com.ctre.phoenix6.configs.TalonFXConfiguration;
-import com.ctre.phoenix6.controls.Follower;
 import com.ctre.phoenix6.controls.PositionVoltage;
 import com.ctre.phoenix6.hardware.CANcoder;
 import com.ctre.phoenix6.hardware.TalonFX;
@@ -29,7 +28,7 @@ import edu.wpi.first.units.measure.Voltage;
  */
 public class WristIOCTRE implements WristIO {
   /** The gear ratio between the motor and the wrist mechanism */
-  public static final double GEAR_RATIO = 150;
+  public static final double GEAR_RATIO = ((50 / 12) * (42 / 16) * (42 / 16)); // (32 + (2 / 3))
 
   /** The leader TalonFX motor controller (CAN ID: 40) */
   public final TalonFX leader = new TalonFX(40);
@@ -54,8 +53,7 @@ public class WristIOCTRE implements WristIO {
 
   /**
    * Constructs a new WristIOCTRE instance and initializes all hardware components. This includes
-   * configuring the motor, and optimizing CAN bus
-   * utilization for all devices.
+   * configuring the motor, and optimizing CAN bus utilization for all devices.
    */
   public WristIOCTRE() {
     // Configure motor with settings
@@ -89,16 +87,16 @@ public class WristIOCTRE implements WristIO {
   private TalonFXConfiguration createMotorConfiguration() {
     var config = new TalonFXConfiguration();
     // Set motor to coast when stopped
-    config.MotorOutput.NeutralMode = NeutralModeValue.Coast;
+    config.MotorOutput.NeutralMode = NeutralModeValue.Brake;
 
     // Configure PID and feedforward gains
-    config.Slot0.kP = 0; // Proportional gain
+    config.Slot0.kP = 30; // Proportional gain
     config.Slot0.kI = 0; // Integral gain
     config.Slot0.kD = 0; // Derivative gain
-    config.Slot0.kS = 0; // Static friction compensation
+    config.Slot0.kS = 3; // Static friction compensation
     config.Slot0.kV = 0; // Velocity feedforward
     config.Slot0.kA = 0; // Acceleration feedforward
-    config.Slot0.kG = 0; // Gravity feedforward
+    config.Slot0.kG = 14; // Gravity feedforward
 
     // Use the CANcoder as the remote feedback device
     config.Feedback.withRemoteCANcoder(encoder);

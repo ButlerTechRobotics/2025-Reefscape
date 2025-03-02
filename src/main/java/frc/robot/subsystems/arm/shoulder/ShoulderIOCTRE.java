@@ -13,7 +13,7 @@ import com.ctre.phoenix6.StatusCode;
 import com.ctre.phoenix6.StatusSignal;
 import com.ctre.phoenix6.configs.TalonFXConfiguration;
 import com.ctre.phoenix6.controls.Follower;
-import com.ctre.phoenix6.controls.PositionVoltage;
+import com.ctre.phoenix6.controls.PositionTorqueCurrentFOC;
 import com.ctre.phoenix6.hardware.CANcoder;
 import com.ctre.phoenix6.hardware.TalonFX;
 import com.ctre.phoenix6.signals.InvertedValue;
@@ -131,7 +131,7 @@ public class ShoulderIOCTRE implements ShoulderIO {
   private TalonFXConfiguration createMotorConfiguration() {
     var config = new TalonFXConfiguration();
     // Set motor to coast when stopped
-    config.MotorOutput.NeutralMode = NeutralModeValue.Coast;
+    config.MotorOutput.NeutralMode = NeutralModeValue.Brake;
     config.Feedback.SensorToMechanismRatio = (82.0 / 18.0); // 82:18 gear ratio
     config.TorqueCurrent.PeakForwardTorqueCurrent = 120.0;
     config.TorqueCurrent.PeakReverseTorqueCurrent = -120.0;
@@ -140,13 +140,13 @@ public class ShoulderIOCTRE implements ShoulderIO {
     config.MotorOutput.Inverted = InvertedValue.CounterClockwise_Positive;
 
     // Configure PID and feedforward gains
-    config.Slot0.kP = 0; // Proportional gain
+    config.Slot0.kP = 350; // Proportional gain
     config.Slot0.kI = 0; // Integral gain
-    config.Slot0.kD = 0; // Derivative gain
-    config.Slot0.kS = 0; // Static friction compensation
+    config.Slot0.kD = 75; // Derivative gain
+    config.Slot0.kS = 3; // Static friction compensation
     config.Slot0.kV = 0; // Velocity feedforward
     config.Slot0.kA = 0; // Acceleration feedforward
-    config.Slot0.kG = 0; // Gravity feedforward
+    config.Slot0.kG = 10; // Gravity feedforward
 
     // Use the CANcoder as the remote feedback device
     config.Feedback.withRemoteCANcoder(encoder);
@@ -226,7 +226,7 @@ public class ShoulderIOCTRE implements ShoulderIO {
   @Override
   public void setPosition(Angle angle) {
     // Convert desired angle to encoder rotations
-    brLeader.setControl(new PositionVoltage(angle));
+    brLeader.setControl(new PositionTorqueCurrentFOC(angle));
   }
 
   /**

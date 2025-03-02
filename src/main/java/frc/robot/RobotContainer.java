@@ -22,8 +22,8 @@ import edu.wpi.first.wpilibj2.command.Command;
 import edu.wpi.first.wpilibj2.command.Commands;
 import edu.wpi.first.wpilibj2.command.sysid.SysIdRoutine;
 import frc.robot.commands.DriveCommands;
-import frc.robot.commands.ReefDrive;
 import frc.robot.commands.SmartArm;
+import frc.robot.commands.SmartClaw;
 import frc.robot.generated.TunerConstants;
 import frc.robot.subsystems.arm.Arm;
 import frc.robot.subsystems.arm.extension.Extension;
@@ -321,10 +321,11 @@ public class RobotContainer {
     //     .leftBumper()
     //     .and(joystick.a())
     //     .whileTrue(new SmartDrive(drivetrain, SmartDrive.Side.LEFT));
+
     joystick
-        .rightBumper()
-        .and(joystick.a())
-        .whileTrue(new ReefDrive(drivetrain, ReefDrive.Side.RIGHT));
+        .leftBumper()
+        .whileTrue(new SmartClaw(claw, SmartClaw.Goal.CORAL_FLOOR_INTAKE))
+        .onFalse(new SmartClaw(claw, SmartClaw.Goal.STOW));
 
     joystick.povLeft().onTrue(new SmartArm(arm, SmartArm.Goal.CORAL_L4BACK));
     joystick.povRight().onTrue(new SmartArm(arm, SmartArm.Goal.STOW));
