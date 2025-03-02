@@ -5,7 +5,7 @@
 // license that can be found in the LICENSE file at
 // the root directory of this project.
 
-package frc.robot.subsystems.claw;
+package frc.robot.subsystems.intake;
 
 import static edu.wpi.first.units.Units.Inches;
 import static edu.wpi.first.units.Units.Kilograms;
@@ -24,15 +24,15 @@ import edu.wpi.first.units.measure.Distance;
 import edu.wpi.first.wpilibj.RobotController;
 import edu.wpi.first.wpilibj.simulation.FlywheelSim;
 
-public class ClawIOSIM extends ClawIOCTRE {
+public class IntakeIOSIM extends IntakeIOCTRE {
 
   private final FlywheelSim motorSimModel;
   private final TalonFXSimState leaderSim;
 
   Distance radius = Inches.of(1.5);
-  double moi = Pounds.of(8.0).in(Kilograms) * Math.pow(radius.in(Meters), 2);
+  double moi = Pounds.of(1.0).in(Kilograms) * Math.pow(radius.in(Meters), 2);
 
-  public ClawIOSIM() {
+  public IntakeIOSIM() {
     super();
 
     var config = new TalonFXConfiguration();
@@ -49,7 +49,7 @@ public class ClawIOSIM extends ClawIOCTRE {
     leader.getConfigurator().apply(config);
 
     leaderSim = leader.getSimState();
-    DCMotor motor = DCMotor.getKrakenX60Foc(2);
+    DCMotor motor = DCMotor.getKrakenX60Foc(1);
     LinearSystem<N1, N1, N1> linearSystem =
         LinearSystemId.createFlywheelSystem(motor, moi, GEAR_RATIO);
     motorSimModel = new FlywheelSim(linearSystem, motor);

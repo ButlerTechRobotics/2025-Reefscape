@@ -5,7 +5,7 @@
 // license that can be found in the LICENSE file at
 // the root directory of this project.
 
-package frc.robot.subsystems.claw;
+package frc.robot.subsystems.intake;
 
 import com.ctre.phoenix6.BaseStatusSignal;
 import com.ctre.phoenix6.StatusSignal;
@@ -19,7 +19,7 @@ import edu.wpi.first.units.measure.AngularVelocity;
 import edu.wpi.first.units.measure.Current;
 import edu.wpi.first.units.measure.Voltage;
 
-public class ClawIOCTRE implements ClawIO {
+public class IntakeIOCTRE implements IntakeIO {
   public static final double GEAR_RATIO = 1.0;
 
   public final TalonFX leader = new TalonFX(42, "CANivore");
@@ -32,7 +32,7 @@ public class ClawIOCTRE implements ClawIO {
 
   private final Debouncer leaderDebounce = new Debouncer(0.5);
 
-  public ClawIOCTRE() {
+  public IntakeIOCTRE() {
     var config = new TalonFXConfiguration();
     config.CurrentLimits.StatorCurrentLimit = 30.0;
     config.CurrentLimits.StatorCurrentLimitEnable = true;

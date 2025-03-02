@@ -18,12 +18,14 @@ import edu.wpi.first.math.geometry.Translation3d;
 import edu.wpi.first.math.trajectory.TrapezoidProfile;
 import edu.wpi.first.math.util.Units;
 import edu.wpi.first.units.measure.LinearVelocity;
+import edu.wpi.first.wpilibj.smartdashboard.SmartDashboard;
 import edu.wpi.first.wpilibj2.command.Command;
 import edu.wpi.first.wpilibj2.command.Commands;
+import edu.wpi.first.wpilibj2.command.InstantCommand;
 import edu.wpi.first.wpilibj2.command.sysid.SysIdRoutine;
 import frc.robot.commands.DriveCommands;
 import frc.robot.commands.SmartArm;
-import frc.robot.commands.SmartClaw;
+import frc.robot.commands.SmartIntake;
 import frc.robot.generated.TunerConstants;
 import frc.robot.subsystems.arm.Arm;
 import frc.robot.subsystems.arm.extension.Extension;
@@ -38,14 +40,18 @@ import frc.robot.subsystems.arm.wrist.Wrist;
 import frc.robot.subsystems.arm.wrist.WristIO;
 import frc.robot.subsystems.arm.wrist.WristIOCTRE;
 import frc.robot.subsystems.arm.wrist.WristIOSIM;
-import frc.robot.subsystems.claw.Claw;
-import frc.robot.subsystems.claw.ClawIO;
-import frc.robot.subsystems.claw.ClawIOCTRE;
-import frc.robot.subsystems.claw.ClawIOSIM;
+import frc.robot.subsystems.beambreak.BeamBreak;
+import frc.robot.subsystems.beambreak.BeamBreakIO;
+import frc.robot.subsystems.beambreak.BeamBreakIOReal;
+import frc.robot.subsystems.beambreak.BeamBreakIOSim;
 import frc.robot.subsystems.drive.Drive;
 import frc.robot.subsystems.drive.DriveIO;
 import frc.robot.subsystems.drive.DriveIOCTRE;
 import frc.robot.subsystems.drive.requests.ProfiledFieldCentricFacingAngle;
+import frc.robot.subsystems.intake.Intake;
+import frc.robot.subsystems.intake.IntakeIO;
+import frc.robot.subsystems.intake.IntakeIOCTRE;
+import frc.robot.subsystems.intake.IntakeIOSIM;
 import frc.robot.subsystems.vision.Vision;
 import frc.robot.subsystems.vision.VisionIO;
 import frc.robot.subsystems.vision.VisionIOPhotonVision;
@@ -62,7 +68,8 @@ public class RobotContainer {
   private final LoggedDashboardChooser<Command> autoChooser;
 
   public final Drive drivetrain;
-  public final Claw claw;
+  public final Intake intake;
+  public final BeamBreak beamBreak;
   public final Arm arm;
 
   /* Setting up bindings for necessary control of the swerve drive platform */
@@ -120,7 +127,8 @@ public class RobotContainer {
                     new Rotation3d(0, Math.toRadians(10), Math.toRadians(150))),
                 drivetrain::getVisionParameters));
 
-        claw = new Claw(new ClawIOCTRE());
+        intake = new Intake(new IntakeIOCTRE());
+        beamBreak = new BeamBreak(new BeamBreakIOReal(0));
         extension = new Extension(new ExtensionIOCTRE());
         shoulder = new Shoulder(new ShoulderIOCTRE());
         wrist = new Wrist(new WristIOCTRE());
@@ -169,7 +177,8 @@ public class RobotContainer {
                     new Rotation3d(0, Math.toRadians(10), Math.toRadians(150))),
                 drivetrain::getVisionParameters));
 
-        claw = new Claw(new ClawIOSIM());
+        intake = new Intake(new IntakeIOSIM());
+        beamBreak = new BeamBreak(new BeamBreakIOSim(0));
         extension = new Extension(new ExtensionIOSIM());
         shoulder = new Shoulder(new ShoulderIOSIM());
         wrist = new Wrist(new WristIOSIM());
@@ -186,7 +195,8 @@ public class RobotContainer {
             new VisionIO() {},
             new VisionIO() {});
 
-        claw = new Claw(new ClawIO() {});
+        intake = new Intake(new IntakeIO() {});
+        beamBreak = new BeamBreak(new BeamBreakIO() {});
         extension = new Extension(new ExtensionIO() {});
         shoulder = new Shoulder(new ShoulderIO() {});
         wrist = new Wrist(new WristIO() {});
@@ -200,6 +210,8 @@ public class RobotContainer {
     NamedCommands.registerCommand(
         "Coral_Station_Intake", new SmartArm(arm, SmartArm.Goal.CORAL_STATION_INTAKE));
     NamedCommands.registerCommand("Coral_L4Back", new SmartArm(arm, SmartArm.Goal.CORAL_L4BACK));
+    NamedCommands.registerCommand(
+        "SIMGamePiecePickup", new InstantCommand(() -> beamBreak.setGamePiece(true)));
 
     // Set up auto routines
     autoChooser = new LoggedDashboardChooser<>("Auto Choices", AutoBuilder.buildAutoChooser());
@@ -303,10 +315,17 @@ public class RobotContainer {
     //     .and(joystick.a())
     //     .whileTrue(new SmartDrive(drivetrain, SmartDrive.Side.LEFT));
 
+    SmartDashboard.putData(
+        "SetHasGamePiece True", new InstantCommand(() -> beamBreak.setGamePiece(true)));
+    SmartDashboard.putData(
+        "SetHasGamePiece False", new InstantCommand(() -> beamBreak.setGamePiece(false)));
+
     joystick
         .leftBumper()
-        .whileTrue(new SmartClaw(claw, SmartClaw.Goal.CORAL_FLOOR_INTAKE))
-        .onFalse(new SmartClaw(claw, SmartClaw.Goal.STOW));
+        .whileTrue(new SmartIntake(intake, beamBreak, Intake.ClawMode.FLOOR_INTAKE));
+    joystick
+        .rightBumper()
+        .whileTrue(new SmartIntake(intake, beamBreak, Intake.ClawMode.OUTTAKE, 1.0));
 
     joystick.povLeft().onTrue(new SmartArm(arm, SmartArm.Goal.CORAL_L4BACK));
     joystick.povRight().onTrue(new SmartArm(arm, SmartArm.Goal.STOW));
