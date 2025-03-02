@@ -48,7 +48,8 @@ public class LEDs extends SubsystemBase {
   public void periodic() {
     // This method will be called once per scheduler run
     if (DriverStation.isDisabled()) {
-      if (aprilTags.getPoseEstimationCount() == 0 || DriverStation.getAlliance().isEmpty()) {
+      // if (aprilTags.getPoseEstimationCount() == 0 || DriverStation.getAlliance().isEmpty()) {
+            if (DriverStation.getAlliance().isEmpty()) {
         candle.animate(new SingleFadeAnimation(0, 100, 0, 0, 0.3, stripLength, startOffset));
         return;
       }

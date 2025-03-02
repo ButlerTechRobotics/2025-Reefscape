@@ -15,6 +15,9 @@ import frc.robot.LimelightHelpers.PoseObservation;
 import frc.robot.LimelightHelpers.RawFiducial;
 import frc.robot.subsystems.drive.Drive.VisionParameters;
 import frc.robot.utils.FieldConstants;
+
+import static edu.wpi.first.units.Units.RadiansPerSecond;
+
 import java.util.ArrayList;
 import java.util.List;
 import java.util.function.Supplier;
@@ -99,7 +102,7 @@ public class VisionIOPhotonVision implements VisionIO {
             avgDistance,
             avgArea,
             ambiguity,
-            visionParams.get().gyroRate(),
+            visionParams.get().gyroRate().in(RadiansPerSecond),
             visionParams.get().robotPose(),
             false),
         rawFiducialsList.toArray(new RawFiducial[0]));

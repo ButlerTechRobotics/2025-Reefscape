@@ -8,16 +8,12 @@
 package frc.robot;
 
 import com.pathplanner.lib.commands.FollowPathCommand;
-import com.pathplanner.lib.commands.PathfindingCommand;
-import com.pathplanner.lib.pathfinding.Pathfinding;
 import edu.wpi.first.wpilibj.DataLogManager;
 import edu.wpi.first.wpilibj.DriverStation;
 import edu.wpi.first.wpilibj.DriverStation.Alliance;
 import edu.wpi.first.wpilibj.RobotController;
-import edu.wpi.first.wpilibj.Threads;
 import edu.wpi.first.wpilibj2.command.Command;
 import edu.wpi.first.wpilibj2.command.CommandScheduler;
-import frc.robot.utils.LocalADStarAK;
 import java.util.Optional;
 import org.littletonrobotics.junction.LogFileUtil;
 import org.littletonrobotics.junction.LoggedRobot;
@@ -28,13 +24,14 @@ import org.littletonrobotics.junction.wpilog.WPILOGWriter;
 
 public class Robot extends LoggedRobot {
   private Command m_autonomousCommand;
+  // Configuration constants
+  public static volatile boolean BEFORE_MATCH = true; // Controls MT1-only usage before match
 
   private final RobotContainer m_robotContainer;
 
   private static boolean redAlliance;
 
   public Robot() {
-    Pathfinding.setPathfinder(new LocalADStarAK());
     // Set up data receivers & replay source
     switch (Constants.currentMode) {
       case REAL:
@@ -72,16 +69,13 @@ public class Robot extends LoggedRobot {
     // Warmup the PPLib library
 
     FollowPathCommand.warmupCommand().schedule();
-    PathfindingCommand.warmupCommand().schedule();
 
     m_robotContainer = new RobotContainer();
   }
 
   @Override
   public void robotPeriodic() {
-    Threads.setCurrentThreadPriority(true, 99);
     CommandScheduler.getInstance().run();
-    Threads.setCurrentThreadPriority(false, 10);
   }
 
   /** Gets the current alliance, true is red */
@@ -110,6 +104,7 @@ public class Robot extends LoggedRobot {
 
   @Override
   public void autonomousInit() {
+    BEFORE_MATCH = false;
     m_autonomousCommand = m_robotContainer.getAutonomousCommand();
 
     if (m_autonomousCommand != null) {
@@ -125,6 +120,7 @@ public class Robot extends LoggedRobot {
 
   @Override
   public void teleopInit() {
+    BEFORE_MATCH = false;
     if (m_autonomousCommand != null) {
       m_autonomousCommand.cancel();
     }

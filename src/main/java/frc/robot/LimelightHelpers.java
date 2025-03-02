@@ -27,7 +27,6 @@ import edu.wpi.first.networktables.NetworkTable;
 import edu.wpi.first.networktables.NetworkTableEntry;
 import edu.wpi.first.networktables.NetworkTableInstance;
 import edu.wpi.first.networktables.TimestampedDoubleArray;
-import edu.wpi.first.units.measure.AngularVelocity;
 import frc.robot.subsystems.drive.Drive.VisionParameters;
 import java.io.IOException;
 import java.net.HttpURLConnection;
@@ -493,12 +492,12 @@ public class LimelightHelpers {
       double avgTagDist,
       double avgTagArea,
       double ambiguity,
-      AngularVelocity yawVelocity,
+      double yawVelocity,
       Pose2d robotPose,
       boolean isMegaTag2) {
 
     public PoseEstimate() {
-      this(new Pose3d(), 0, 0, 0, 0, 0, 0, 0, RadiansPerSecond.of(0), Pose2d.kZero, false);
+      this(new Pose3d(), 0, 0, 0, 0, 0, 0, 0, 0, Pose2d.kZero, false);
     }
 
     public PoseEstimate setVisionParams(VisionParameters visionParams) {
@@ -511,7 +510,7 @@ public class LimelightHelpers {
           avgTagDist,
           avgTagArea,
           ambiguity,
-          visionParams.gyroRate(),
+          visionParams.gyroRate().in(RadiansPerSecond),
           visionParams.robotPose(),
           isMegaTag2);
     }
@@ -746,7 +745,7 @@ public class LimelightHelpers {
             tagDist,
             tagArea,
             ambiguity,
-            RadiansPerSecond.of(0),
+            0,
             Pose2d.kZero,
             isMegaTag2),
         rawFiducials);

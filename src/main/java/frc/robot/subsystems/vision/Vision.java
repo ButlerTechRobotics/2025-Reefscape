@@ -1,5 +1,4 @@
-// Copyright (c) 2025 FRC 325/144 & 5712
-// https://hemlock5712.github.io/Swerve-Setup/home.html
+// Copyright (c) 2025 FRC 5712
 //
 // Use of this source code is governed by an MIT-style
 // license that can be found in the LICENSE file at
@@ -11,6 +10,7 @@ import edu.wpi.first.math.geometry.Pose3d;
 import edu.wpi.first.wpilibj.Alert;
 import edu.wpi.first.wpilibj.Alert.AlertType;
 import edu.wpi.first.wpilibj2.command.SubsystemBase;
+import frc.robot.Constants;
 import frc.robot.LimelightHelpers.PoseObservation;
 import frc.robot.subsystems.vision.VisionIO.VisionIOInputs;
 import frc.robot.subsystems.vision.VisionUtil.VisionData;
@@ -20,7 +20,6 @@ import frc.robot.utils.FieldConstants;
 import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.List;
-import org.littletonrobotics.junction.AutoLogOutput;
 import org.littletonrobotics.junction.Logger;
 
 /**
@@ -38,18 +37,13 @@ public class Vision extends SubsystemBase {
   private final VisionIOInputsAutoLogged[] inputs;
   private final Alert[] disconnectedAlerts;
 
-  @AutoLogOutput(key = "Vision/PoseEstimateCount")
-  public int getPoseEstimationCount() {
-    int count = 0;
-    for (VisionIOInputs input : inputs) {
-      // Count MT1 estimates
-      count += input.poseEstimateMT1 != null ? 1 : 0;
-      // Count MT2 estimates
-      count += input.poseEstimateMT2 != null ? 1 : 0;
-    }
-    Logger.recordOutput("Vision/PoseEstimateCount/Details", count);
-    return count;
-  }
+  private List<VisionMeasurement> measurements = new ArrayList<>();
+  private List<Pose3d> tagPoses = new ArrayList<>();
+  private List<Pose3d> acceptedTagPoses = new ArrayList<>();
+  private List<Pose3d> rejectedTagPoses = new ArrayList<>();
+  private List<Pose3d> robotPoses = new ArrayList<>();
+  private List<Pose3d> acceptedPoses = new ArrayList<>();
+  private List<Pose3d> rejectedPoses = new ArrayList<>();
 
   /**
    * Creates a new Vision subsystem.
@@ -129,13 +123,47 @@ public class Vision extends SubsystemBase {
    * @return Processed VisionData for this observation
    */
   private VisionData processObservation(int cameraIndex, PoseObservation observation) {
-    List<VisionMeasurement> measurements = new ArrayList<>();
-    List<Pose3d> tagPoses = new ArrayList<>();
-    List<Pose3d> acceptedTagPoses = new ArrayList<>();
-    List<Pose3d> rejectedTagPoses = new ArrayList<>();
-    List<Pose3d> robotPoses = new ArrayList<>();
-    List<Pose3d> acceptedPoses = new ArrayList<>();
-    List<Pose3d> rejectedPoses = new ArrayList<>();
+    if (Constants.currentMode == Constants.Mode.REAL) {
+      return realObservation(cameraIndex, observation);
+    } else {
+      return simObservation(cameraIndex, observation);
+    }
+  }
+
+  private VisionData realObservation(int cameraIndex, PoseObservation observation) {
+    // Validate measurement against current vision mode criteria
+    boolean acceptedVisionMeasurement = MODE.acceptVisionMeasurement(observation);
+
+    // Add to appropriate accepted/rejected lists
+    if (acceptedVisionMeasurement) {
+      measurements.add(MODE.getVisionMeasurement(observation.poseEstimate()));
+    }
+
+    // Create and log vision data
+    VisionData data =
+        new VisionData(
+            measurements,
+            tagPoses,
+            acceptedTagPoses,
+            rejectedTagPoses,
+            robotPoses,
+            acceptedPoses,
+            rejectedPoses);
+
+    String mtType = observation.poseEstimate().isMegaTag2() ? "/MegaTag2" : "/MegaTag1";
+    logCameraData(cameraIndex, mtType, data);
+
+    return data;
+  }
+
+  private VisionData simObservation(int cameraIndex, PoseObservation observation) {
+    measurements.clear();
+    tagPoses.clear();
+    acceptedTagPoses.clear();
+    rejectedTagPoses.clear();
+    robotPoses.clear();
+    acceptedPoses.clear();
+    rejectedPoses.clear();
 
     Pose3d robotPose = observation.poseEstimate().pose();
     robotPoses.add(robotPose);
