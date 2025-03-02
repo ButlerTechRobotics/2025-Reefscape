@@ -7,6 +7,8 @@
 
 package frc.robot.subsystems.vision;
 
+import static edu.wpi.first.units.Units.RadiansPerSecond;
+
 import edu.wpi.first.math.geometry.Pose3d;
 import edu.wpi.first.math.geometry.Transform3d;
 import frc.robot.Constants;
@@ -15,9 +17,6 @@ import frc.robot.LimelightHelpers.PoseObservation;
 import frc.robot.LimelightHelpers.RawFiducial;
 import frc.robot.subsystems.drive.Drive.VisionParameters;
 import frc.robot.utils.FieldConstants;
-
-import static edu.wpi.first.units.Units.RadiansPerSecond;
-
 import java.util.ArrayList;
 import java.util.List;
 import java.util.function.Supplier;

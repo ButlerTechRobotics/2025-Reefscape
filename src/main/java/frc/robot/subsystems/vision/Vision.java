@@ -1,4 +1,5 @@
-// Copyright (c) 2025 FRC 5712
+// Copyright (c) 2025 FRC 325/144 & 5712
+// https://hemlock5712.github.io/Swerve-Setup/home.html
 //
 // Use of this source code is governed by an MIT-style
 // license that can be found in the LICENSE file at
@@ -37,7 +38,12 @@ public class Vision extends SubsystemBase {
   private final VisionIOInputsAutoLogged[] inputs;
   private final Alert[] disconnectedAlerts;
 
+  /**
+   * Lists to store vision measurements and poses. These are maintained at the class level to allow
+   * for logging during both real and simulation operation.
+   */
   private List<VisionMeasurement> measurements = new ArrayList<>();
+
   private List<Pose3d> tagPoses = new ArrayList<>();
   private List<Pose3d> acceptedTagPoses = new ArrayList<>();
   private List<Pose3d> rejectedTagPoses = new ArrayList<>();
@@ -123,6 +129,15 @@ public class Vision extends SubsystemBase {
    * @return Processed VisionData for this observation
    */
   private VisionData processObservation(int cameraIndex, PoseObservation observation) {
+    // Clear previous data
+    measurements.clear();
+    tagPoses.clear();
+    acceptedTagPoses.clear();
+    rejectedTagPoses.clear();
+    robotPoses.clear();
+    acceptedPoses.clear();
+    rejectedPoses.clear();
+
     if (Constants.currentMode == Constants.Mode.REAL) {
       return realObservation(cameraIndex, observation);
     } else {
@@ -150,21 +165,10 @@ public class Vision extends SubsystemBase {
             acceptedPoses,
             rejectedPoses);
 
-    String mtType = observation.poseEstimate().isMegaTag2() ? "/MegaTag2" : "/MegaTag1";
-    logCameraData(cameraIndex, mtType, data);
-
     return data;
   }
 
   private VisionData simObservation(int cameraIndex, PoseObservation observation) {
-    measurements.clear();
-    tagPoses.clear();
-    acceptedTagPoses.clear();
-    rejectedTagPoses.clear();
-    robotPoses.clear();
-    acceptedPoses.clear();
-    rejectedPoses.clear();
-
     Pose3d robotPose = observation.poseEstimate().pose();
     robotPoses.add(robotPose);
 
