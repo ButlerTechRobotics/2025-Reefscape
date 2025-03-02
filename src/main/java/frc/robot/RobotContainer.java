@@ -24,6 +24,7 @@ import edu.wpi.first.wpilibj2.command.Commands;
 import edu.wpi.first.wpilibj2.command.InstantCommand;
 import edu.wpi.first.wpilibj2.command.sysid.SysIdRoutine;
 import frc.robot.commands.DriveCommands;
+import frc.robot.commands.ReefDrive;
 import frc.robot.commands.SmartArm;
 import frc.robot.commands.SmartIntake;
 import frc.robot.generated.TunerConstants;
@@ -310,10 +311,11 @@ public class RobotContainer {
     // SmartDashboard.putData(
     //     "Pathfind and score L1 Right",
     //     new SmartScore(drivetrain, arm, SmartScore.Side.RIGHT, SmartScore.ArmMode.L1));
-    // joystick
-    //     .leftBumper()
-    //     .and(joystick.a())
-    //     .whileTrue(new SmartDrive(drivetrain, SmartDrive.Side.LEFT));
+
+    joystick
+        .leftTrigger()
+        .and(joystick.a())
+        .whileTrue(new ReefDrive(drivetrain, ReefDrive.Side.LEFT));
 
     SmartDashboard.putData(
         "SetHasGamePiece True", new InstantCommand(() -> beamBreak.setGamePiece(true)));
