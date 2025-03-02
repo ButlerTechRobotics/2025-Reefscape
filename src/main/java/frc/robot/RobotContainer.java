@@ -69,18 +69,6 @@ public class RobotContainer {
   private final SwerveRequest.SwerveDriveBrake brake = new SwerveRequest.SwerveDriveBrake();
   private final SwerveRequest.PointWheelsAt point = new SwerveRequest.PointWheelsAt();
 
-  // Add deadband constant - adjust this value as needed (0.05 to 0.15 is typical)
-  private static final double JOYSTICK_DEADBAND = 0.1;
-
-  // Add this helper method to apply deadband
-  private double applyDeadband(double value, double deadband) {
-    if (Math.abs(value) < deadband) {
-      return 0.0;
-    }
-    // Scale the value to maintain full range from deadband to 1.0
-    return Math.copySign((Math.abs(value) - deadband) / (1.0 - deadband), value);
-  }
-
   public RobotContainer() {
     // Declare component subsystems (not visible outside constructor)
     Extension extension = null;
@@ -246,16 +234,10 @@ public class RobotContainer {
             () ->
                 drivetrain
                     .setpointGen
-                    .withVelocityX(
-                        MaxSpeed.times(
-                            applyDeadband(
-                                joystick.getLeftY(),
-                                JOYSTICK_DEADBAND))) // Drive forward with negative Y
-                    .withVelocityY(
-                        MaxSpeed.times(applyDeadband(joystick.getLeftX(), JOYSTICK_DEADBAND)))
-                    .withRotationalRate(
-                        Constants.MaxAngularRate.times(
-                            -applyDeadband(joystick.getRightX(), JOYSTICK_DEADBAND)))));
+                    .withVelocityX(MaxSpeed.times(-joystick.getLeftY()))
+                    .withVelocityY(MaxSpeed.times(-joystick.getLeftX()))
+                    .withRotationalRate(Constants.MaxAngularRate.times(-joystick.getRightX()))
+                    .withOperatorForwardDirection(drivetrain.getOperatorForwardDirection())));
 
     joystick.start().onTrue(Commands.runOnce(() -> drivetrain.resetPose(Pose2d.kZero)));
     // joystick
@@ -273,7 +255,6 @@ public class RobotContainer {
                 new TrapezoidProfile.Constraints(
                     Constants.MaxAngularRate.baseUnitMagnitude(),
                     Constants.MaxAngularRate.div(0.25).baseUnitMagnitude()))
-            .withDeadband(MaxSpeed.times(0.1))
             .withDriveRequestType(DriveRequestType.OpenLoopVoltage);
     // Set PID for ProfiledFieldCentricFacingAngle
     driveFacingAngle.HeadingController.setPID(7, 0, 0);
