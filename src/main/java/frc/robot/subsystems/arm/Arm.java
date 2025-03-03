@@ -20,6 +20,7 @@ import org.littletonrobotics.junction.Logger;
 public class Arm extends SubsystemBase {
   public enum Goal {
     STOW,
+    STANDBY,
     CORAL_FLOOR_INTAKE,
     CORAL_STATION_INTAKE,
     CORAL_L1,
@@ -85,6 +86,11 @@ public class Arm extends SubsystemBase {
         extension.stow().schedule();
         wrist.stow().schedule();
       }
+      case STANDBY -> {
+        shoulder.standby().schedule();
+        extension.standby().schedule();
+        wrist.standby().schedule();
+      }
       case CORAL_FLOOR_INTAKE -> {
         shoulder.coralFloorIntake().schedule();
         extension.coralFloorIntake().schedule();
@@ -126,7 +132,6 @@ public class Arm extends SubsystemBase {
         wrist.coralL3Back().schedule();
       }
       case CORAL_L4BACK -> {
-        System.out.println("Setting arm to CORAL_L4BACK position");
         shoulder.coralL4Back().schedule();
         extension.coralL4Back().schedule();
         wrist.coralL4Back().schedule();

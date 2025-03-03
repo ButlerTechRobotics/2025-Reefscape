@@ -109,6 +109,7 @@ public class Extension extends SubsystemBase {
     // Common positions
     STOP(Inches.of(0)),
     STOW(Inches.of(0)),
+    STANDBY(Inches.of(0)),
     CLIMB(Inches.of(0)),
 
     // Coral positions
@@ -173,6 +174,7 @@ public class Extension extends SubsystemBase {
               Map.entry(
                   ExtensionPosition.STOP, Commands.runOnce(this::stop).withName("Stop Extension")),
               Map.entry(ExtensionPosition.STOW, createPositionCommand(ExtensionPosition.STOW)),
+              Map.entry(ExtensionPosition.STANDBY, createPositionCommand(ExtensionPosition.STANDBY)),
               Map.entry(ExtensionPosition.CLIMB, createPositionCommand(ExtensionPosition.CLIMB)),
 
               // Coral positions
@@ -272,6 +274,13 @@ public class Extension extends SubsystemBase {
    */
   public final Command stow() {
     return setPositionCommand(ExtensionPosition.STOW);
+  }
+
+  /**
+   * @return Command to move the extension to standby position
+   */
+  public final Command standby() {
+    return setPositionCommand(ExtensionPosition.STANDBY);
   }
 
   /**

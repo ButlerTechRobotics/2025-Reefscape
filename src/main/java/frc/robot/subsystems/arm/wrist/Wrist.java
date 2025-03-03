@@ -111,6 +111,7 @@ public class Wrist extends SubsystemBase {
     // Common positions
     STOP(Degrees.of(0)),
     STOW(Degrees.of(90)),
+    STANDBY(Degrees.of(90)),
     CLIMB(Degrees.of(-90)),
 
     // Coral positions
@@ -175,6 +176,7 @@ public class Wrist extends SubsystemBase {
               // Common positions
               Map.entry(WristPosition.STOP, Commands.runOnce(this::stop).withName("Stop Wrist")),
               Map.entry(WristPosition.STOW, createPositionCommand(WristPosition.STOW)),
+              Map.entry(WristPosition.STANDBY, createPositionCommand(WristPosition.STANDBY)),
               Map.entry(WristPosition.CLIMB, createPositionCommand(WristPosition.CLIMB)),
 
               // Coral positions
@@ -264,6 +266,13 @@ public class Wrist extends SubsystemBase {
    */
   public final Command stow() {
     return setPositionCommand(WristPosition.STOW);
+  }
+
+  /**
+   * @return Command to move the wrist to standby position
+   */
+  public final Command standby() {
+    return setPositionCommand(WristPosition.STANDBY);
   }
 
   /**

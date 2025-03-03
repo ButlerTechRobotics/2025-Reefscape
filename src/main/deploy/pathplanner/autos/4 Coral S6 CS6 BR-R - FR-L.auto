@@ -5,9 +5,27 @@
     "data": {
       "commands": [
         {
+          "type": "named",
+          "data": {
+            "name": "SIMGamePiecePickup"
+          }
+        },
+        {
           "type": "path",
           "data": {
             "pathName": "S6 - BR-R"
+          }
+        },
+        {
+          "type": "named",
+          "data": {
+            "name": "Score"
+          }
+        },
+        {
+          "type": "named",
+          "data": {
+            "name": "Standby"
           }
         },
         {
@@ -17,9 +35,21 @@
           }
         },
         {
+          "type": "named",
+          "data": {
+            "name": "SIMGamePiecePickup"
+          }
+        },
+        {
           "type": "path",
           "data": {
             "pathName": "CS-6 - BR-L"
+          }
+        },
+        {
+          "type": "named",
+          "data": {
+            "name": "Score"
           }
         },
         {
@@ -29,9 +59,21 @@
           }
         },
         {
+          "type": "named",
+          "data": {
+            "name": "SIMGamePiecePickup"
+          }
+        },
+        {
           "type": "path",
           "data": {
             "pathName": "CS-6 - FR-R"
+          }
+        },
+        {
+          "type": "named",
+          "data": {
+            "name": "Score"
           }
         },
         {
@@ -41,9 +83,21 @@
           }
         },
         {
+          "type": "named",
+          "data": {
+            "name": "SIMGamePiecePickup"
+          }
+        },
+        {
           "type": "path",
           "data": {
             "pathName": "CS-6 - FR-L"
+          }
+        },
+        {
+          "type": "named",
+          "data": {
+            "name": "Score"
           }
         }
       ]

@@ -28,7 +28,6 @@ import edu.wpi.first.wpilibj2.command.Commands;
 import frc.robot.Constants;
 import frc.robot.subsystems.drive.*;
 import frc.robot.subsystems.drive.requests.SwerveSetpointGen;
-import frc.robot.utils.AllianceFlipUtil;
 import frc.robot.utils.FieldConstants.Reef;
 import frc.robot.utils.GeomUtil;
 import java.text.DecimalFormat;
@@ -210,7 +209,7 @@ public class DriveCommands extends Command {
                     shiftYT * Constants.maxDistanceReefLineup.in(Meters) * 0.8, offset.getY())));
 
     Logger.recordOutput("Drive/TargetPose", goalPose);
-    
+
     return goalPose;
   }
 

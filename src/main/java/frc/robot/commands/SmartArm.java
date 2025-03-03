@@ -35,7 +35,7 @@ public class SmartArm extends Command {
   public SmartArm(Arm arm, Goal goal) {
     this.arm = arm;
     this.goal = goal;
-    addRequirements(arm);
+    addRequirements(arm, arm.getShoulder(), arm.getExtension(), arm.getWrist());
   }
 
   @Override

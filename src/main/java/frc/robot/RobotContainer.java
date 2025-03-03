@@ -50,6 +50,7 @@ import frc.robot.subsystems.drive.DriveIO;
 import frc.robot.subsystems.drive.DriveIOCTRE;
 import frc.robot.subsystems.drive.requests.ProfiledFieldCentricFacingAngle;
 import frc.robot.subsystems.intake.Intake;
+import frc.robot.subsystems.intake.Intake.ClawMode;
 import frc.robot.subsystems.intake.IntakeIO;
 import frc.robot.subsystems.intake.IntakeIOCTRE;
 import frc.robot.subsystems.intake.IntakeIOSIM;
@@ -207,10 +208,13 @@ public class RobotContainer {
     arm = new Arm(shoulder, extension, wrist);
 
     // Set up the named commands
-    NamedCommands.registerCommand("Stow", new SmartArm(arm, SmartArm.Goal.STOW));
+    NamedCommands.registerCommand("Stow", arm.setGoalCommand(Arm.Goal.STOW));
+    NamedCommands.registerCommand("Standby", arm.setGoalCommand(Arm.Goal.STANDBY));
     NamedCommands.registerCommand(
-        "Coral_Station_Intake", new SmartArm(arm, SmartArm.Goal.CORAL_STATION_INTAKE));
-    NamedCommands.registerCommand("Coral_L4Back", new SmartArm(arm, SmartArm.Goal.CORAL_L4BACK));
+        "Coral_Station_Intake", arm.setGoalCommand(Arm.Goal.CORAL_STATION_INTAKE));
+    NamedCommands.registerCommand("Coral_L4Back", arm.setGoalCommand(Arm.Goal.CORAL_L4BACK));
+    NamedCommands.registerCommand(
+        "Score", new SmartIntake(intake, beamBreak, ClawMode.OUTTAKE, 0.25));
     NamedCommands.registerCommand(
         "SIMGamePiecePickup", new InstantCommand(() -> beamBreak.setGamePiece(true)));
 

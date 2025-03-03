@@ -7,12 +7,15 @@
 
 package frc.robot.commands;
 
+import edu.wpi.first.wpilibj.Timer;
 import edu.wpi.first.wpilibj2.command.Command;
 import edu.wpi.first.wpilibj2.command.SequentialCommandGroup;
 import edu.wpi.first.wpilibj2.command.WaitCommand;
+import frc.robot.Constants;
 import frc.robot.subsystems.beambreak.BeamBreak;
 import frc.robot.subsystems.intake.Intake;
 import frc.robot.subsystems.intake.Intake.ClawMode;
+import org.littletonrobotics.junction.Logger;
 
 public class SmartIntake extends Command {
 
@@ -20,6 +23,7 @@ public class SmartIntake extends Command {
   private final BeamBreak beamBreak;
   private final ClawMode goal;
   private final double outtakeDelay;
+  private final Timer timer = new Timer();
 
   /**
    * Creates a new SmartIntake.
@@ -38,7 +42,7 @@ public class SmartIntake extends Command {
   }
 
   /**
-   * Creates a new SmartIntake with no outtake delay.
+   * Creates a new SmartIntake with default outtake delay.
    *
    * @param intake The intake subsystem.
    * @param beamBreak The beam break subsystem.
@@ -51,11 +55,17 @@ public class SmartIntake extends Command {
   @Override
   public void initialize() {
     intake.setClawMode(goal); // Start the intake/outtake
+    timer.reset();
+    timer.start();
+    Logger.recordOutput("SmartIntake/Goal", goal.toString());
+    Logger.recordOutput("SmartIntake/HasGamePiece", beamBreak.hasGamePiece());
   }
 
   @Override
   public void execute() {
-    // The intake motor will run until the end condition is met, which is handled in isFinished.
+    // Log status to help with debugging
+    Logger.recordOutput("SmartIntake/ElapsedTime", timer.get());
+    Logger.recordOutput("SmartIntake/HasGamePiece", beamBreak.hasGamePiece());
   }
 
   @Override
@@ -66,8 +76,8 @@ public class SmartIntake extends Command {
       // Intake goal: finish when game piece is detected
       return beamBreak.hasGamePiece();
     } else if (goal == ClawMode.OUTTAKE) {
-      // Outtake goal: finish when game piece is not detected
-      return !beamBreak.hasGamePiece();
+      // Outtake goal: finish when game piece is not detected OR timeout elapsed
+      return !beamBreak.hasGamePiece() || timer.hasElapsed(outtakeDelay);
     } else {
       // Should not happen, but stop if goal is NONE
       return true;
@@ -76,8 +86,21 @@ public class SmartIntake extends Command {
 
   @Override
   public void end(boolean interrupted) {
-    if (goal == ClawMode.OUTTAKE && !interrupted) {
-      // Add a delay after outtake
+    timer.stop();
+
+    boolean timedOut = goal == ClawMode.OUTTAKE && timer.hasElapsed(outtakeDelay);
+    Logger.recordOutput("SmartIntake/TimedOut", timedOut);
+    Logger.recordOutput("SmartIntake/Interrupted", interrupted);
+
+    // In simulation mode, when outtaking, make sure the game piece is marked as gone
+    if (goal == ClawMode.OUTTAKE && Constants.currentMode == Constants.Mode.SIM) {
+      beamBreak.setGamePiece(false);
+      Logger.recordOutput("SmartIntake/SimOutake", "Game piece released in simulation");
+    }
+
+    if (goal == ClawMode.OUTTAKE && !interrupted && !timedOut) {
+      // Only add delay if we're ending because the beam break detected the piece is gone
+      // and we didn't already time out
       new SequentialCommandGroup(new WaitCommand(outtakeDelay), intake.stopCommand()).schedule();
     } else {
       intake.stopCommand().schedule();

@@ -33,24 +33,13 @@
   "pointTowardsZones": [],
   "eventMarkers": [
     {
-      "name": "Arm-Stow",
-      "waypointRelativePos": 0.05,
-      "endWaypointRelativePos": null,
-      "command": {
-        "type": "named",
-        "data": {
-          "name": "Arm-Stow"
-        }
-      }
-    },
-    {
-      "name": "Arm-Station_Intake",
+      "name": "Coral_Station_Intake",
       "waypointRelativePos": 0.8,
       "endWaypointRelativePos": null,
       "command": {
         "type": "named",
         "data": {
-          "name": "Arm-Station_Intake"
+          "name": "Coral_Station_Intake"
         }
       }
     }
@@ -65,13 +54,13 @@
   },
   "goalEndState": {
     "velocity": 0,
-    "rotation": 55.0
+    "rotation": -125.00000000000001
   },
   "reversed": false,
   "folder": "BR-R",
   "idealStartingState": {
     "velocity": 0,
-    "rotation": 119.99999999999999
+    "rotation": -59.99999999999999
   },
   "useDefaultConstraints": true
 }

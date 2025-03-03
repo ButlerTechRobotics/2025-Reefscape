@@ -118,6 +118,7 @@ public class Shoulder extends SubsystemBase {
     // Common positions
     STOP(Degrees.of(0)),
     STOW(Degrees.of(0)),
+    STANDBY(Degrees.of(45)),
     CLIMB(Degrees.of(90)),
 
     // Coral positions
@@ -183,6 +184,7 @@ public class Shoulder extends SubsystemBase {
               Map.entry(
                   ShoulderPosition.STOP, Commands.runOnce(this::stop).withName("Stop Shoulder")),
               Map.entry(ShoulderPosition.STOW, createPositionCommand(ShoulderPosition.STOW)),
+              Map.entry(ShoulderPosition.STANDBY, createPositionCommand(ShoulderPosition.STANDBY)),
               Map.entry(ShoulderPosition.CLIMB, createPositionCommand(ShoulderPosition.CLIMB)),
 
               // Coral positions
@@ -282,6 +284,13 @@ public class Shoulder extends SubsystemBase {
    */
   public final Command stow() {
     return setPositionCommand(ShoulderPosition.STOW);
+  }
+
+  /**
+   * @return Command to move the shoulder to standby position
+   */
+  public final Command standby() {
+    return setPositionCommand(ShoulderPosition.STANDBY);
   }
 
   /**
