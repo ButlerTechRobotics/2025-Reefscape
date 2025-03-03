@@ -139,7 +139,22 @@ public class ShoulderIOCTRE implements ShoulderIO {
     config.CurrentLimits.StatorCurrentLimitEnable = true;
     config.MotorOutput.Inverted = InvertedValue.CounterClockwise_Positive;
 
-    // Configure PID and feedforward gains
+    // Apply PID and feedforward values from protected method
+    configPID(config);
+
+    // Use the CANcoder as the remote feedback device
+    config.Feedback.withRemoteCANcoder(encoder);
+    return config;
+  }
+  /**
+   * Configures PID and feedforward gains for the hardware implementation. This method can be
+   * overridden in simulation to provide different tuning.
+   *
+   * @param config The TalonFXConfiguration to apply PID values to
+   * @return The updated configuration with PID values applied
+   */
+  protected TalonFXConfiguration configPID(TalonFXConfiguration config) {
+    // Hardware-specific PID values
     config.Slot0.kP = 350; // Proportional gain
     config.Slot0.kI = 0; // Integral gain
     config.Slot0.kD = 75; // Derivative gain
@@ -147,12 +162,8 @@ public class ShoulderIOCTRE implements ShoulderIO {
     config.Slot0.kV = 0; // Velocity feedforward
     config.Slot0.kA = 0; // Acceleration feedforward
     config.Slot0.kG = 10; // Gravity feedforward
-
-    // Use the CANcoder as the remote feedback device
-    config.Feedback.withRemoteCANcoder(encoder);
     return config;
   }
-
   /**
    * Updates the shoulder's input values with the latest sensor readings. This includes position,
    * velocity, voltage, and current measurements from all motors and the encoder, as well as

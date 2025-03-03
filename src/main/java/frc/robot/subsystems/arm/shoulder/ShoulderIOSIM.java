@@ -15,6 +15,7 @@ import static edu.wpi.first.units.Units.Pounds;
 import static edu.wpi.first.units.Units.Radians;
 import static edu.wpi.first.units.Units.RadiansPerSecond;
 
+import com.ctre.phoenix6.configs.TalonFXConfiguration;
 import com.ctre.phoenix6.sim.CANcoderSimState;
 import com.ctre.phoenix6.sim.TalonFXSimState;
 import edu.wpi.first.math.numbers.N1;
@@ -89,6 +90,25 @@ public class ShoulderIOSIM extends ShoulderIOCTRE {
             Degrees.of(180).in(Radians), // Upper limit (180)
             true, // Enable gravity simulation
             Degrees.of(0).in(Radians)); // Start at 0°
+  }
+
+  /**
+   * Overrides the hardware PID configuration to provide simulation-specific tuning.
+   *
+   * @param config The TalonFXConfiguration to apply PID values to
+   * @return The updated configuration with simulation PID values applied
+   */
+  @Override
+  protected TalonFXConfiguration configPID(TalonFXConfiguration config) {
+    // Simulation-specific PID values - adjust these based on simulation behavior
+    config.Slot0.kP = 620; // Lower P gain for simulation
+    config.Slot0.kI = 0; // No integral gain
+    config.Slot0.kD = 11; // Lower D gain for simulation
+    config.Slot0.kS = 0.08; // Lower static friction compensation
+    config.Slot0.kV = 0; // Velocity feedforward
+    config.Slot0.kA = 0; // Acceleration feedforward
+    config.Slot0.kG = 0.0001; // Lower gravity compensation for simulation
+    return config;
   }
 
   /**
