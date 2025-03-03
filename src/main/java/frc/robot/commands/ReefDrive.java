@@ -50,7 +50,7 @@ public class ReefDrive extends Command {
     // Get alliance-flipped centerfaces for comparison
     for (int i = 0; i < FieldConstants.Reef.centerFaces.length; i++) {
       // Apply alliance flip before comparing distances
-      Pose2d centerface = AllianceFlipUtil.apply(FieldConstants.Reef.centerFaces[i]);
+      Pose2d centerface = FieldConstants.Reef.centerFaces[i];
       double distance = currentPose.getTranslation().getDistance(centerface.getTranslation());
       if (distance < minDistance) {
         minDistance = distance;
@@ -79,7 +79,7 @@ public class ReefDrive extends Command {
 
       // Get the appropriate branch position at L1 height and alliance-flip it
       Pose3d reefBranch = FieldConstants.Reef.branchPositions.get(branchIndex).get(ReefHeight.L1);
-      Pose2d flippedBranch = AllianceFlipUtil.apply(reefBranch.toPose2d());
+      Pose2d flippedBranch = reefBranch.toPose2d();
 
       // Apply offset similar to the example in the joystick code
       targetPose =
