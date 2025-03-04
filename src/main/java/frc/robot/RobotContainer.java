@@ -64,7 +64,18 @@ public class RobotContainer {
   private final TunableController joystick =
       new TunableController(0).withControllerType(TunableControllerType.QUADRATIC);
 
+  // Safety override flags for the arm subsystem
+  // These can be toggled via SmartDashboard buttons to provide manual safety controls
+  /**
+   * When true, forces all arm motors into coast mode regardless of their normal state. This allows
+   * the arm to be moved manually when testing or in case of emergency.
+   */
   private boolean armCoastOverride = false;
+
+  /**
+   * When true, prevents the arm motors from being driven even while enabled. Acts as an emergency
+   * stop for just the arm without disabling the entire robot.
+   */
   private boolean armDisable = false;
 
   private final LoggedDashboardChooser<Command> autoChooser;
@@ -234,6 +245,11 @@ public class RobotContainer {
         "Drive Wheel Radius Characterization",
         DriveCommands.wheelRadiusCharacterization(drivetrain));
 
+    /**
+     * Connect safety overrides to the shoulder subsystem. These allow operators to: - Put the arm
+     * in coast mode for manual positioning (armCoastOverride) - Prevent the arm from moving under
+     * its own power (armDisable)
+     */
     shoulder.setOverrides(() -> armCoastOverride, () -> armDisable);
 
     configureBindings();
@@ -277,6 +293,9 @@ public class RobotContainer {
     // SmartDashboard.putData(
     //     "SetHasGamePiece False", new InstantCommand(() -> beamBreak.setGamePiece(false)));
 
+    // SmartDashboard safety controls for the arm
+    // These provide manual override buttons that are useful during testing
+    // and as emergency controls if the arm malfunctions
     SmartDashboard.putData("Arm Disable", new InstantCommand(() -> armDisable = true));
     SmartDashboard.putData("Arm Enable", new InstantCommand(() -> armDisable = false));
     SmartDashboard.putData("Arm Coast", new InstantCommand(() -> armCoastOverride = true));

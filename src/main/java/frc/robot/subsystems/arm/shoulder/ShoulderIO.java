@@ -69,5 +69,18 @@ public interface ShoulderIO {
   /** Stop in open loop. */
   public default void stop() {}
 
-  public default void setBrakeMode(boolean enabled) {}
-}
+
+  /**
+   * Sets the brake mode on the shoulder motors.
+   * 
+   * <p>In brake mode, the motors actively resist movement when not powered,
+   * which helps maintain position against gravity but may cause more wear.
+   * In coast mode, motors spin freely when not powered, allowing for 
+   * manual positioning and reduced power consumption.
+   * 
+   * <p>Implementation note: Hardware interfaces should apply this setting
+   * to all motors controlling the shoulder mechanism.
+   * 
+   * @param enabled true for brake mode, false for coast mode
+   */
+  public default void setBrakeMode(boolean enabled) {}}

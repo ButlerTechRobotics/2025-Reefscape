@@ -259,11 +259,26 @@ public class ShoulderIOCTRE implements ShoulderIO {
   public void stop() {
     brLeader.stopMotor();
   }
-
-  @Override
-  public void setBrakeMode(boolean enabled) {
-    new Thread(
-            () -> brLeader.setNeutralMode(enabled ? NeutralModeValue.Brake : NeutralModeValue.Coast))
-        .start();
-  }
+  
+/**
+ * Sets the neutral mode (brake or coast) for all shoulder motors.
+ * 
+ * <p>This method runs in a separate thread to prevent blocking the main control loop,
+ * as changing neutral mode can take a non-trivial amount of time on the CAN bus.
+ * The setting is only applied to the leader motor, as all followers will
+ * automatically inherit this setting through their follower relationship.
+ * 
+ * <p>In brake mode ({@code enabled=true}), motors will actively resist external movement 
+ * when not powered, which helps maintain position but generates heat.
+ * In coast mode ({@code enabled=false}), motors spin freely when not powered, allowing 
+ * for manual positioning but potentially drifting due to gravity.
+ *
+ * @param enabled true to enable brake mode, false for coast mode
+ */
+@Override
+public void setBrakeMode(boolean enabled) {
+  new Thread(
+          () -> brLeader.setNeutralMode(enabled ? NeutralModeValue.Brake : NeutralModeValue.Coast))
+      .start();
+}
 }
