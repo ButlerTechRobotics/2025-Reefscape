@@ -233,6 +233,10 @@ public class DriveCommands extends Command {
         .withVelocityY(speeds.vyMetersPerSecond)
         .withRotationalRate(speeds.omegaRadiansPerSecond);
     drive.setControl(setpointGenerator);
+
+    // ChassisSpeeds fieldSpeeds = new ChassisSpeeds(pidX, pidY, Rotations.of(pidRot).in(Radians));
+
+    // drive.applyFieldSpeeds(fieldSpeeds);
   }
 
   private static class WheelRadiusCharacterizationState {

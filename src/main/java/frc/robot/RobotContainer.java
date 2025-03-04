@@ -7,15 +7,12 @@
 
 package frc.robot;
 
-import com.ctre.phoenix6.swerve.SwerveModule.DriveRequestType;
-import com.ctre.phoenix6.swerve.SwerveRequest;
 import com.pathplanner.lib.auto.AutoBuilder;
 import com.pathplanner.lib.auto.NamedCommands;
 import edu.wpi.first.math.geometry.Pose2d;
 import edu.wpi.first.math.geometry.Rotation3d;
 import edu.wpi.first.math.geometry.Transform3d;
 import edu.wpi.first.math.geometry.Translation3d;
-import edu.wpi.first.math.trajectory.TrapezoidProfile;
 import edu.wpi.first.math.util.Units;
 import edu.wpi.first.units.measure.LinearVelocity;
 import edu.wpi.first.wpilibj.smartdashboard.SmartDashboard;
@@ -23,6 +20,7 @@ import edu.wpi.first.wpilibj2.command.Command;
 import edu.wpi.first.wpilibj2.command.Commands;
 import edu.wpi.first.wpilibj2.command.InstantCommand;
 import edu.wpi.first.wpilibj2.command.sysid.SysIdRoutine;
+import frc.robot.commands.AutoScore;
 import frc.robot.commands.DriveCommands;
 import frc.robot.commands.ReefDrive;
 import frc.robot.commands.SmartArm;
@@ -48,7 +46,6 @@ import frc.robot.subsystems.beambreak.BeamBreakIOSim;
 import frc.robot.subsystems.drive.Drive;
 import frc.robot.subsystems.drive.DriveIO;
 import frc.robot.subsystems.drive.DriveIOCTRE;
-import frc.robot.subsystems.drive.requests.ProfiledFieldCentricFacingAngle;
 import frc.robot.subsystems.intake.Intake;
 import frc.robot.subsystems.intake.Intake.ClawMode;
 import frc.robot.subsystems.intake.IntakeIO;
@@ -67,16 +64,15 @@ public class RobotContainer {
   private final TunableController joystick =
       new TunableController(0).withControllerType(TunableControllerType.QUADRATIC);
 
+  private boolean armCoastOverride = false;
+  private boolean armDisable = false;
+
   private final LoggedDashboardChooser<Command> autoChooser;
 
   public final Drive drivetrain;
   public final Intake intake;
   public final BeamBreak beamBreak;
   public final Arm arm;
-
-  /* Setting up bindings for necessary control of the swerve drive platform */
-  private final SwerveRequest.SwerveDriveBrake brake = new SwerveRequest.SwerveDriveBrake();
-  private final SwerveRequest.PointWheelsAt point = new SwerveRequest.PointWheelsAt();
 
   public RobotContainer() {
     // Declare component subsystems (not visible outside constructor)
@@ -211,6 +207,8 @@ public class RobotContainer {
     NamedCommands.registerCommand("Stow", arm.setGoalCommand(Arm.Goal.STOW));
     NamedCommands.registerCommand("Standby", arm.setGoalCommand(Arm.Goal.STANDBY));
     NamedCommands.registerCommand(
+        "Coral_Floor_Intake", arm.setGoalCommand(Arm.Goal.CORAL_FLOOR_INTAKE));
+    NamedCommands.registerCommand(
         "Coral_Station_Intake", arm.setGoalCommand(Arm.Goal.CORAL_STATION_INTAKE));
     NamedCommands.registerCommand("Coral_L4Back", arm.setGoalCommand(Arm.Goal.CORAL_L4BACK));
     NamedCommands.registerCommand(
@@ -235,6 +233,9 @@ public class RobotContainer {
     autoChooser.addOption(
         "Drive Wheel Radius Characterization",
         DriveCommands.wheelRadiusCharacterization(drivetrain));
+
+    shoulder.setOverrides(() -> armCoastOverride, () -> armDisable);
+
     configureBindings();
   }
 
@@ -256,44 +257,6 @@ public class RobotContainer {
                     .withRotationalRate(Constants.MaxAngularRate.times(-joystick.getRightX()))
                     .withOperatorForwardDirection(drivetrain.getOperatorForwardDirection())));
 
-    joystick.start().onTrue(Commands.runOnce(() -> drivetrain.resetPose(Pose2d.kZero)));
-    // joystick
-    //     .b()
-    //     .whileTrue(
-    //         drivetrain.applyRequest(
-    //             () ->
-    //                 point.withModuleDirection(
-    //                     new Rotation2d(-joystick.getLeftY(), -joystick.getLeftX()))));
-
-    // Custom Swerve Request that use ProfiledFieldCentricFacingAngle. Allows you to face specific
-    // direction while driving
-    ProfiledFieldCentricFacingAngle driveFacingAngle =
-        new ProfiledFieldCentricFacingAngle(
-                new TrapezoidProfile.Constraints(
-                    Constants.MaxAngularRate.baseUnitMagnitude(),
-                    Constants.MaxAngularRate.div(0.25).baseUnitMagnitude()))
-            .withDriveRequestType(DriveRequestType.OpenLoopVoltage);
-    // Set PID for ProfiledFieldCentricFacingAngle
-    driveFacingAngle.HeadingController.setPID(7, 0, 0);
-    // joystick
-    //     .y()
-    //     .whileTrue(
-    //         drivetrain
-    //             .runOnce(() -> driveFacingAngle.resetProfile(drivetrain.getRotation()))
-    //             .andThen(
-    //                 drivetrain.applyRequest(
-    //                     () ->
-    //                         driveFacingAngle
-    //                             .withVelocityX(
-    //                                 MaxSpeed.times(
-    //                                     -joystick
-    //                                         .getLeftY())) // Drive forward with negative Y
-    // (forward)
-    //                             .withVelocityY(MaxSpeed.times(-joystick.getLeftX()))
-    //                             .withTargetDirection(
-    //                                 new Rotation2d(
-    //                                     -joystick.getRightY(), -joystick.getRightX())))));
-
     // Run SysId routines when holding back/start and X/Y.
     // Note that each routine should be run exactly once in a single log.
     // joystick.back().and(joystick.y()).whileTrue(drivetrain.sysIdDynamic(Direction.kForward));
@@ -304,28 +267,20 @@ public class RobotContainer {
     // reset the field-centric heading on left bumper press
     joystick.back().onTrue(Commands.runOnce(() -> drivetrain.resetPose(Pose2d.kZero)));
 
-    // joystick.povDown().whileTrue(arm.setGoalCommand(Arm.Goal.STOW));
-    // joystick.povLeft().whileTrue(arm.setGoalCommand(Arm.Goal.L1));
-    // joystick.povRight().whileTrue(arm.setGoalCommand(Arm.Goal.L2));
-    // joystick.povUp().whileTrue(arm.setGoalCommand(Arm.Goal.L3));
-
-    // SmartDashboard.putData(
-    //     "Pathfind and score L1 Left",
-    //     new SmartScore(drivetrain, arm, SmartScore.Side.LEFT, SmartScore.ArmMode.L1));
-    // SmartDashboard.putData(
-    //     "Pathfind and score L1 Right",
-    //     new SmartScore(drivetrain, arm, SmartScore.Side.RIGHT, SmartScore.ArmMode.L1));
-
     joystick
         .leftTrigger()
         .and(joystick.a())
         .whileTrue(new ReefDrive(drivetrain, ReefDrive.Side.LEFT));
 
-    SmartDashboard.putData(
-        "SetHasGamePiece True", new InstantCommand(() -> beamBreak.setGamePiece(true)));
-    SmartDashboard.putData(
-        "SetHasGamePiece False", new InstantCommand(() -> beamBreak.setGamePiece(false)));
+    // SmartDashboard.putData(
+    //     "SetHasGamePiece True", new InstantCommand(() -> beamBreak.setGamePiece(true)));
+    // SmartDashboard.putData(
+    //     "SetHasGamePiece False", new InstantCommand(() -> beamBreak.setGamePiece(false)));
 
+    SmartDashboard.putData("Arm Disable", new InstantCommand(() -> armDisable = true));
+    SmartDashboard.putData("Arm Enable", new InstantCommand(() -> armDisable = false));
+    SmartDashboard.putData("Arm Coast", new InstantCommand(() -> armCoastOverride = true));
+    SmartDashboard.putData("Arm Brake", new InstantCommand(() -> armCoastOverride = false));
     joystick
         .leftBumper()
         .whileTrue(new SmartIntake(intake, beamBreak, Intake.ClawMode.FLOOR_INTAKE));
@@ -335,7 +290,7 @@ public class RobotContainer {
 
     joystick.povLeft().onTrue(new SmartArm(arm, SmartArm.Goal.CORAL_L4BACK));
     joystick.povRight().onTrue(new SmartArm(arm, SmartArm.Goal.STOW));
-    // joystick.povLeft().whileTrue(AutoScore.scoreAtL4(drivetrain, arm, Side.RIGHT));
+    joystick.povLeft().whileTrue(AutoScore.scoreAtL4(drivetrain, arm, ReefDrive.Side.RIGHT));
   }
 
   public Command getAutonomousCommand() {

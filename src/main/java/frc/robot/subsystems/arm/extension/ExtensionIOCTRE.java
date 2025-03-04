@@ -181,4 +181,11 @@ public class ExtensionIOCTRE implements ExtensionIO {
   public void stop() {
     leader.stopMotor();
   }
+
+  @Override
+  public void setBrakeMode(boolean enabled) {
+    new Thread(
+            () -> leader.setNeutralMode(enabled ? NeutralModeValue.Brake : NeutralModeValue.Coast))
+        .start();
+  }
 }

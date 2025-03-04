@@ -63,6 +63,11 @@ public interface ShoulderIO {
   /** Run closed loop at the specified position. */
   public default void setPosition(Angle angle) {}
 
+  /** Run open loop at the specified voltage. */
+  default void runVolts(double volts) {}
+
   /** Stop in open loop. */
   public default void stop() {}
+
+  public default void setBrakeMode(boolean enabled) {}
 }

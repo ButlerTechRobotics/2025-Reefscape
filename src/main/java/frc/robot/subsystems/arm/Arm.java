@@ -49,6 +49,8 @@ public class Arm extends SubsystemBase {
   private final ArmVisualizer measuredVisualizer = new ArmVisualizer("Measured");
   private final ArmVisualizer setpointVisualizer = new ArmVisualizer("Setpoint");
 
+  private boolean zeroed = false;
+
   public Arm(Shoulder shoulder, Extension extension, Wrist wrist) {
     this.shoulder = shoulder;
     this.extension = extension;
@@ -217,4 +219,13 @@ public class Arm extends SubsystemBase {
   public boolean atWristGoal() {
     return currentGoal == desiredGoal && wrist.isAtTarget();
   }
+
+  public void setZeroed(boolean zero) {
+    this.zeroed = zero;
+}
+
+@AutoLogOutput(key = "Arm/IsZeroed")
+public boolean isZeroed() {
+    return zeroed;
+}
 }

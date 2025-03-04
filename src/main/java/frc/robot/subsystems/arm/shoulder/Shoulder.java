@@ -9,6 +9,7 @@ package frc.robot.subsystems.arm.shoulder;
 
 import static edu.wpi.first.units.Units.*;
 
+import edu.wpi.first.math.filter.Debouncer;
 import edu.wpi.first.units.measure.Angle;
 import edu.wpi.first.wpilibj.Alert;
 import edu.wpi.first.wpilibj.Alert.AlertType;
@@ -16,7 +17,9 @@ import edu.wpi.first.wpilibj2.command.Command;
 import edu.wpi.first.wpilibj2.command.Commands;
 import edu.wpi.first.wpilibj2.command.SelectCommand;
 import edu.wpi.first.wpilibj2.command.SubsystemBase;
+import frc.robot.utils.LoggedTunableNumber;
 import java.util.Map;
+import java.util.function.BooleanSupplier;
 import org.littletonrobotics.junction.AutoLogOutput;
 import org.littletonrobotics.junction.Logger;
 
@@ -26,6 +29,14 @@ import org.littletonrobotics.junction.Logger;
  * closed-loop control options.
  */
 public class Shoulder extends SubsystemBase {
+  // Homing parameters
+  private static final LoggedTunableNumber homingVolts =
+      new LoggedTunableNumber("Shoulder/HomingVolts", -2.0);
+  private static final LoggedTunableNumber homingTimeSecs =
+      new LoggedTunableNumber("Shoulder/HomingTimeSecs", 0.25);
+  private static final LoggedTunableNumber homingVelocityThresh =
+      new LoggedTunableNumber("Shoulder/HomingVelocityThresh", 5.0);
+
   // Hardware interface and inputs
   private final ShoulderIO io;
   private final ShoulderIOInputsAutoLogged inputs;
@@ -44,6 +55,21 @@ public class Shoulder extends SubsystemBase {
       new Alert("Shoulder front-left follower motor isn't connected", AlertType.kError);
   private final Alert encoderAlert =
       new Alert("Shoulder encoder isn't connected", AlertType.kError);
+  private BooleanSupplier coastOverride = () -> false;
+  private BooleanSupplier disabledOverride = () -> false;
+
+  private boolean stopProfile = false;
+  
+  @AutoLogOutput 
+  private boolean brakeModeEnabled = true;
+
+  @AutoLogOutput(key = "Shoulder/HomedPositionRot")
+  private double homedPosition = 0.0;
+
+  @AutoLogOutput(key = "Shoulder/Homed")
+  private boolean homed = false;
+
+  private Debouncer homingDebouncer = new Debouncer(homingTimeSecs.get());
 
   /**
    * Creates a new Shoulder subsystem with the specified hardware interface.
@@ -67,6 +93,13 @@ public class Shoulder extends SubsystemBase {
     frFollowerMotorAlert.set(!inputs.frFollowerConnected);
     flFollowerMotorAlert.set(!inputs.flFollowerConnected);
     encoderAlert.set(!inputs.encoderConnected);
+
+    // Set coast mode
+    setBrakeMode(!coastOverride.getAsBoolean());
+
+    // Log state
+    Logger.recordOutput("Shoulder/CoastOverride", coastOverride.getAsBoolean());
+    Logger.recordOutput("Shoulder/DisabledOverride", disabledOverride.getAsBoolean());
   }
 
   /**
@@ -174,6 +207,46 @@ public class Shoulder extends SubsystemBase {
       currentMode = position;
       currentCommand.schedule();
     }
+  }
+
+  public void setOverrides(BooleanSupplier coastOverride, BooleanSupplier disabledOverride) {
+    this.coastOverride = coastOverride;
+    this.disabledOverride = disabledOverride;
+  }
+
+  private void setBrakeMode(boolean enabled) {
+    if (brakeModeEnabled == enabled) return;
+    brakeModeEnabled = enabled;
+    io.setBrakeMode(brakeModeEnabled);
+  }
+
+  /** Set current position of elevator to home. */
+  public void setHome() {
+    homedPosition = inputs.shoulderAngle.abs(Rotations);
+    homed = true;
+  }
+
+  public Command homingSequence() {
+    return Commands.startRun(
+            () -> {
+              stopProfile = true;
+              homed = false;
+              homingDebouncer = new Debouncer(homingTimeSecs.get());
+              homingDebouncer.calculate(false);
+            },
+            () -> {
+              if (disabledOverride.getAsBoolean() || coastOverride.getAsBoolean()) return;
+              io.runVolts(homingVolts.get());
+              homed =
+                  homingDebouncer.calculate(
+                      Math.abs(inputs.encoderVelocity.abs(RotationsPerSecond)) <= homingVelocityThresh.get());
+            })
+        .until(() -> homed)
+        .andThen(this::setHome)
+        .finallyDo(
+            () -> {
+              stopProfile = false;
+            });
   }
 
   // Command that runs the appropriate routine based on the current position

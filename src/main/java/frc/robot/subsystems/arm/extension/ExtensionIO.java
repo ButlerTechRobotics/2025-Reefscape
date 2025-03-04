@@ -49,4 +49,6 @@ public interface ExtensionIO {
 
   /** Stop in open loop. */
   public default void stop() {}
+
+  public default void setBrakeMode(boolean enabled) {}
 }

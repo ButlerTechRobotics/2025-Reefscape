@@ -14,6 +14,7 @@ import com.ctre.phoenix6.StatusSignal;
 import com.ctre.phoenix6.configs.TalonFXConfiguration;
 import com.ctre.phoenix6.controls.Follower;
 import com.ctre.phoenix6.controls.PositionTorqueCurrentFOC;
+import com.ctre.phoenix6.controls.VoltageOut;
 import com.ctre.phoenix6.hardware.CANcoder;
 import com.ctre.phoenix6.hardware.TalonFX;
 import com.ctre.phoenix6.signals.InvertedValue;
@@ -132,7 +133,6 @@ public class ShoulderIOCTRE implements ShoulderIO {
     var config = new TalonFXConfiguration();
     // Set motor to coast when stopped
     config.MotorOutput.NeutralMode = NeutralModeValue.Brake;
-    config.Feedback.SensorToMechanismRatio = (82.0 / 18.0); // 82:18 gear ratio
     config.TorqueCurrent.PeakForwardTorqueCurrent = 120.0;
     config.TorqueCurrent.PeakReverseTorqueCurrent = -120.0;
     config.CurrentLimits.StatorCurrentLimit = 80.0;
@@ -241,11 +241,29 @@ public class ShoulderIOCTRE implements ShoulderIO {
   }
 
   /**
+   * Runs the shoulder in open loop at the specified voltage. This method is used for manual control
+   * of the shoulder mechanism.
+   *
+   * @param volts The voltage to run the shoulder at
+   */
+  @Override
+  public void runVolts(double volts) {
+    brLeader.setControl(new VoltageOut(volts).withUpdateFreqHz(0));
+  }
+  
+  /**
    * Stops all shoulder movement by stopping the leader motor. All followers will also stop due to
    * the follower relationship.
    */
   @Override
   public void stop() {
     brLeader.stopMotor();
+  }
+
+  @Override
+  public void setBrakeMode(boolean enabled) {
+    new Thread(
+            () -> brLeader.setNeutralMode(enabled ? NeutralModeValue.Brake : NeutralModeValue.Coast))
+        .start();
   }
 }

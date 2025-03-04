@@ -40,6 +40,8 @@ public class Wrist extends SubsystemBase {
       new Alert("Wrist follower motor isn't connected", AlertType.kError);
   private final Alert encoderAlert = new Alert("Wrist encoder isn't connected", AlertType.kError);
 
+  @AutoLogOutput private boolean brakeModeEnabled = true;
+
   /**
    * Creates a new Wrist subsystem with the specified hardware interface.
    *
@@ -169,6 +171,12 @@ public class Wrist extends SubsystemBase {
     }
   }
 
+  private void setBrakeMode(boolean enabled) {
+    if (brakeModeEnabled == enabled) return;
+    brakeModeEnabled = enabled;
+    io.setBrakeMode(brakeModeEnabled);
+  }
+  
   // Command that runs the appropriate routine based on the current position
   private final Command currentCommand =
       new SelectCommand<>(

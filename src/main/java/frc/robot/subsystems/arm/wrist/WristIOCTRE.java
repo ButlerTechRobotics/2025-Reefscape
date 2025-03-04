@@ -167,4 +167,11 @@ public class WristIOCTRE implements WristIO {
   public void stop() {
     leader.stopMotor();
   }
+
+  @Override
+  public void setBrakeMode(boolean enabled) {
+    new Thread(
+            () -> leader.setNeutralMode(enabled ? NeutralModeValue.Brake : NeutralModeValue.Coast))
+        .start();
+  }
 }

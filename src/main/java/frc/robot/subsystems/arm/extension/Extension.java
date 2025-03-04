@@ -39,6 +39,8 @@ public class Extension extends SubsystemBase {
   private final Alert followerMotorAlert =
       new Alert("Extension follower motor isn't connected", AlertType.kError);
 
+  @AutoLogOutput private boolean brakeModeEnabled = true;
+
   /**
    * Creates a new Extension subsystem with the specified hardware interface.
    *
@@ -166,6 +168,12 @@ public class Extension extends SubsystemBase {
     }
   }
 
+  private void setBrakeMode(boolean enabled) {
+    if (brakeModeEnabled == enabled) return;
+    brakeModeEnabled = enabled;
+    io.setBrakeMode(brakeModeEnabled);
+  }
+
   // Command that runs the appropriate routine based on the current distance
   private final Command currentCommand =
       new SelectCommand<>(
@@ -174,7 +182,8 @@ public class Extension extends SubsystemBase {
               Map.entry(
                   ExtensionPosition.STOP, Commands.runOnce(this::stop).withName("Stop Extension")),
               Map.entry(ExtensionPosition.STOW, createPositionCommand(ExtensionPosition.STOW)),
-              Map.entry(ExtensionPosition.STANDBY, createPositionCommand(ExtensionPosition.STANDBY)),
+              Map.entry(
+                  ExtensionPosition.STANDBY, createPositionCommand(ExtensionPosition.STANDBY)),
               Map.entry(ExtensionPosition.CLIMB, createPositionCommand(ExtensionPosition.CLIMB)),
 
               // Coral positions
