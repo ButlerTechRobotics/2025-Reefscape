@@ -47,6 +47,9 @@ public interface ExtensionIO {
   /** Run closed loop at the specified distance. */
   public default void setDistance(Distance distance) {}
 
+  /** Run open loop at the specified voltage. */
+  public default void setVoltage(Voltage voltage) {}
+
   /** Stop in open loop. */
   public default void stop() {}
 

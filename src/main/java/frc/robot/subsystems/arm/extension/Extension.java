@@ -10,6 +10,7 @@ package frc.robot.subsystems.arm.extension;
 import static edu.wpi.first.units.Units.*;
 
 import edu.wpi.first.units.measure.Distance;
+import edu.wpi.first.units.measure.Voltage;
 import edu.wpi.first.wpilibj.Alert;
 import edu.wpi.first.wpilibj.Alert.AlertType;
 import edu.wpi.first.wpilibj2.command.Command;
@@ -69,6 +70,10 @@ public class Extension extends SubsystemBase {
    */
   private void setDistance(Distance distance) {
     io.setDistance(distance);
+  }
+
+  public void setVoltage(Voltage volts) {
+    io.setVoltage(volts);
   }
 
   /** Stops the arm motors. */

@@ -20,7 +20,6 @@ import edu.wpi.first.wpilibj2.command.Commands;
 import edu.wpi.first.wpilibj2.command.InstantCommand;
 import edu.wpi.first.wpilibj2.command.sysid.SysIdRoutine;
 import frc.robot.commands.DriveCommands;
-import frc.robot.commands.ReefDrive;
 import frc.robot.commands.SmartArm;
 import frc.robot.commands.SmartIntake;
 import frc.robot.generated.TunerConstants;
@@ -53,28 +52,16 @@ import frc.robot.subsystems.vision.Vision;
 import frc.robot.subsystems.vision.VisionIO;
 import frc.robot.subsystems.vision.VisionIOPhotonVision;
 import frc.robot.subsystems.vision.VisionIOPhotonVisionSIM;
-import frc.robot.utils.TunableController;
+import frc.robot.utils.DriverController;
+import frc.robot.utils.OperatorController;
 import frc.robot.utils.TunableController.TunableControllerType;
 import org.littletonrobotics.junction.networktables.LoggedDashboardChooser;
 
 public class RobotContainer {
   private LinearVelocity MaxSpeed = TunerConstants.kSpeedAt12Volts;
-  private final TunableController joystick =
-      new TunableController(0).withControllerType(TunableControllerType.LINEAR);
-
-  // Safety override flags for the arm subsystem
-  // These can be toggled via SmartDashboard buttons to provide manual safety controls
-  /**
-   * When true, forces all arm motors into coast mode regardless of their normal state. This allows
-   * the arm to be moved manually when testing or in case of emergency.
-   */
-  private boolean armCoastOverride = false;
-
-  /**
-   * When true, prevents the arm motors from being driven even while enabled. Acts as an emergency
-   * stop for just the arm without disabling the entire robot.
-   */
-  private boolean armDisable = false;
+  private final DriverController driver = new DriverController(0, TunableControllerType.LINEAR);
+  private final OperatorController operator =
+      new OperatorController(1, TunableControllerType.LINEAR);
 
   private final LoggedDashboardChooser<Command> autoChooser;
 
@@ -242,14 +229,6 @@ public class RobotContainer {
     autoChooser.addOption(
         "Drive Wheel Radius Characterization",
         DriveCommands.wheelRadiusCharacterization(drivetrain));
-
-    /**
-     * Connect safety overrides to the shoulder subsystem. These allow operators to: - Put the arm
-     * in coast mode for manual positioning (armCoastOverride) - Prevent the arm from moving under
-     * its own power (armDisable)
-     */
-    shoulder.setOverrides(() -> armCoastOverride, () -> armDisable);
-
     configureBindings();
   }
 
@@ -266,9 +245,9 @@ public class RobotContainer {
             () ->
                 drivetrain
                     .setpointGen
-                    .withVelocityX(MaxSpeed.times(-joystick.getLeftY()))
-                    .withVelocityY(MaxSpeed.times(-joystick.getLeftX()))
-                    .withRotationalRate(Constants.MaxAngularRate.times(-joystick.getRightX()))
+                    .withVelocityX(MaxSpeed.times(-driver.getLeftY()))
+                    .withVelocityY(MaxSpeed.times(-driver.getLeftX()))
+                    .withRotationalRate(Constants.MaxAngularRate.times(-driver.getRightX()))
                     .withOperatorForwardDirection(drivetrain.getOperatorForwardDirection())));
 
     // Run SysId routines when holding back/start and X/Y.
@@ -279,27 +258,21 @@ public class RobotContainer {
     // joystick.start().and(joystick.x()).whileTrue(drivetrain.sysIdQuasistatic(Direction.kReverse));
 
     // reset the field-centric heading on left bumper press
-    joystick.back().onTrue(Commands.runOnce(() -> drivetrain.resetPose(Pose2d.kZero)));
+    driver.resetHeading().onTrue(Commands.runOnce(() -> drivetrain.resetPose(Pose2d.kZero)));
 
-    joystick
-        .leftTrigger()
-        .and(joystick.a())
-        .whileTrue(new ReefDrive(drivetrain, ReefDrive.Side.LEFT));
+    // joystick
+    //     .leftTrigger()
+    //     .and(joystick.a())
+    //     .whileTrue(new ReefDrive(drivetrain, ReefDrive.Side.LEFT));
 
-    // SmartDashboard.putData(
-    //     "SetHasGamePiece True", new InstantCommand(() -> beamBreak.setGamePiece(true)));
-    // SmartDashboard.putData(
-    //     "SetHasGamePiece False", new InstantCommand(() -> beamBreak.setGamePiece(false)));
-    joystick
-        .leftBumper()
+    driver
+        .floorIntake()
         .whileTrue(new SmartIntake(intake, beamBreak, Intake.ClawMode.FLOOR_INTAKE));
-    joystick
-        .rightBumper()
-        .whileTrue(new SmartIntake(intake, beamBreak, Intake.ClawMode.OUTTAKE, 1.0));
+    driver.outtake().whileTrue(new SmartIntake(intake, beamBreak, Intake.ClawMode.OUTTAKE, 1.0));
 
-    joystick.povLeft().onTrue(new SmartArm(arm, SmartArm.Goal.CORAL_L3BACK));
-    joystick.povDown().onTrue(new SmartArm(arm, SmartArm.Goal.STANDBY));
-    joystick.povRight().onTrue(new SmartArm(arm, SmartArm.Goal.CORAL_STATION_INTAKE));
+    driver.povLeft().onTrue(new SmartArm(arm, SmartArm.Goal.CORAL_L3BACK));
+    driver.povDown().onTrue(new SmartArm(arm, SmartArm.Goal.STANDBY));
+    driver.povRight().onTrue(new SmartArm(arm, SmartArm.Goal.CORAL_STATION_INTAKE));
 
     // joystick.povLeft().whileTrue(AutoScore.scoreAtL4(drivetrain, arm, ReefDrive.Side.RIGHT));
   }

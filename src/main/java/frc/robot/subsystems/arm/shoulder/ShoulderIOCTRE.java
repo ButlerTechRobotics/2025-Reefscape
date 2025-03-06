@@ -7,6 +7,8 @@
 
 package frc.robot.subsystems.arm.shoulder;
 
+import static edu.wpi.first.units.Units.Rotations;
+
 import com.ctre.phoenix6.BaseStatusSignal;
 import com.ctre.phoenix6.CANBus;
 import com.ctre.phoenix6.StatusCode;
@@ -79,6 +81,10 @@ public class ShoulderIOCTRE implements ShoulderIO {
   private final Debouncer frFollowerDebounce = new Debouncer(0.5);
   private final Debouncer flFollowerDebounce = new Debouncer(0.5);
   private final Debouncer encoderDebounce = new Debouncer(0.5);
+
+  private boolean isBrakeMode = true; // Default to brake mode
+
+  private boolean disableOverride = false; // Default to enabled
 
   /**
    * Constructs a new ShoulderIOCTRE instance and initializes all hardware components. This includes
@@ -240,6 +246,9 @@ public class ShoulderIOCTRE implements ShoulderIO {
 
     // Calculate shoulder angle using encoder position
     inputs.shoulderAngle = inputs.encoderPosition;
+
+    // Update brake mode status from our tracked variable
+    inputs.brakeMode = isBrakeMode;
   }
 
   /**
@@ -265,6 +274,13 @@ public class ShoulderIOCTRE implements ShoulderIO {
     brLeader.setControl(new VoltageOut(volts).withUpdateFreqHz(0));
   }
 
+  @Override
+  public void setEncoderPosition(Angle position) {
+    if (encoder != null) {
+      encoder.setPosition(position.in(Rotations));
+    }
+  }
+
   /**
    * Stops all shoulder movement by stopping the leader motor. All followers will also stop due to
    * the follower relationship.
@@ -274,26 +290,27 @@ public class ShoulderIOCTRE implements ShoulderIO {
     brLeader.stopMotor();
   }
 
-  /**
-   * Sets the neutral mode (brake or coast) for all shoulder motors.
-   *
-   * <p>This method runs in a separate thread to prevent blocking the main control loop, as changing
-   * neutral mode can take a non-trivial amount of time on the CAN bus. The setting is only applied
-   * to the leader motor, as all followers will automatically inherit this setting through their
-   * follower relationship.
-   *
-   * <p>In brake mode ({@code enabled=true}), motors will actively resist external movement when not
-   * powered, which helps maintain position but generates heat. In coast mode ({@code
-   * enabled=false}), motors spin freely when not powered, allowing for manual positioning but
-   * potentially drifting due to gravity.
-   *
-   * @param enabled true to enable brake mode, false for coast mode
-   */
+  // Add to ShoulderIOCTRE.java
   @Override
-  public void setBrakeMode(boolean enabled) {
-    new Thread(
-            () ->
-                brLeader.setNeutralMode(enabled ? NeutralModeValue.Brake : NeutralModeValue.Coast))
-        .start();
+  public void setBrakeMode(boolean brake) {
+    NeutralModeValue mode = brake ? NeutralModeValue.Brake : NeutralModeValue.Coast;
+    brLeader.setNeutralMode(mode);
+    blFollower.setNeutralMode(mode);
+    frFollower.setNeutralMode(mode);
+    flFollower.setNeutralMode(mode);
+
+    // Store the current state in our own variable
+    isBrakeMode = brake;
+  }
+
+  @Override
+  public void setDisableOverride(boolean disabled) {
+    // If disabled, immediately stop all motors
+    if (disabled) {
+      brLeader.stopMotor();
+      blFollower.stopMotor();
+      frFollower.stopMotor();
+      flFollower.stopMotor();
+    }
   }
 }

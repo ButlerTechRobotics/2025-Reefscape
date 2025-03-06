@@ -10,6 +10,7 @@ package frc.robot.subsystems.arm.wrist;
 import static edu.wpi.first.units.Units.*;
 
 import edu.wpi.first.units.measure.Angle;
+import edu.wpi.first.units.measure.Voltage;
 import edu.wpi.first.wpilibj.Alert;
 import edu.wpi.first.wpilibj.Alert.AlertType;
 import edu.wpi.first.wpilibj2.command.Command;
@@ -71,6 +72,10 @@ public class Wrist extends SubsystemBase {
    */
   public void setPosition(Angle position) {
     io.setPosition(position);
+  }
+
+  public void setVoltage(Voltage volts) {
+    io.setVoltage(volts);
   }
 
   /** Stops the wrist motors. */

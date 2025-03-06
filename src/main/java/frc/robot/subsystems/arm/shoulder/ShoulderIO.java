@@ -28,6 +28,12 @@ public interface ShoulderIO {
     public boolean flFollowerConnected = false;
     public boolean encoderConnected = false;
 
+    /** Current neutral mode. True = brake, False = coast */
+    public boolean brakeMode = true;
+
+    /** Current disable state. True = disabled, False = enabled */
+    public boolean disableOverride = false;
+
     // Position measurements
     public Angle brLeaderPosition = Rotations.of(0);
     public Angle brLeaderRotorPosition = Rotations.of(0);
@@ -66,20 +72,40 @@ public interface ShoulderIO {
   /** Run open loop at the specified voltage. */
   default void runVolts(double volts) {}
 
+  /** Run open loop at the specified voltage. */
+  public default void setVoltage(Voltage voltage) {}
+
+  /**
+   * Sets the encoder position to the specified angle.
+   *
+   * @param position The position to set the encoder to
+   */
+  public default void setEncoderPosition(Angle position) {}
+
+  /**
+   * Gets the current angular velocity of the shoulder mechanism.
+   *
+   * @return The current angular velocity
+   */
+  public default AngularVelocity getVelocity() {
+    return RotationsPerSecond.of(0);
+  }
+
   /** Stop in open loop. */
   public default void stop() {}
 
   /**
-   * Sets the brake mode on the shoulder motors.
+   * Sets the neutral mode of the motors.
    *
-   * <p>In brake mode, the motors actively resist movement when not powered, which helps maintain
-   * position against gravity but may cause more wear. In coast mode, motors spin freely when not
-   * powered, allowing for manual positioning and reduced power consumption.
-   *
-   * <p>Implementation note: Hardware interfaces should apply this setting to all motors controlling
-   * the shoulder mechanism.
-   *
-   * @param enabled true for brake mode, false for coast mode
+   * @param brake True for brake mode, false for coast mode
    */
-  public default void setBrakeMode(boolean enabled) {}
+  public default void setBrakeMode(boolean brake) {}
+
+  /**
+   * Sets the override for the disable state.
+   *
+   * @param disabled True to disable the motors, false to enable them
+   */
+  public default void setDisableOverride(boolean disabled) {}
+  ;
 }

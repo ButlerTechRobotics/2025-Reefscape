@@ -48,6 +48,9 @@ public interface WristIO {
   /** Run closed loop at the specified velocity. */
   public default void setPosition(Angle angle) {}
 
+  /** Run open loop at the specified voltage. */
+  public default void setVoltage(Voltage voltage) {}
+
   /** Stop in open loop. */
   public default void stop() {}
 

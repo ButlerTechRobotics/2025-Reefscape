@@ -9,17 +9,16 @@ package frc.robot.subsystems.arm.shoulder;
 
 import static edu.wpi.first.units.Units.*;
 
-import edu.wpi.first.math.filter.Debouncer;
 import edu.wpi.first.units.measure.Angle;
+import edu.wpi.first.units.measure.AngularVelocity;
+import edu.wpi.first.units.measure.Voltage;
 import edu.wpi.first.wpilibj.Alert;
 import edu.wpi.first.wpilibj.Alert.AlertType;
 import edu.wpi.first.wpilibj2.command.Command;
 import edu.wpi.first.wpilibj2.command.Commands;
 import edu.wpi.first.wpilibj2.command.SelectCommand;
 import edu.wpi.first.wpilibj2.command.SubsystemBase;
-import frc.robot.utils.LoggedTunableNumber;
 import java.util.Map;
-import java.util.function.BooleanSupplier;
 import org.littletonrobotics.junction.AutoLogOutput;
 import org.littletonrobotics.junction.Logger;
 
@@ -29,14 +28,6 @@ import org.littletonrobotics.junction.Logger;
  * closed-loop control options.
  */
 public class Shoulder extends SubsystemBase {
-  // Homing parameters
-  private static final LoggedTunableNumber homingVolts =
-      new LoggedTunableNumber("Shoulder/HomingVolts", -2.0);
-  private static final LoggedTunableNumber homingTimeSecs =
-      new LoggedTunableNumber("Shoulder/HomingTimeSecs", 0.25);
-  private static final LoggedTunableNumber homingVelocityThresh =
-      new LoggedTunableNumber("Shoulder/HomingVelocityThresh", 5.0);
-
   // Hardware interface and inputs
   private final ShoulderIO io;
   private final ShoulderIOInputsAutoLogged inputs;
@@ -55,20 +46,8 @@ public class Shoulder extends SubsystemBase {
       new Alert("Shoulder front-left follower motor isn't connected", AlertType.kError);
   private final Alert encoderAlert =
       new Alert("Shoulder encoder isn't connected", AlertType.kError);
-  private BooleanSupplier coastOverride = () -> false;
-  private BooleanSupplier disabledOverride = () -> false;
 
-  private boolean stopProfile = false;
-
-  @AutoLogOutput private boolean brakeModeEnabled = true;
-
-  @AutoLogOutput(key = "Shoulder/HomedPositionRot")
-  private double homedPosition = 0.0;
-
-  @AutoLogOutput(key = "Shoulder/Homed")
-  private boolean homed = false;
-
-  private Debouncer homingDebouncer = new Debouncer(homingTimeSecs.get());
+  private boolean zeroed = false;
 
   /**
    * Creates a new Shoulder subsystem with the specified hardware interface.
@@ -92,13 +71,6 @@ public class Shoulder extends SubsystemBase {
     frFollowerMotorAlert.set(!inputs.frFollowerConnected);
     flFollowerMotorAlert.set(!inputs.flFollowerConnected);
     encoderAlert.set(!inputs.encoderConnected);
-
-    // Set coast mode
-    setBrakeMode(!coastOverride.getAsBoolean());
-
-    // Log state
-    Logger.recordOutput("Shoulder/CoastOverride", coastOverride.getAsBoolean());
-    Logger.recordOutput("Shoulder/DisabledOverride", disabledOverride.getAsBoolean());
   }
 
   /**
@@ -108,6 +80,20 @@ public class Shoulder extends SubsystemBase {
    */
   private void setPosition(Angle position) {
     io.setPosition(position);
+  }
+
+  public void setVoltage(Voltage volts) {
+    io.setVoltage(volts);
+  }
+
+  public void setZero() {
+    // Set the current position as zero
+    io.setEncoderPosition(Rotations.of(0));
+
+    // Mark the shoulder as zeroed
+    setZeroed(true);
+
+    Logger.recordOutput("Shoulder/SetZero", true);
   }
 
   /** Stops the shoulder motors. */
@@ -208,106 +194,6 @@ public class Shoulder extends SubsystemBase {
     }
   }
 
-  /**
-   * Sets override suppliers for coast mode and disabled state.
-   *
-   * <p>These overrides provide safety controls to:
-   *
-   * <ul>
-   *   <li>coastOverride: When true, puts motors in coast mode regardless of normal operation state
-   *   <li>disabledOverride: When true, prevents motors from being driven even when the robot is
-   *       enabled
-   * </ul>
-   *
-   * <p>Typically connected to operator controls for manual safety cutoffs.
-   *
-   * @param coastOverride Supplier that returns true when coast mode should be forced
-   * @param disabledOverride Supplier that returns true when motors should be disabled
-   */
-  public void setOverrides(BooleanSupplier coastOverride, BooleanSupplier disabledOverride) {
-    this.coastOverride = coastOverride;
-    this.disabledOverride = disabledOverride;
-  }
-
-  /**
-   * Sets the brake mode on all shoulder motors.
-   *
-   * <p>In brake mode, motors actively resist movement when not powered. In coast mode, motors spin
-   * freely when not powered.
-   *
-   * <p>Only changes mode when the requested state differs from current state to minimize CAN bus
-   * traffic and wear on the motor controllers.
-   *
-   * @param enabled true for brake mode, false for coast mode
-   */
-  private void setBrakeMode(boolean enabled) {
-    if (brakeModeEnabled == enabled) return;
-    brakeModeEnabled = enabled;
-    io.setBrakeMode(brakeModeEnabled);
-  }
-
-  /**
-   * Sets the current position of the shoulder as the "home" or zero position.
-   *
-   * <p>Called at the end of the homing sequence when the shoulder has reached its mechanical limit.
-   * This position becomes the reference point for all future shoulder movements.
-   *
-   * <p>Records the absolute position in rotations and marks the shoulder as homed.
-   */
-  public void setHome() {
-    homedPosition = inputs.shoulderAngle.abs(Rotations);
-    homed = true;
-  }
-
-  /**
-   * Creates a command that homes the shoulder by driving it against a mechanical hard stop.
-   *
-   * <p>The homing sequence works as follows:
-   *
-   * <ol>
-   *   <li>Disables any running motion profiles and resets homing state
-   *   <li>Applies a constant negative voltage ({@link homingVolts}) to drive the shoulder toward
-   *       its hard stop
-   *   <li>Continuously monitors the shoulder's velocity while it's moving
-   *   <li>When the shoulder reaches the hard stop, it will stall and velocity will drop
-   *   <li>Once velocity stays below threshold ({@link homingVelocityThresh}) for the required time
-   *       period ({@link homingTimeSecs}), the shoulder is considered homed
-   *   <li>The current position is then calibrated as the home/zero position
-   * </ol>
-   *
-   * <p>Safety features:
-   *
-   * <ul>
-   *   <li>Will not run if {@code disabledOverride} or {@code coastOverride} is active
-   *   <li>Uses a debouncer to ensure velocity is consistently below threshold before completing
-   * </ul>
-   *
-   * @return A command that executes the shoulder homing sequence
-   */
-  public Command homingSequence() {
-    return Commands.startRun(
-            () -> {
-              stopProfile = true;
-              homed = false;
-              homingDebouncer = new Debouncer(homingTimeSecs.get());
-              homingDebouncer.calculate(false);
-            },
-            () -> {
-              if (disabledOverride.getAsBoolean() || coastOverride.getAsBoolean()) return;
-              io.runVolts(homingVolts.get());
-              homed =
-                  homingDebouncer.calculate(
-                      Math.abs(inputs.encoderVelocity.abs(RotationsPerSecond))
-                          <= homingVelocityThresh.get());
-            })
-        .until(() -> homed)
-        .andThen(this::setHome)
-        .finallyDo(
-            () -> {
-              stopProfile = false;
-            });
-  }
-
   // Command that runs the appropriate routine based on the current position
   private final Command currentCommand =
       new SelectCommand<>(
@@ -389,6 +275,16 @@ public class Shoulder extends SubsystemBase {
   @AutoLogOutput
   public Angle targetAngle() {
     return currentMode.targetAngle;
+  }
+
+  /**
+   * Gets the current angular velocity of the shoulder.
+   *
+   * @return The current angular velocity
+   */
+  @AutoLogOutput(key = "Shoulder/Velocity")
+  public AngularVelocity getVelocity() {
+    return inputs.encoderVelocity;
   }
 
   /**
@@ -521,5 +417,33 @@ public class Shoulder extends SubsystemBase {
    */
   public final Command climb() {
     return setPositionCommand(ShoulderPosition.CLIMB);
+  }
+
+  // Add to Shoulder.java
+  @AutoLogOutput(key = "Shoulder/BrakeMode")
+  public boolean getBrakeMode() {
+    return inputs.brakeMode;
+  }
+
+  public void setZeroed(boolean zero) {
+    this.zeroed = zero;
+  }
+
+  public boolean isZeroed() {
+    return zeroed;
+  }
+
+  /**
+   * Sets the shoulder motors to either brake or coast mode.
+   *
+   * @param brake True for brake mode, false for coast mode
+   */
+  public void setBrakeMode(boolean brake) {
+    io.setBrakeMode(brake);
+  }
+
+  /** Toggles between brake and coast mode. */
+  public void toggleBrakeMode() {
+    setBrakeMode(!getBrakeMode());
   }
 }
