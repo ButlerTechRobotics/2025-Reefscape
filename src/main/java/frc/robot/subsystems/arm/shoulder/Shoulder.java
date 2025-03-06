@@ -128,7 +128,7 @@ public class Shoulder extends SubsystemBase {
   /**
    * Sets the shoulder to a specific angle.
    *
-   * @param angle The desired angle in degrees
+   * @param angle The desired angle in Rotations
    */
   public void setAngle(Angle angle) {
     io.setPosition(angle);
@@ -137,38 +137,38 @@ public class Shoulder extends SubsystemBase {
   /**
    * Creates a command to set the shoulder to a specific angle.
    *
-   * @param angle The desired angle in degrees
+   * @param angle The desired angle in Rotations
    * @return Command to set the angle
    */
   public Command setAngleCommand(Angle angle) {
     return Commands.runOnce(() -> setAngle(angle))
-        .withName("SetShoulderAngle(" + angle.in(Degrees) + ")");
+        .withName("SetShoulderAngle(" + angle.in(Rotations) + ")");
   }
 
   /** Enumeration of available shoulder positions with their corresponding target angles. */
   public enum ShoulderPosition {
     // Common positions
-    STOP(Degrees.of(0)),
-    STOW(Degrees.of(0)),
-    STANDBY(Degrees.of(45)),
-    CLIMB(Degrees.of(90)),
+    STOP(Rotations.of(0)),
+    STOW(Rotations.of(0)),
+    STANDBY(Rotations.of(0.6)),
+    CLIMB(Rotations.of(1.5)),
 
     // Coral positions
-    CORAL_FLOOR_INTAKE(Degrees.of(10)),
-    CORAL_STATION_INTAKE(Degrees.of(45)),
-    CORAL_L1(Degrees.of(45)),
-    CORAL_L1BACK(Degrees.of(90)),
-    CORAL_L2(Degrees.of(25)),
-    CORAL_L2BACK(Degrees.of(90)),
-    CORAL_L3(Degrees.of(25)),
-    CORAL_L3BACK(Degrees.of(90)),
-    CORAL_L4BACK(Degrees.of(90)),
+    CORAL_FLOOR_INTAKE(Rotations.of(0.1)),
+    CORAL_STATION_INTAKE(Rotations.of(0.98)),
+    CORAL_L1(Rotations.of(0)),
+    CORAL_L1BACK(Rotations.of(0)),
+    CORAL_L2(Rotations.of(0)),
+    CORAL_L2BACK(Rotations.of(0)),
+    CORAL_L3(Rotations.of(0)),
+    CORAL_L3BACK(Rotations.of(1.369)),
+    CORAL_L4BACK(Rotations.of(0)),
 
     // Algae positions
-    ALGAE_FLOOR_INTAKE(Degrees.of(0)),
-    ALGAE_SCORE(Degrees.of(0)),
-    ALGAE_L1(Degrees.of(0)),
-    ALGAE_L2(Degrees.of(0));
+    ALGAE_FLOOR_INTAKE(Rotations.of(0)),
+    ALGAE_SCORE(Rotations.of(0)),
+    ALGAE_L1(Rotations.of(0)),
+    ALGAE_L2(Rotations.of(0));
 
     private final Angle targetAngle;
     private final Angle angleTolerance;
@@ -179,7 +179,7 @@ public class Shoulder extends SubsystemBase {
     }
 
     ShoulderPosition(Angle targetAngle) {
-      this(targetAngle, Degrees.of(2)); // 2 degree default tolerance
+      this(targetAngle, Degrees.of(2.0)); // 2 degree default tolerance
     }
   }
 
@@ -207,56 +207,57 @@ public class Shoulder extends SubsystemBase {
       currentCommand.schedule();
     }
   }
-  
-/**
- * Sets override suppliers for coast mode and disabled state.
- * 
- * <p>These overrides provide safety controls to:
- * <ul>
- *   <li>coastOverride: When true, puts motors in coast mode regardless of normal operation state</li>
- *   <li>disabledOverride: When true, prevents motors from being driven even when the robot is enabled</li>
- * </ul>
- * 
- * <p>Typically connected to operator controls for manual safety cutoffs.
- * 
- * @param coastOverride Supplier that returns true when coast mode should be forced
- * @param disabledOverride Supplier that returns true when motors should be disabled
- */
-public void setOverrides(BooleanSupplier coastOverride, BooleanSupplier disabledOverride) {
-  this.coastOverride = coastOverride;
-  this.disabledOverride = disabledOverride;
-}
 
-/**
- * Sets the brake mode on all shoulder motors.
- * 
- * <p>In brake mode, motors actively resist movement when not powered.
- * In coast mode, motors spin freely when not powered.
- * 
- * <p>Only changes mode when the requested state differs from current state
- * to minimize CAN bus traffic and wear on the motor controllers.
- * 
- * @param enabled true for brake mode, false for coast mode
- */
-private void setBrakeMode(boolean enabled) {
-  if (brakeModeEnabled == enabled) return;
-  brakeModeEnabled = enabled;
-  io.setBrakeMode(brakeModeEnabled);
-}
+  /**
+   * Sets override suppliers for coast mode and disabled state.
+   *
+   * <p>These overrides provide safety controls to:
+   *
+   * <ul>
+   *   <li>coastOverride: When true, puts motors in coast mode regardless of normal operation state
+   *   <li>disabledOverride: When true, prevents motors from being driven even when the robot is
+   *       enabled
+   * </ul>
+   *
+   * <p>Typically connected to operator controls for manual safety cutoffs.
+   *
+   * @param coastOverride Supplier that returns true when coast mode should be forced
+   * @param disabledOverride Supplier that returns true when motors should be disabled
+   */
+  public void setOverrides(BooleanSupplier coastOverride, BooleanSupplier disabledOverride) {
+    this.coastOverride = coastOverride;
+    this.disabledOverride = disabledOverride;
+  }
 
-/**
- * Sets the current position of the shoulder as the "home" or zero position.
- * 
- * <p>Called at the end of the homing sequence when the shoulder has reached
- * its mechanical limit. This position becomes the reference point for all
- * future shoulder movements.
- * 
- * <p>Records the absolute position in rotations and marks the shoulder as homed.
- */
-public void setHome() {
-  homedPosition = inputs.shoulderAngle.abs(Rotations);
-  homed = true;
-}
+  /**
+   * Sets the brake mode on all shoulder motors.
+   *
+   * <p>In brake mode, motors actively resist movement when not powered. In coast mode, motors spin
+   * freely when not powered.
+   *
+   * <p>Only changes mode when the requested state differs from current state to minimize CAN bus
+   * traffic and wear on the motor controllers.
+   *
+   * @param enabled true for brake mode, false for coast mode
+   */
+  private void setBrakeMode(boolean enabled) {
+    if (brakeModeEnabled == enabled) return;
+    brakeModeEnabled = enabled;
+    io.setBrakeMode(brakeModeEnabled);
+  }
+
+  /**
+   * Sets the current position of the shoulder as the "home" or zero position.
+   *
+   * <p>Called at the end of the homing sequence when the shoulder has reached its mechanical limit.
+   * This position becomes the reference point for all future shoulder movements.
+   *
+   * <p>Records the absolute position in rotations and marks the shoulder as homed.
+   */
+  public void setHome() {
+    homedPosition = inputs.shoulderAngle.abs(Rotations);
+    homed = true;
+  }
 
   /**
    * Creates a command that homes the shoulder by driving it against a mechanical hard stop.

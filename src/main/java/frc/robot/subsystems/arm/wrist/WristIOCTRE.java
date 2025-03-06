@@ -8,13 +8,17 @@
 package frc.robot.subsystems.arm.wrist;
 
 import com.ctre.phoenix6.BaseStatusSignal;
+import com.ctre.phoenix6.CANBus;
 import com.ctre.phoenix6.StatusCode;
 import com.ctre.phoenix6.StatusSignal;
 import com.ctre.phoenix6.configs.TalonFXConfiguration;
-import com.ctre.phoenix6.controls.PositionVoltage;
+import com.ctre.phoenix6.controls.MotionMagicTorqueCurrentFOC;
 import com.ctre.phoenix6.hardware.CANcoder;
 import com.ctre.phoenix6.hardware.TalonFX;
+import com.ctre.phoenix6.signals.GravityTypeValue;
+import com.ctre.phoenix6.signals.InvertedValue;
 import com.ctre.phoenix6.signals.NeutralModeValue;
+import com.ctre.phoenix6.signals.StaticFeedforwardSignValue;
 import edu.wpi.first.math.filter.Debouncer;
 import edu.wpi.first.units.measure.Angle;
 import edu.wpi.first.units.measure.AngularVelocity;
@@ -30,11 +34,14 @@ public class WristIOCTRE implements WristIO {
   /** The gear ratio between the motor and the wrist mechanism */
   public static final double GEAR_RATIO = ((50 / 12) * (42 / 16) * (42 / 16)); // (32 + (2 / 3))
 
+  /** CAN bus that the devices are located on */
+  public static final CANBus kCANBus = new CANBus("CANivore");
+
   /** The leader TalonFX motor controller (CAN ID: 40) */
-  public final TalonFX leader = new TalonFX(40);
+  public final TalonFX leader = new TalonFX(40, kCANBus);
 
   /** The CANcoder for position feedback (CAN ID: 41) */
-  public final CANcoder encoder = new CANcoder(41);
+  public final CANcoder encoder = new CANcoder(41, kCANBus);
 
   // Status signals for monitoring motor and encoder states
   private final StatusSignal<Angle> leaderPosition = leader.getPosition();
@@ -56,6 +63,10 @@ public class WristIOCTRE implements WristIO {
    * configuring the motor, and optimizing CAN bus utilization for all devices.
    */
   public WristIOCTRE() {
+    // Set the CANcoder position to zero at startup
+    // This makes it behave like a relative encoder instead of absolute
+    encoder.setPosition(0.0);
+
     // Configure motor with settings
     TalonFXConfiguration config = createMotorConfiguration();
     leader.getConfigurator().apply(config);
@@ -88,18 +99,40 @@ public class WristIOCTRE implements WristIO {
     var config = new TalonFXConfiguration();
     // Set motor to coast when stopped
     config.MotorOutput.NeutralMode = NeutralModeValue.Brake;
+    config.TorqueCurrent.PeakForwardTorqueCurrent = 120.0;
+    config.TorqueCurrent.PeakReverseTorqueCurrent = -120.0;
+    config.CurrentLimits.StatorCurrentLimit = 30.0;
+    config.CurrentLimits.StatorCurrentLimitEnable = true;
+    config.MotorOutput.Inverted = InvertedValue.CounterClockwise_Positive;
+    config.Slot0.GravityType = GravityTypeValue.Arm_Cosine;
+    config.Slot0.StaticFeedforwardSign = StaticFeedforwardSignValue.UseClosedLoopSign;
+    config.MotionMagic.MotionMagicCruiseVelocity = 4;
+    // config.MotionMagic.MotionMagicAcceleration = 10;
+    config.MotionMagic.MotionMagicAcceleration = 5;
 
-    // Configure PID and feedforward gains
-    config.Slot0.kP = 30; // Proportional gain
-    config.Slot0.kI = 0; // Integral gain
-    config.Slot0.kD = 0; // Derivative gain
-    config.Slot0.kS = 3; // Static friction compensation
-    config.Slot0.kV = 0; // Velocity feedforward
-    config.Slot0.kA = 0; // Acceleration feedforward
-    config.Slot0.kG = 14; // Gravity feedforward
+    // Apply PID and feedforward values from protected method
+    configPID(config);
 
     // Use the CANcoder as the remote feedback device
     config.Feedback.withRemoteCANcoder(encoder);
+    return config;
+  }
+  /**
+   * Configures PID and feedforward gains for the hardware implementation. This method can be
+   * overridden in simulation to provide different tuning.
+   *
+   * @param config The TalonFXConfiguration to apply PID values to
+   * @return The updated configuration with PID values applied
+   */
+  protected TalonFXConfiguration configPID(TalonFXConfiguration config) {
+    // Hardware-specific PID values
+    config.Slot0.kP = 135; // Proportional gain
+    config.Slot0.kI = 0; // Integral gain
+    config.Slot0.kD = 15; // Derivative gain
+    config.Slot0.kS = 1; // Static friction compensation
+    config.Slot0.kV = 0; // Velocity feedforward
+    config.Slot0.kA = 0; // Acceleration feedforward
+    config.Slot0.kG = 5; // Gravity feedforward
     return config;
   }
 
@@ -156,7 +189,7 @@ public class WristIOCTRE implements WristIO {
   @Override
   public void setPosition(Angle angle) {
     // Convert desired angle to encoder rotations
-    leader.setControl(new PositionVoltage(angle));
+    leader.setControl(new MotionMagicTorqueCurrentFOC(angle));
   }
 
   /**

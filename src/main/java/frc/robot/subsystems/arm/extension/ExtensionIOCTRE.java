@@ -10,13 +10,17 @@ package frc.robot.subsystems.arm.extension;
 import static edu.wpi.first.units.Units.Inches;
 
 import com.ctre.phoenix6.BaseStatusSignal;
+import com.ctre.phoenix6.CANBus;
 import com.ctre.phoenix6.StatusCode;
 import com.ctre.phoenix6.StatusSignal;
 import com.ctre.phoenix6.configs.TalonFXConfiguration;
 import com.ctre.phoenix6.controls.Follower;
-import com.ctre.phoenix6.controls.PositionVoltage;
+import com.ctre.phoenix6.controls.MotionMagicTorqueCurrentFOC;
 import com.ctre.phoenix6.hardware.TalonFX;
+import com.ctre.phoenix6.signals.GravityTypeValue;
+import com.ctre.phoenix6.signals.InvertedValue;
 import com.ctre.phoenix6.signals.NeutralModeValue;
+import com.ctre.phoenix6.signals.StaticFeedforwardSignValue;
 import edu.wpi.first.math.filter.Debouncer;
 import edu.wpi.first.units.measure.Angle;
 import edu.wpi.first.units.measure.AngularVelocity;
@@ -32,12 +36,15 @@ import frc.robot.utils.Conversions;
  */
 public class ExtensionIOCTRE implements ExtensionIO {
   /** The gear ratio between the motor and the extension mechanism */
-  public static final double GEAR_RATIO = 8.0;
+  public static final double GEAR_RATIO = 90.0;
+
+  /** CAN bus that the devices are located on */
+  public static final CANBus kCANBus = new CANBus("CANivore");
 
   /** The leader TalonFX motor controller (CAN ID: 30) */
-  public final TalonFX leader = new TalonFX(30);
+  public final TalonFX leader = new TalonFX(30, kCANBus);
   /** The follower TalonFX motor controller (CAN ID: 31) */
-  public final TalonFX follower = new TalonFX(31);
+  public final TalonFX follower = new TalonFX(31, kCANBus);
 
   // Status signals for monitoring motor and encoder states
   private final StatusSignal<Angle> leaderPosition = leader.getPosition();
@@ -58,7 +65,7 @@ public class ExtensionIOCTRE implements ExtensionIO {
    * The radius of the extension pulley/drum, used for converting between rotations and linear
    * distance
    */
-  protected final Distance extensionRadius = Inches.of(2);
+  protected final Distance extensionRadius = Inches.of(0.5);
 
   /**
    * Constructs a new ExtensionIOCTRE instance and initializes all hardware components. This
@@ -66,6 +73,7 @@ public class ExtensionIOCTRE implements ExtensionIO {
    * utilization for all devices.
    */
   public ExtensionIOCTRE() {
+    leader.setPosition(0);
     // Set up follower to mirror leader
     follower.setControl(new Follower(leader.getDeviceID(), false));
 
@@ -101,8 +109,33 @@ public class ExtensionIOCTRE implements ExtensionIO {
     var config = new TalonFXConfiguration();
     // Set motor to coast when stopped
     config.MotorOutput.NeutralMode = NeutralModeValue.Coast;
+    config.TorqueCurrent.PeakForwardTorqueCurrent = 120.0;
+    config.TorqueCurrent.PeakReverseTorqueCurrent = -120.0;
+    config.CurrentLimits.StatorCurrentLimit = 80.0;
+    config.CurrentLimits.StatorCurrentLimitEnable = true;
+    config.MotorOutput.Inverted = InvertedValue.Clockwise_Positive;
+    config.Slot0.GravityType = GravityTypeValue.Elevator_Static;
+    config.Slot0.StaticFeedforwardSign = StaticFeedforwardSignValue.UseClosedLoopSign;
+    config.MotionMagic.MotionMagicCruiseVelocity = 1;
+    config.MotionMagic.MotionMagicAcceleration = 1;
+    config.SoftwareLimitSwitch.ForwardSoftLimitEnable = true;
+    config.SoftwareLimitSwitch.ForwardSoftLimitThreshold = 25;
+    config.SoftwareLimitSwitch.ReverseSoftLimitEnable = true;
+    config.SoftwareLimitSwitch.ReverseSoftLimitThreshold = 0;
 
-    // Configure PID and feedforward gains
+    // Apply PID and feedforward values from protected method
+    configPID(config);
+    return config;
+  }
+  /**
+   * Configures PID and feedforward gains for the hardware implementation. This method can be
+   * overridden in simulation to provide different tuning.
+   *
+   * @param config The TalonFXConfiguration to apply PID values to
+   * @return The updated configuration with PID values applied
+   */
+  protected TalonFXConfiguration configPID(TalonFXConfiguration config) {
+    // Hardware-specific PID values
     config.Slot0.kP = 0; // Proportional gain
     config.Slot0.kI = 0; // Integral gain
     config.Slot0.kD = 0; // Derivative gain
@@ -110,7 +143,6 @@ public class ExtensionIOCTRE implements ExtensionIO {
     config.Slot0.kV = 0; // Velocity feedforward
     config.Slot0.kA = 0; // Acceleration feedforward
     config.Slot0.kG = 0; // Gravity feedforward
-
     return config;
   }
 
@@ -170,7 +202,8 @@ public class ExtensionIOCTRE implements ExtensionIO {
   public void setDistance(Distance distance) {
     // Convert desired distance to rotations and set position control
     leader.setControl(
-        new PositionVoltage(Conversions.metersToRotations(distance, 1, extensionRadius)));
+        new MotionMagicTorqueCurrentFOC(
+            Conversions.metersToRotations(distance, 1, extensionRadius)));
   }
 
   /**

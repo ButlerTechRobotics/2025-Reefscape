@@ -91,7 +91,7 @@ public class Wrist extends SubsystemBase {
   /**
    * Sets the wrist to a specific angle.
    *
-   * @param angle The desired angle in degrees
+   * @param angle The desired angle in Rotations
    */
   public void setAngle(Angle angle) {
     io.setPosition(angle);
@@ -100,39 +100,39 @@ public class Wrist extends SubsystemBase {
   /**
    * Creates a command to set the wrist to a specific angle.
    *
-   * @param angle The desired angle in degrees
+   * @param angle The desired angle in Rotations
    * @return Command to set the angle
    */
   public Command setAngleCommand(Angle angle) {
     return Commands.runOnce(() -> setAngle(angle))
-        .withName("SetWristAngle(" + angle.in(Degrees) + ")");
+        .withName("SetWristAngle(" + angle.in(Rotations) + ")");
   }
 
   /** Enumeration of available wrist positions with their corresponding target angles. */
   public enum WristPosition {
     // Common positions
-    STOP(Degrees.of(0)),
-    STOW(Degrees.of(90)),
-    STANDBY(Degrees.of(90)),
-    CLIMB(Degrees.of(-90)),
+    STOP(Rotations.of(0)),
+    STOW(Rotations.of(0)),
+    STANDBY(Rotations.of(0)),
+    CLIMB(Rotations.of(0)),
 
     // Coral positions
-    CORAL_FLOOR_INTAKE(Degrees.of(0)),
-    CORAL_STATION_INTAKE(Degrees.of(0)),
-    CORAL_L1(Degrees.of(-90)),
-    CORAL_L1BACK(Degrees.of(130)),
-    CORAL_L2(Degrees.of(-90)),
-    CORAL_L2BACK(Degrees.of(110)),
-    CORAL_L3(Degrees.of(-90)),
-    CORAL_L3BACK(Degrees.of(110)),
-    CORAL_L4(Degrees.of(-90)),
-    CORAL_L4BACK(Degrees.of(130)),
+    CORAL_FLOOR_INTAKE(Rotations.of(0)),
+    CORAL_STATION_INTAKE(Rotations.of(1.65)),
+    CORAL_L1(Rotations.of(0)),
+    CORAL_L1BACK(Rotations.of(0)),
+    CORAL_L2(Rotations.of(0)),
+    CORAL_L2BACK(Rotations.of(0)),
+    CORAL_L3(Rotations.of(0)),
+    CORAL_L3BACK(Rotations.of(0.9)),
+    CORAL_L4(Rotations.of(0)),
+    CORAL_L4BACK(Rotations.of(0)),
 
     // Algae positions (all 0)
-    ALGAE_FLOOR_INTAKE(Degrees.of(0)),
-    ALGAE_SCORE(Degrees.of(0)),
-    ALGAE_L1(Degrees.of(0)),
-    ALGAE_L2(Degrees.of(0));
+    ALGAE_FLOOR_INTAKE(Rotations.of(0)),
+    ALGAE_SCORE(Rotations.of(0)),
+    ALGAE_L1(Rotations.of(0)),
+    ALGAE_L2(Rotations.of(0));
 
     private final Angle targetAngle;
     private final Angle angleTolerance;
@@ -143,7 +143,7 @@ public class Wrist extends SubsystemBase {
     }
 
     WristPosition(Angle targetAngle) {
-      this(targetAngle, Degrees.of(2)); // 2 degree default tolerance
+      this(targetAngle, Rotations.of(2)); // 2 degree default tolerance
     }
   }
 
@@ -176,7 +176,7 @@ public class Wrist extends SubsystemBase {
     brakeModeEnabled = enabled;
     io.setBrakeMode(brakeModeEnabled);
   }
-  
+
   // Command that runs the appropriate routine based on the current position
   private final Command currentCommand =
       new SelectCommand<>(

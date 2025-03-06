@@ -15,12 +15,10 @@ import edu.wpi.first.math.geometry.Transform3d;
 import edu.wpi.first.math.geometry.Translation3d;
 import edu.wpi.first.math.util.Units;
 import edu.wpi.first.units.measure.LinearVelocity;
-import edu.wpi.first.wpilibj.smartdashboard.SmartDashboard;
 import edu.wpi.first.wpilibj2.command.Command;
 import edu.wpi.first.wpilibj2.command.Commands;
 import edu.wpi.first.wpilibj2.command.InstantCommand;
 import edu.wpi.first.wpilibj2.command.sysid.SysIdRoutine;
-import frc.robot.commands.AutoScore;
 import frc.robot.commands.DriveCommands;
 import frc.robot.commands.ReefDrive;
 import frc.robot.commands.SmartArm;
@@ -62,7 +60,7 @@ import org.littletonrobotics.junction.networktables.LoggedDashboardChooser;
 public class RobotContainer {
   private LinearVelocity MaxSpeed = TunerConstants.kSpeedAt12Volts;
   private final TunableController joystick =
-      new TunableController(0).withControllerType(TunableControllerType.QUADRATIC);
+      new TunableController(0).withControllerType(TunableControllerType.LINEAR);
 
   // Safety override flags for the arm subsystem
   // These can be toggled via SmartDashboard buttons to provide manual safety controls
@@ -292,14 +290,6 @@ public class RobotContainer {
     //     "SetHasGamePiece True", new InstantCommand(() -> beamBreak.setGamePiece(true)));
     // SmartDashboard.putData(
     //     "SetHasGamePiece False", new InstantCommand(() -> beamBreak.setGamePiece(false)));
-
-    // SmartDashboard safety controls for the arm
-    // These provide manual override buttons that are useful during testing
-    // and as emergency controls if the arm malfunctions
-    SmartDashboard.putData("Arm Disable", new InstantCommand(() -> armDisable = true));
-    SmartDashboard.putData("Arm Enable", new InstantCommand(() -> armDisable = false));
-    SmartDashboard.putData("Arm Coast", new InstantCommand(() -> armCoastOverride = true));
-    SmartDashboard.putData("Arm Brake", new InstantCommand(() -> armCoastOverride = false));
     joystick
         .leftBumper()
         .whileTrue(new SmartIntake(intake, beamBreak, Intake.ClawMode.FLOOR_INTAKE));
@@ -307,9 +297,11 @@ public class RobotContainer {
         .rightBumper()
         .whileTrue(new SmartIntake(intake, beamBreak, Intake.ClawMode.OUTTAKE, 1.0));
 
-    joystick.povLeft().onTrue(new SmartArm(arm, SmartArm.Goal.CORAL_L4BACK));
-    joystick.povRight().onTrue(new SmartArm(arm, SmartArm.Goal.STOW));
-    joystick.povLeft().whileTrue(AutoScore.scoreAtL4(drivetrain, arm, ReefDrive.Side.RIGHT));
+    joystick.povLeft().onTrue(new SmartArm(arm, SmartArm.Goal.CORAL_L3BACK));
+    joystick.povDown().onTrue(new SmartArm(arm, SmartArm.Goal.STANDBY));
+    joystick.povRight().onTrue(new SmartArm(arm, SmartArm.Goal.CORAL_STATION_INTAKE));
+
+    // joystick.povLeft().whileTrue(AutoScore.scoreAtL4(drivetrain, arm, ReefDrive.Side.RIGHT));
   }
 
   public Command getAutonomousCommand() {

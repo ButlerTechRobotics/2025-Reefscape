@@ -77,20 +77,14 @@ public class Arm extends SubsystemBase {
 
     switch (currentGoal) {
       case STOW -> {
-        // wrist.stow();
-        // if (wrist.isAtTarget()) {
-        //   extension.stow();
-        // }
-        // if (shoulder.isAtTarget()) {
-        //   shoulder.stow();
-        // }
-        shoulder.stow().schedule();
-        extension.stow().schedule();
-        wrist.stow().schedule();
+        wrist.stow();
+        if (wrist.isAtTarget()) {
+          shoulder.stow();
+        }
       }
       case STANDBY -> {
         shoulder.standby().schedule();
-        extension.standby().schedule();
+        // extension.standby().schedule();
         wrist.standby().schedule();
       }
       case CORAL_FLOOR_INTAKE -> {
@@ -100,8 +94,8 @@ public class Arm extends SubsystemBase {
       }
       case CORAL_STATION_INTAKE -> {
         shoulder.coralStationIntake().schedule();
-        extension.coralStationIntake().schedule();
         wrist.coralStationIntake().schedule();
+        extension.coralStationIntake().schedule();
       }
       case CORAL_L1 -> {
         shoulder.coralL1().schedule();
@@ -129,9 +123,10 @@ public class Arm extends SubsystemBase {
         wrist.coralL3().schedule();
       }
       case CORAL_L3BACK -> {
-        shoulder.coralL3Back().schedule();
-        extension.coralL3Back().schedule();
-        wrist.coralL3Back().schedule();
+        wrist.coralL3Back();
+        if (wrist.isAtTarget()) {
+          shoulder.coralL3Back();
+        }
       }
       case CORAL_L4BACK -> {
         shoulder.coralL4Back().schedule();
@@ -222,10 +217,10 @@ public class Arm extends SubsystemBase {
 
   public void setZeroed(boolean zero) {
     this.zeroed = zero;
-}
+  }
 
-@AutoLogOutput(key = "Arm/IsZeroed")
-public boolean isZeroed() {
+  @AutoLogOutput(key = "Arm/IsZeroed")
+  public boolean isZeroed() {
     return zeroed;
-}
+  }
 }

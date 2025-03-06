@@ -13,12 +13,14 @@ import com.ctre.phoenix6.StatusCode;
 import com.ctre.phoenix6.StatusSignal;
 import com.ctre.phoenix6.configs.TalonFXConfiguration;
 import com.ctre.phoenix6.controls.Follower;
-import com.ctre.phoenix6.controls.PositionTorqueCurrentFOC;
+import com.ctre.phoenix6.controls.MotionMagicTorqueCurrentFOC;
 import com.ctre.phoenix6.controls.VoltageOut;
 import com.ctre.phoenix6.hardware.CANcoder;
 import com.ctre.phoenix6.hardware.TalonFX;
+import com.ctre.phoenix6.signals.GravityTypeValue;
 import com.ctre.phoenix6.signals.InvertedValue;
 import com.ctre.phoenix6.signals.NeutralModeValue;
+import com.ctre.phoenix6.signals.StaticFeedforwardSignValue;
 import edu.wpi.first.math.filter.Debouncer;
 import edu.wpi.first.units.measure.Angle;
 import edu.wpi.first.units.measure.AngularVelocity;
@@ -84,6 +86,10 @@ public class ShoulderIOCTRE implements ShoulderIO {
    * utilization for all devices.
    */
   public ShoulderIOCTRE() {
+    // Set the CANcoder position to zero at startup
+    // This makes it behave like a relative encoder instead of absolute
+    encoder.setPosition(0.0);
+
     // Set up all three followers to mirror the leader
     blFollower.setControl(new Follower(brLeader.getDeviceID(), true));
     frFollower.setControl(new Follower(brLeader.getDeviceID(), false));
@@ -138,6 +144,14 @@ public class ShoulderIOCTRE implements ShoulderIO {
     config.CurrentLimits.StatorCurrentLimit = 80.0;
     config.CurrentLimits.StatorCurrentLimitEnable = true;
     config.MotorOutput.Inverted = InvertedValue.CounterClockwise_Positive;
+    config.Slot0.GravityType = GravityTypeValue.Arm_Cosine;
+    config.Slot0.StaticFeedforwardSign = StaticFeedforwardSignValue.UseClosedLoopSign;
+    config.MotionMagic.MotionMagicCruiseVelocity = 2.5;
+    config.MotionMagic.MotionMagicAcceleration = 10;
+    config.SoftwareLimitSwitch.ForwardSoftLimitEnable = true;
+    config.SoftwareLimitSwitch.ForwardSoftLimitThreshold = 1.5;
+    config.SoftwareLimitSwitch.ReverseSoftLimitEnable = true;
+    config.SoftwareLimitSwitch.ReverseSoftLimitThreshold = 0;
 
     // Apply PID and feedforward values from protected method
     configPID(config);
@@ -155,13 +169,13 @@ public class ShoulderIOCTRE implements ShoulderIO {
    */
   protected TalonFXConfiguration configPID(TalonFXConfiguration config) {
     // Hardware-specific PID values
-    config.Slot0.kP = 350; // Proportional gain
+    config.Slot0.kP = 110; // Proportional gain
     config.Slot0.kI = 0; // Integral gain
-    config.Slot0.kD = 75; // Derivative gain
-    config.Slot0.kS = 3; // Static friction compensation
+    config.Slot0.kD = 25; // Derivative gain
+    config.Slot0.kS = 1; // Static friction compensation
     config.Slot0.kV = 0; // Velocity feedforward
     config.Slot0.kA = 0; // Acceleration feedforward
-    config.Slot0.kG = 10; // Gravity feedforward
+    config.Slot0.kG = 0; // Gravity feedforward
     return config;
   }
   /**
@@ -237,7 +251,7 @@ public class ShoulderIOCTRE implements ShoulderIO {
   @Override
   public void setPosition(Angle angle) {
     // Convert desired angle to encoder rotations
-    brLeader.setControl(new PositionTorqueCurrentFOC(angle));
+    brLeader.setControl(new MotionMagicTorqueCurrentFOC(angle));
   }
 
   /**
@@ -250,7 +264,7 @@ public class ShoulderIOCTRE implements ShoulderIO {
   public void runVolts(double volts) {
     brLeader.setControl(new VoltageOut(volts).withUpdateFreqHz(0));
   }
-  
+
   /**
    * Stops all shoulder movement by stopping the leader motor. All followers will also stop due to
    * the follower relationship.
@@ -259,26 +273,27 @@ public class ShoulderIOCTRE implements ShoulderIO {
   public void stop() {
     brLeader.stopMotor();
   }
-  
-/**
- * Sets the neutral mode (brake or coast) for all shoulder motors.
- * 
- * <p>This method runs in a separate thread to prevent blocking the main control loop,
- * as changing neutral mode can take a non-trivial amount of time on the CAN bus.
- * The setting is only applied to the leader motor, as all followers will
- * automatically inherit this setting through their follower relationship.
- * 
- * <p>In brake mode ({@code enabled=true}), motors will actively resist external movement 
- * when not powered, which helps maintain position but generates heat.
- * In coast mode ({@code enabled=false}), motors spin freely when not powered, allowing 
- * for manual positioning but potentially drifting due to gravity.
- *
- * @param enabled true to enable brake mode, false for coast mode
- */
-@Override
-public void setBrakeMode(boolean enabled) {
-  new Thread(
-          () -> brLeader.setNeutralMode(enabled ? NeutralModeValue.Brake : NeutralModeValue.Coast))
-      .start();
-}
+
+  /**
+   * Sets the neutral mode (brake or coast) for all shoulder motors.
+   *
+   * <p>This method runs in a separate thread to prevent blocking the main control loop, as changing
+   * neutral mode can take a non-trivial amount of time on the CAN bus. The setting is only applied
+   * to the leader motor, as all followers will automatically inherit this setting through their
+   * follower relationship.
+   *
+   * <p>In brake mode ({@code enabled=true}), motors will actively resist external movement when not
+   * powered, which helps maintain position but generates heat. In coast mode ({@code
+   * enabled=false}), motors spin freely when not powered, allowing for manual positioning but
+   * potentially drifting due to gravity.
+   *
+   * @param enabled true to enable brake mode, false for coast mode
+   */
+  @Override
+  public void setBrakeMode(boolean enabled) {
+    new Thread(
+            () ->
+                brLeader.setNeutralMode(enabled ? NeutralModeValue.Brake : NeutralModeValue.Coast))
+        .start();
+  }
 }

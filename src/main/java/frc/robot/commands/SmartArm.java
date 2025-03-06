@@ -16,6 +16,7 @@ public class SmartArm extends Command {
 
   public enum Goal {
     STOW,
+    STANDBY,
     CORAL_FLOOR_INTAKE,
     CORAL_STATION_INTAKE,
     CORAL_L1,
@@ -43,6 +44,9 @@ public class SmartArm extends Command {
     switch (goal) {
       case STOW:
         arm.setGoalCommand(Arm.Goal.STOW).schedule();
+        break;
+      case STANDBY:
+        arm.setGoalCommand(Arm.Goal.STANDBY).schedule();
         break;
       case CORAL_FLOOR_INTAKE:
         arm.setGoalCommand(Arm.Goal.CORAL_FLOOR_INTAKE).schedule();
