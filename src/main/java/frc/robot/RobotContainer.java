@@ -15,9 +15,11 @@ import edu.wpi.first.math.geometry.Transform3d;
 import edu.wpi.first.math.geometry.Translation3d;
 import edu.wpi.first.math.util.Units;
 import edu.wpi.first.units.measure.LinearVelocity;
+import edu.wpi.first.wpilibj.DriverStation;
 import edu.wpi.first.wpilibj2.command.Command;
 import edu.wpi.first.wpilibj2.command.Commands;
 import edu.wpi.first.wpilibj2.command.InstantCommand;
+import edu.wpi.first.wpilibj2.command.button.Trigger;
 import edu.wpi.first.wpilibj2.command.sysid.SysIdRoutine;
 import frc.robot.commands.DriveCommands;
 import frc.robot.commands.SmartArm;
@@ -48,10 +50,14 @@ import frc.robot.subsystems.intake.Intake.ClawMode;
 import frc.robot.subsystems.intake.IntakeIO;
 import frc.robot.subsystems.intake.IntakeIOCTRE;
 import frc.robot.subsystems.intake.IntakeIOSIM;
+import frc.robot.subsystems.onboardbuttons.OnBoardButtons;
+import frc.robot.subsystems.onboardbuttons.OnBoardButtonsIO;
+import frc.robot.subsystems.onboardbuttons.OnBoardButtonsIOReal;
 import frc.robot.subsystems.vision.Vision;
 import frc.robot.subsystems.vision.VisionIO;
 import frc.robot.subsystems.vision.VisionIOPhotonVision;
 import frc.robot.subsystems.vision.VisionIOPhotonVisionSIM;
+import frc.robot.utils.DisabledInstantCommand;
 import frc.robot.utils.DriverController;
 import frc.robot.utils.OperatorController;
 import frc.robot.utils.TunableController.TunableControllerType;
@@ -69,6 +75,7 @@ public class RobotContainer {
   public final Intake intake;
   public final BeamBreak beamBreak;
   public final Arm arm;
+  public final OnBoardButtons onBoardButtons;
 
   public RobotContainer() {
     // Declare component subsystems (not visible outside constructor)
@@ -126,6 +133,7 @@ public class RobotContainer {
         extension = new Extension(new ExtensionIOCTRE());
         shoulder = new Shoulder(new ShoulderIOCTRE());
         wrist = new Wrist(new WristIOCTRE());
+        onBoardButtons = new OnBoardButtons(new OnBoardButtonsIOReal(3, 4));
         break;
 
       case SIM:
@@ -176,6 +184,7 @@ public class RobotContainer {
         extension = new Extension(new ExtensionIOSIM());
         shoulder = new Shoulder(new ShoulderIOSIM());
         wrist = new Wrist(new WristIOSIM());
+        onBoardButtons = new OnBoardButtons(new OnBoardButtonsIO() {});
         break;
 
       default:
@@ -194,6 +203,7 @@ public class RobotContainer {
         extension = new Extension(new ExtensionIO() {});
         shoulder = new Shoulder(new ShoulderIO() {});
         wrist = new Wrist(new WristIO() {});
+        onBoardButtons = new OnBoardButtons(new OnBoardButtonsIO() {});
         break;
     }
 
@@ -267,14 +277,42 @@ public class RobotContainer {
 
     driver
         .floorIntake()
-        .whileTrue(new SmartIntake(intake, beamBreak, Intake.ClawMode.FLOOR_INTAKE));
+        .whileTrue(new SmartIntake(intake, beamBreak, Intake.ClawMode.STATION_INTAKE));
     driver.outtake().whileTrue(new SmartIntake(intake, beamBreak, Intake.ClawMode.OUTTAKE, 1.0));
 
-    driver.povLeft().onTrue(new SmartArm(arm, SmartArm.Goal.CORAL_L3BACK));
-    driver.povDown().onTrue(new SmartArm(arm, SmartArm.Goal.STANDBY));
+    driver.povUp().onTrue(new SmartArm(arm, SmartArm.Goal.CORAL_L3BACK));
+    driver.povLeft().onTrue(new SmartArm(arm, SmartArm.Goal.CORAL_L2BACK));
+    driver.povDown().onTrue(new SmartArm(arm, SmartArm.Goal.CORAL_L1));
     driver.povRight().onTrue(new SmartArm(arm, SmartArm.Goal.CORAL_STATION_INTAKE));
 
+    driver.leftTrigger().onTrue(new SmartArm(arm, SmartArm.Goal.CLIMB));
+    driver.rightTrigger().onTrue(new SmartArm(arm, SmartArm.Goal.STOW));
+
+    driver.a().onTrue(Commands.runOnce(() -> arm.getShoulder().setBrakeMode(false)));
+    driver.b().onTrue(Commands.runOnce(() -> arm.getShoulder().setBrakeMode(true)));
+
     // joystick.povLeft().whileTrue(AutoScore.scoreAtL4(drivetrain, arm, ReefDrive.Side.RIGHT));
+
+    // Button bindings for the physical buttons on the robot
+    new Trigger(onBoardButtons::getHomeButtonPressed)
+        .onTrue(
+            new DisabledInstantCommand(
+                () -> {
+                  if (DriverStation.isDisabled()) {
+                    arm.getShoulder().setZero();
+                    // arm.getExtension().setZero();
+                    // arm.getWrist().setZero();
+                  }
+                }));
+
+    new Trigger(onBoardButtons::getBrakeButtonPressed)
+        .onTrue(
+            new DisabledInstantCommand(
+                () -> {
+                  if (DriverStation.isDisabled()) {
+                    arm.getShoulder().toggleBrakeMode();
+                  }
+                }));
   }
 
   public Command getAutonomousCommand() {

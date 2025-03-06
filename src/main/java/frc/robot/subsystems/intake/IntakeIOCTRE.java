@@ -38,7 +38,8 @@ public class IntakeIOCTRE implements IntakeIO {
     config.CurrentLimits.StatorCurrentLimit = 120.0;
     config.CurrentLimits.SupplyCurrentLimit = 30.0;
     config.CurrentLimits.StatorCurrentLimitEnable = true;
-    config.MotorOutput.NeutralMode = NeutralModeValue.Coast;
+    config.MotorOutput.NeutralMode = NeutralModeValue.Brake;
+
     config.MotorOutput.Inverted = InvertedValue.CounterClockwise_Positive;
     leader.getConfigurator().apply(config);
 

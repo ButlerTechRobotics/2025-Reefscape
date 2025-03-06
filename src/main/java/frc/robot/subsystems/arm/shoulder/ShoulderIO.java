@@ -75,6 +75,10 @@ public interface ShoulderIO {
   /** Run open loop at the specified voltage. */
   public default void setVoltage(Voltage voltage) {}
 
+  public default void setMaxVelocity(AngularVelocity maxVelocity) {}
+
+  public default void setMaxAcceleration(double maxAcceleration) {}
+
   /**
    * Sets the encoder position to the specified angle.
    *

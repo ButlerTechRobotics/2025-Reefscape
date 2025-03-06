@@ -103,7 +103,7 @@ public class WristIOCTRE implements WristIO {
     config.TorqueCurrent.PeakReverseTorqueCurrent = -120.0;
     config.CurrentLimits.StatorCurrentLimit = 30.0;
     config.CurrentLimits.StatorCurrentLimitEnable = true;
-    config.MotorOutput.Inverted = InvertedValue.CounterClockwise_Positive;
+    config.MotorOutput.Inverted = InvertedValue.Clockwise_Positive;
     config.Slot0.GravityType = GravityTypeValue.Arm_Cosine;
     config.Slot0.StaticFeedforwardSign = StaticFeedforwardSignValue.UseClosedLoopSign;
     config.MotionMagic.MotionMagicCruiseVelocity = 4;

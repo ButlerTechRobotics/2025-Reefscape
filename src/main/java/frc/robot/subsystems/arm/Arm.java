@@ -77,10 +77,12 @@ public class Arm extends SubsystemBase {
 
     switch (currentGoal) {
       case STOW -> {
-        wrist.stow();
-        if (wrist.isAtTarget()) {
-          shoulder.stow();
-        }
+        // wrist.stow();
+        // if (wrist.isAtTarget()) {
+        //   shoulder.stow();
+        // }
+        shoulder.stow().schedule();
+        wrist.stow().schedule();
       }
       case STANDBY -> {
         shoulder.standby().schedule();
@@ -123,10 +125,8 @@ public class Arm extends SubsystemBase {
         wrist.coralL3().schedule();
       }
       case CORAL_L3BACK -> {
-        wrist.coralL3Back();
-        if (wrist.isAtTarget()) {
-          shoulder.coralL3Back();
-        }
+        wrist.coralL3Back().schedule();
+        shoulder.coralL3Back().schedule();
       }
       case CORAL_L4BACK -> {
         shoulder.coralL4Back().schedule();

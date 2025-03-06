@@ -135,19 +135,19 @@ public class Shoulder extends SubsystemBase {
   public enum ShoulderPosition {
     // Common positions
     STOP(Rotations.of(0)),
-    STOW(Rotations.of(0)),
+    STOW(Rotations.of(-.1)),
     STANDBY(Rotations.of(0.6)),
-    CLIMB(Rotations.of(1.5)),
+    CLIMB(Rotations.of(1.15)),
 
     // Coral positions
     CORAL_FLOOR_INTAKE(Rotations.of(0.1)),
     CORAL_STATION_INTAKE(Rotations.of(0.98)),
-    CORAL_L1(Rotations.of(0)),
+    CORAL_L1(Rotations.of(0.5)),
     CORAL_L1BACK(Rotations.of(0)),
     CORAL_L2(Rotations.of(0)),
-    CORAL_L2BACK(Rotations.of(0)),
+    CORAL_L2BACK(Rotations.of(1.33)),
     CORAL_L3(Rotations.of(0)),
-    CORAL_L3BACK(Rotations.of(1.369)),
+    CORAL_L3BACK(Rotations.of(1.33)),
     CORAL_L4BACK(Rotations.of(0)),
 
     // Algae positions
@@ -445,5 +445,24 @@ public class Shoulder extends SubsystemBase {
   /** Toggles between brake and coast mode. */
   public void toggleBrakeMode() {
     setBrakeMode(!getBrakeMode());
+  }
+
+  public Command climbWithLimitedSpeed() {
+    return Commands.sequence(
+            // First set reduced motion magic parameters
+            Commands.runOnce(
+                () -> {
+                  io.setMaxVelocity(RotationsPerSecond.of(1.0)); // Reduced from 2.5
+                  io.setMaxAcceleration(3.0); // Reduced from 10
+                }),
+            // Move to climb position
+            stow(),
+            // Restore normal parameters afterward
+            Commands.runOnce(
+                () -> {
+                  io.setMaxVelocity(RotationsPerSecond.of(2.5));
+                  io.setMaxAcceleration(10.0);
+                }))
+        .withName("ClimbWithLimitedSpeed");
   }
 }

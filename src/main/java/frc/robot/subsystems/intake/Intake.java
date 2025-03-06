@@ -75,7 +75,7 @@ public class Intake extends SubsystemBase {
   public enum ClawMode {
     NONE(Voltage.ofBaseUnits(0, Volts)), // Stowed position
     FLOOR_INTAKE(Voltage.ofBaseUnits(6, Volts)), // Position for floor intake
-    STATION_INTAKE(Voltage.ofBaseUnits(4, Volts)), // Position for station intake
+    STATION_INTAKE(Voltage.ofBaseUnits(6, Volts)), // Position for station intake
     ALGAE_INTAKE(Voltage.ofBaseUnits(10, Volts)), // Position for algae intake
     OUTTAKE(Voltage.ofBaseUnits(-6, Volts)); // Position for gripping at level 1
 
