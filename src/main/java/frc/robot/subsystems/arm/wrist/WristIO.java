@@ -25,6 +25,12 @@ public interface WristIO {
     public boolean followerConnected = false;
     public boolean encoderConnected = false;
 
+    /** Current neutral mode. True = brake, False = coast */
+    public boolean brakeMode = true;
+
+    /** Current disable state. True = disabled, False = enabled */
+    public boolean disableOverride = false;
+
     public Angle leaderPosition = Rotations.of(0);
     public Angle leaderRotorPosition = Rotations.of(0);
     public Angle encoderPosition = Rotations.of(0);
@@ -51,8 +57,37 @@ public interface WristIO {
   /** Run open loop at the specified voltage. */
   public default void setVoltage(Voltage voltage) {}
 
+  /**
+   * Sets the encoder position to the specified angle.
+   *
+   * @param position The position to set the encoder to
+   */
+  public default void setEncoderPosition(Angle position) {}
+
+  /**
+   * Gets the current angular velocity of the shoulder mechanism.
+   *
+   * @return The current angular velocity
+   */
+  public default AngularVelocity getVelocity() {
+    return RotationsPerSecond.of(0);
+  }
+
   /** Stop in open loop. */
   public default void stop() {}
 
-  public default void setBrakeMode(boolean enabled) {}
+  /**
+   * Sets the neutral mode of the motors.
+   *
+   * @param brake True for brake mode, false for coast mode
+   */
+  public default void setBrakeMode(boolean brake) {}
+
+  /**
+   * Sets the override for the disable state.
+   *
+   * @param disabled True to disable the motors, false to enable them
+   */
+  public default void setDisableOverride(boolean disabled) {}
+  ;
 }

@@ -8,7 +8,6 @@
 package frc.robot.subsystems.arm.shoulder;
 
 import static edu.wpi.first.units.Units.Rotations;
-import static edu.wpi.first.units.Units.RotationsPerSecond;
 
 import com.ctre.phoenix6.BaseStatusSignal;
 import com.ctre.phoenix6.CANBus;
@@ -154,7 +153,7 @@ public class ShoulderIOCTRE implements ShoulderIO {
     config.Slot0.GravityType = GravityTypeValue.Arm_Cosine;
     config.Slot0.StaticFeedforwardSign = StaticFeedforwardSignValue.UseClosedLoopSign;
     config.MotionMagic.MotionMagicCruiseVelocity = 2.5;
-    config.MotionMagic.MotionMagicAcceleration = 10;
+    config.MotionMagic.MotionMagicAcceleration = 5;
     config.SoftwareLimitSwitch.ForwardSoftLimitEnable = true;
     config.SoftwareLimitSwitch.ForwardSoftLimitThreshold = 1.5;
     config.SoftwareLimitSwitch.ReverseSoftLimitEnable = true;
@@ -313,21 +312,5 @@ public class ShoulderIOCTRE implements ShoulderIO {
       frFollower.stopMotor();
       flFollower.stopMotor();
     }
-  }
-
-  @Override
-  public void setMaxVelocity(AngularVelocity maxVelocity) {
-    TalonFXConfiguration config = new TalonFXConfiguration();
-    brLeader.getConfigurator().refresh(config);
-    config.MotionMagic.MotionMagicCruiseVelocity = maxVelocity.in(RotationsPerSecond);
-    brLeader.getConfigurator().apply(config);
-  }
-
-  @Override
-  public void setMaxAcceleration(double maxAcceleration) {
-    TalonFXConfiguration config = new TalonFXConfiguration();
-    brLeader.getConfigurator().refresh(config);
-    config.MotionMagic.MotionMagicAcceleration = maxAcceleration;
-    brLeader.getConfigurator().apply(config);
   }
 }

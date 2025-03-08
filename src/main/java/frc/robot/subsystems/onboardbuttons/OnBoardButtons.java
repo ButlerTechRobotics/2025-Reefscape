@@ -7,9 +7,10 @@
 
 package frc.robot.subsystems.onboardbuttons;
 
+import edu.wpi.first.wpilibj2.command.SubsystemBase;
 import org.littletonrobotics.junction.Logger;
 
-public class OnBoardButtons {
+public class OnBoardButtons extends SubsystemBase {
   private final OnBoardButtonsIO io;
   private final OnBoardButtonsIOInputsAutoLogged onBoardButtonsInputs =
       new OnBoardButtonsIOInputsAutoLogged();
@@ -18,9 +19,12 @@ public class OnBoardButtons {
     this.io = io;
   }
 
-  public void update() {
+  public void periodic() {
     io.updateInputs(onBoardButtonsInputs);
     Logger.processInputs("OnBoardButtons", onBoardButtonsInputs);
+    Logger.recordOutput("OnBoardButtons/HomeButtonPressed", onBoardButtonsInputs.homeButtonPressed);
+    Logger.recordOutput(
+        "OnBoardButtons/BrakeButtonPressed", onBoardButtonsInputs.brakeButtonPressed);
   }
 
   public boolean getHomeButtonPressed() {

@@ -40,7 +40,7 @@ public class IntakeIOCTRE implements IntakeIO {
     config.CurrentLimits.StatorCurrentLimitEnable = true;
     config.MotorOutput.NeutralMode = NeutralModeValue.Brake;
 
-    config.MotorOutput.Inverted = InvertedValue.CounterClockwise_Positive;
+    config.MotorOutput.Inverted = InvertedValue.Clockwise_Positive;
     leader.getConfigurator().apply(config);
 
     BaseStatusSignal.setUpdateFrequencyForAll(

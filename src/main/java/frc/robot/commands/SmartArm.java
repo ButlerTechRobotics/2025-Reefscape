@@ -30,7 +30,8 @@ public class SmartArm extends Command {
     ALGAE_SCORE,
     ALGAE_L1,
     ALGAE_L2,
-    CLIMB
+    CLIMB,
+    CLIMB_DOWN
   }
 
   public SmartArm(Arm arm, Goal goal) {
@@ -89,6 +90,9 @@ public class SmartArm extends Command {
         break;
       case CLIMB:
         arm.setGoalCommand(Arm.Goal.CLIMB).schedule();
+        break;
+      case CLIMB_DOWN:
+        arm.setGoalCommand(Arm.Goal.CLIMB_DOWN).schedule();
         break;
     }
   }

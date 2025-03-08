@@ -217,6 +217,7 @@ public class RobotContainer {
     NamedCommands.registerCommand(
         "Coral_Station_Intake", arm.setGoalCommand(Arm.Goal.CORAL_STATION_INTAKE));
     NamedCommands.registerCommand("Coral_L4Back", arm.setGoalCommand(Arm.Goal.CORAL_L4BACK));
+    NamedCommands.registerCommand("Coral_L3Back", arm.setGoalCommand(Arm.Goal.CORAL_L3BACK));
     NamedCommands.registerCommand(
         "Score", new SmartIntake(intake, beamBreak, ClawMode.OUTTAKE, 0.25));
     NamedCommands.registerCommand(
@@ -282,11 +283,13 @@ public class RobotContainer {
 
     driver.povUp().onTrue(new SmartArm(arm, SmartArm.Goal.CORAL_L3BACK));
     driver.povLeft().onTrue(new SmartArm(arm, SmartArm.Goal.CORAL_L2BACK));
-    driver.povDown().onTrue(new SmartArm(arm, SmartArm.Goal.CORAL_L1));
+    // driver.povDown().onTrue(new SmartArm(arm, SmartArm.Goal.CORAL_L1));
+    driver.povDown().onTrue(new SmartArm(arm, SmartArm.Goal.CORAL_FLOOR_INTAKE));
+
     driver.povRight().onTrue(new SmartArm(arm, SmartArm.Goal.CORAL_STATION_INTAKE));
 
     driver.leftTrigger().onTrue(new SmartArm(arm, SmartArm.Goal.CLIMB));
-    driver.rightTrigger().onTrue(new SmartArm(arm, SmartArm.Goal.STOW));
+    driver.rightTrigger().onTrue(new SmartArm(arm, SmartArm.Goal.CLIMB_DOWN));
 
     driver.a().onTrue(Commands.runOnce(() -> arm.getShoulder().setBrakeMode(false)));
     driver.b().onTrue(Commands.runOnce(() -> arm.getShoulder().setBrakeMode(true)));
@@ -297,22 +300,34 @@ public class RobotContainer {
     new Trigger(onBoardButtons::getHomeButtonPressed)
         .onTrue(
             new DisabledInstantCommand(
-                () -> {
-                  if (DriverStation.isDisabled()) {
-                    arm.getShoulder().setZero();
-                    // arm.getExtension().setZero();
-                    // arm.getWrist().setZero();
-                  }
-                }));
+                    () -> {
+                      if (DriverStation.isDisabled()) {
+                        arm.getShoulder().setZero();
+                      }
+                    })
+                .alongWith(
+                    new DisabledInstantCommand(
+                        () -> {
+                          if (DriverStation.isDisabled()) {
+                            arm.getWrist().setZero();
+                          }
+                        })));
 
     new Trigger(onBoardButtons::getBrakeButtonPressed)
         .onTrue(
             new DisabledInstantCommand(
-                () -> {
-                  if (DriverStation.isDisabled()) {
-                    arm.getShoulder().toggleBrakeMode();
-                  }
-                }));
+                    () -> {
+                      if (DriverStation.isDisabled()) {
+                        arm.getShoulder().toggleBrakeMode();
+                      }
+                    })
+                .alongWith(
+                    new DisabledInstantCommand(
+                        () -> {
+                          if (DriverStation.isDisabled()) {
+                            arm.getWrist().toggleBrakeMode();
+                          }
+                        })));
   }
 
   public Command getAutonomousCommand() {

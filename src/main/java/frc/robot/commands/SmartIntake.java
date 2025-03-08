@@ -49,7 +49,7 @@ public class SmartIntake extends Command {
    * @param goal The desired intake goal (intake or outtake).
    */
   public SmartIntake(Intake intake, BeamBreak beamBreak, ClawMode goal) {
-    this(intake, beamBreak, goal, 0.5); // Default delay of 0.5 seconds
+    this(intake, beamBreak, goal, 0.0); // Default delay of 0.5 seconds
   }
 
   @Override

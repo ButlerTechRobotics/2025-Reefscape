@@ -135,15 +135,17 @@ public class Shoulder extends SubsystemBase {
   public enum ShoulderPosition {
     // Common positions
     STOP(Rotations.of(0)),
-    STOW(Rotations.of(-.1)),
+    STOW(Rotations.of(0)),
     STANDBY(Rotations.of(0.6)),
     CLIMB(Rotations.of(1.15)),
+    CLIMB_DOWN(Rotations.of(-0.1)),
 
     // Coral positions
-    CORAL_FLOOR_INTAKE(Rotations.of(0.1)),
+    CORAL_FLOOR_INTAKE(Rotations.of(0.155)),
     CORAL_STATION_INTAKE(Rotations.of(0.98)),
-    CORAL_L1(Rotations.of(0.5)),
+    CORAL_L1(Rotations.of(0.61)),
     CORAL_L1BACK(Rotations.of(0)),
+
     CORAL_L2(Rotations.of(0)),
     CORAL_L2BACK(Rotations.of(1.33)),
     CORAL_L3(Rotations.of(0)),
@@ -204,6 +206,8 @@ public class Shoulder extends SubsystemBase {
               Map.entry(ShoulderPosition.STOW, createPositionCommand(ShoulderPosition.STOW)),
               Map.entry(ShoulderPosition.STANDBY, createPositionCommand(ShoulderPosition.STANDBY)),
               Map.entry(ShoulderPosition.CLIMB, createPositionCommand(ShoulderPosition.CLIMB)),
+              Map.entry(
+                  ShoulderPosition.CLIMB_DOWN, createPositionCommand(ShoulderPosition.CLIMB_DOWN)),
 
               // Coral positions
               Map.entry(
@@ -419,7 +423,13 @@ public class Shoulder extends SubsystemBase {
     return setPositionCommand(ShoulderPosition.CLIMB);
   }
 
-  // Add to Shoulder.java
+  /**
+   * @return Command to move the shoulder to climb down position
+   */
+  public final Command climbDown() {
+    return setPositionCommand(ShoulderPosition.CLIMB_DOWN);
+  }
+
   @AutoLogOutput(key = "Shoulder/BrakeMode")
   public boolean getBrakeMode() {
     return inputs.brakeMode;
@@ -445,24 +455,5 @@ public class Shoulder extends SubsystemBase {
   /** Toggles between brake and coast mode. */
   public void toggleBrakeMode() {
     setBrakeMode(!getBrakeMode());
-  }
-
-  public Command climbWithLimitedSpeed() {
-    return Commands.sequence(
-            // First set reduced motion magic parameters
-            Commands.runOnce(
-                () -> {
-                  io.setMaxVelocity(RotationsPerSecond.of(1.0)); // Reduced from 2.5
-                  io.setMaxAcceleration(3.0); // Reduced from 10
-                }),
-            // Move to climb position
-            stow(),
-            // Restore normal parameters afterward
-            Commands.runOnce(
-                () -> {
-                  io.setMaxVelocity(RotationsPerSecond.of(2.5));
-                  io.setMaxAcceleration(10.0);
-                }))
-        .withName("ClimbWithLimitedSpeed");
   }
 }

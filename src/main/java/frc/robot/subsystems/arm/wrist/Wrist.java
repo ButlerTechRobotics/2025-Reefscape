@@ -41,7 +41,7 @@ public class Wrist extends SubsystemBase {
       new Alert("Wrist follower motor isn't connected", AlertType.kError);
   private final Alert encoderAlert = new Alert("Wrist encoder isn't connected", AlertType.kError);
 
-  @AutoLogOutput private boolean brakeModeEnabled = true;
+  private boolean zeroed = false;
 
   /**
    * Creates a new Wrist subsystem with the specified hardware interface.
@@ -76,6 +76,16 @@ public class Wrist extends SubsystemBase {
 
   public void setVoltage(Voltage volts) {
     io.setVoltage(volts);
+  }
+
+  public void setZero() {
+    // Set the current position as zero
+    io.setEncoderPosition(Rotations.of(0));
+
+    // Mark the wrist as zeroed
+    setZeroed(true);
+
+    Logger.recordOutput("Wrist/SetZero", true);
   }
 
   /** Stops the wrist motors. */
@@ -117,17 +127,18 @@ public class Wrist extends SubsystemBase {
   public enum WristPosition {
     // Common positions
     STOP(Rotations.of(0)),
-    STOW(Rotations.of(0.9)),
+    STOW(Rotations.of(0.0)),
     STANDBY(Rotations.of(0)),
     CLIMB(Rotations.of(1.65)),
+    CLIMB_DOWN(Rotations.of(0.9)),
 
     // Coral positions
-    CORAL_FLOOR_INTAKE(Rotations.of(0)),
+    CORAL_FLOOR_INTAKE(Rotations.of(1.5)),
     CORAL_STATION_INTAKE(Rotations.of(1.65)),
-    CORAL_L1(Rotations.of(1.6)),
+    CORAL_L1(Rotations.of(1.45)),
     CORAL_L1BACK(Rotations.of(0)),
     CORAL_L2(Rotations.of(0)),
-    CORAL_L2BACK(Rotations.of(0.4)),
+    CORAL_L2BACK(Rotations.of(0.5)),
     CORAL_L3(Rotations.of(0)),
 
     CORAL_L3BACK(Rotations.of(0.9)),
@@ -177,12 +188,6 @@ public class Wrist extends SubsystemBase {
     }
   }
 
-  private void setBrakeMode(boolean enabled) {
-    if (brakeModeEnabled == enabled) return;
-    brakeModeEnabled = enabled;
-    io.setBrakeMode(brakeModeEnabled);
-  }
-
   // Command that runs the appropriate routine based on the current position
   private final Command currentCommand =
       new SelectCommand<>(
@@ -192,6 +197,7 @@ public class Wrist extends SubsystemBase {
               Map.entry(WristPosition.STOW, createPositionCommand(WristPosition.STOW)),
               Map.entry(WristPosition.STANDBY, createPositionCommand(WristPosition.STANDBY)),
               Map.entry(WristPosition.CLIMB, createPositionCommand(WristPosition.CLIMB)),
+              Map.entry(WristPosition.CLIMB_DOWN, createPositionCommand(WristPosition.CLIMB_DOWN)),
 
               // Coral positions
               Map.entry(
@@ -385,5 +391,39 @@ public class Wrist extends SubsystemBase {
    */
   public final Command climb() {
     return setPositionCommand(WristPosition.CLIMB);
+  }
+
+  /**
+   * @return Command to move the wrist to climb down position
+   */
+  public final Command climbDown() {
+    return setPositionCommand(WristPosition.CLIMB_DOWN);
+  }
+
+  @AutoLogOutput(key = "Wrist/BrakeMode")
+  public boolean getBrakeMode() {
+    return inputs.brakeMode;
+  }
+
+  public void setZeroed(boolean zero) {
+    this.zeroed = zero;
+  }
+
+  public boolean isZeroed() {
+    return zeroed;
+  }
+
+  /**
+   * Sets the wrist motors to either brake or coast mode.
+   *
+   * @param brake True for brake mode, false for coast mode
+   */
+  public void setBrakeMode(boolean brake) {
+    io.setBrakeMode(brake);
+  }
+
+  /** Toggles between brake and coast mode. */
+  public void toggleBrakeMode() {
+    setBrakeMode(!getBrakeMode());
   }
 }

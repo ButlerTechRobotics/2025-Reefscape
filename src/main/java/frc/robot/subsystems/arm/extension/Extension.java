@@ -118,6 +118,7 @@ public class Extension extends SubsystemBase {
     STOW(Inches.of(0)),
     STANDBY(Inches.of(0)),
     CLIMB(Inches.of(0)),
+    CLIMB_DOWN(Inches.of(0)),
 
     // Coral positions
     CORAL_FLOOR_INTAKE(Inches.of(36 - 24)),
@@ -190,6 +191,9 @@ public class Extension extends SubsystemBase {
               Map.entry(
                   ExtensionPosition.STANDBY, createPositionCommand(ExtensionPosition.STANDBY)),
               Map.entry(ExtensionPosition.CLIMB, createPositionCommand(ExtensionPosition.CLIMB)),
+              Map.entry(
+                  ExtensionPosition.CLIMB_DOWN,
+                  createPositionCommand(ExtensionPosition.CLIMB_DOWN)),
 
               // Coral positions
               Map.entry(
@@ -393,5 +397,12 @@ public class Extension extends SubsystemBase {
    */
   public final Command climb() {
     return setPositionCommand(ExtensionPosition.CLIMB);
+  }
+
+  /**
+   * @return Command to move the extension to climb down position
+   */
+  public final Command climbDown() {
+    return setPositionCommand(ExtensionPosition.CLIMB_DOWN);
   }
 }

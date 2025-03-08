@@ -34,7 +34,8 @@ public class Arm extends SubsystemBase {
     ALGAE_SCORE,
     ALGAE_L1,
     ALGAE_L2,
-    CLIMB
+    CLIMB,
+    CLIMB_DOWN
   }
 
   private Goal currentGoal = Goal.STOW;
@@ -77,12 +78,10 @@ public class Arm extends SubsystemBase {
 
     switch (currentGoal) {
       case STOW -> {
-        // wrist.stow();
-        // if (wrist.isAtTarget()) {
-        //   shoulder.stow();
-        // }
-        shoulder.stow().schedule();
-        wrist.stow().schedule();
+        wrist.stow();
+        if (wrist.isAtTarget()) {
+          shoulder.stow();
+        }
       }
       case STANDBY -> {
         shoulder.standby().schedule();
@@ -90,9 +89,11 @@ public class Arm extends SubsystemBase {
         wrist.standby().schedule();
       }
       case CORAL_FLOOR_INTAKE -> {
-        shoulder.coralFloorIntake().schedule();
-        extension.coralFloorIntake().schedule();
         wrist.coralFloorIntake().schedule();
+        if (wrist.isAtTarget()) {
+          shoulder.coralFloorIntake().schedule();
+        }
+        // extension.coralFloorIntake().schedule();
       }
       case CORAL_STATION_INTAKE -> {
         shoulder.coralStationIntake().schedule();
@@ -157,6 +158,11 @@ public class Arm extends SubsystemBase {
         shoulder.climb().schedule();
         extension.climb().schedule();
         wrist.climb().schedule();
+      }
+      case CLIMB_DOWN -> {
+        shoulder.climbDown().schedule();
+        extension.climbDown().schedule();
+        wrist.climbDown().schedule();
       }
     }
 
