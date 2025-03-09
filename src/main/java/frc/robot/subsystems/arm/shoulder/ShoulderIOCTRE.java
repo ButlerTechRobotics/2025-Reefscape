@@ -92,10 +92,6 @@ public class ShoulderIOCTRE implements ShoulderIO {
    * utilization for all devices.
    */
   public ShoulderIOCTRE() {
-    // Set the CANcoder position to zero at startup
-    // This makes it behave like a relative encoder instead of absolute
-    encoder.setPosition(0.0);
-
     // Set up all three followers to mirror the leader
     blFollower.setControl(new Follower(brLeader.getDeviceID(), true));
     frFollower.setControl(new Follower(brLeader.getDeviceID(), false));
@@ -155,7 +151,7 @@ public class ShoulderIOCTRE implements ShoulderIO {
     config.MotionMagic.MotionMagicCruiseVelocity = 2.5;
     config.MotionMagic.MotionMagicAcceleration = 5;
     config.SoftwareLimitSwitch.ForwardSoftLimitEnable = true;
-    config.SoftwareLimitSwitch.ForwardSoftLimitThreshold = 1.5;
+    config.SoftwareLimitSwitch.ForwardSoftLimitThreshold = 0.334;
     config.SoftwareLimitSwitch.ReverseSoftLimitEnable = true;
     config.SoftwareLimitSwitch.ReverseSoftLimitThreshold = 0;
 

@@ -136,20 +136,20 @@ public class Shoulder extends SubsystemBase {
     // Common positions
     STOP(Rotations.of(0)),
     STOW(Rotations.of(0)),
-    STANDBY(Rotations.of(0.6)),
-    CLIMB(Rotations.of(1.15)),
-    CLIMB_DOWN(Rotations.of(-0.1)),
+    STANDBY(Rotations.of(0.14)),
+    CLIMB(Rotations.of(.3)),
+    CLIMB_DOWN(Rotations.of(-0.01)),
 
     // Coral positions
-    CORAL_FLOOR_INTAKE(Rotations.of(0.155)),
-    CORAL_STATION_INTAKE(Rotations.of(0.98)),
-    CORAL_L1(Rotations.of(0.61)),
+    CORAL_FLOOR_INTAKE(Rotations.of(0.1)),
+    CORAL_STATION_INTAKE(Rotations.of(0.23)),
+    CORAL_L1(Rotations.of(0.17)),
     CORAL_L1BACK(Rotations.of(0)),
 
     CORAL_L2(Rotations.of(0)),
-    CORAL_L2BACK(Rotations.of(1.33)),
+    CORAL_L2BACK(Rotations.of(0.3)),
     CORAL_L3(Rotations.of(0)),
-    CORAL_L3BACK(Rotations.of(1.33)),
+    CORAL_L3BACK(Rotations.of(0.3)),
     CORAL_L4BACK(Rotations.of(0)),
 
     // Algae positions

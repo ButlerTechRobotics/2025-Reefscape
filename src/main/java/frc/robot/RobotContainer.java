@@ -276,58 +276,44 @@ public class RobotContainer {
     //     .and(joystick.a())
     //     .whileTrue(new ReefDrive(drivetrain, ReefDrive.Side.LEFT));
 
+    // Driver Button Bindings
     driver
         .floorIntake()
         .whileTrue(new SmartIntake(intake, beamBreak, Intake.ClawMode.STATION_INTAKE));
-    driver.outtake().whileTrue(new SmartIntake(intake, beamBreak, Intake.ClawMode.OUTTAKE, 1.0));
+    driver.outtake().whileTrue(new SmartIntake(intake, beamBreak, Intake.ClawMode.OUTTAKE, 0.5));
+    driver.povUp().onTrue(new SmartArm(arm, SmartArm.Goal.CORAL_STATION_INTAKE));
+    driver.povLeft().onTrue(new SmartArm(arm, SmartArm.Goal.STANDBY));
 
-    driver.povUp().onTrue(new SmartArm(arm, SmartArm.Goal.CORAL_L3BACK));
-    driver.povLeft().onTrue(new SmartArm(arm, SmartArm.Goal.CORAL_L2BACK));
-    // driver.povDown().onTrue(new SmartArm(arm, SmartArm.Goal.CORAL_L1));
-    driver.povDown().onTrue(new SmartArm(arm, SmartArm.Goal.CORAL_FLOOR_INTAKE));
+    driver.a().onTrue(new SmartArm(arm, SmartArm.Goal.CLIMB_DOWN));
+    driver.y().onTrue(new SmartArm(arm, SmartArm.Goal.CLIMB));
 
-    driver.povRight().onTrue(new SmartArm(arm, SmartArm.Goal.CORAL_STATION_INTAKE));
-
-    driver.leftTrigger().onTrue(new SmartArm(arm, SmartArm.Goal.CLIMB));
-    driver.rightTrigger().onTrue(new SmartArm(arm, SmartArm.Goal.CLIMB_DOWN));
-
-    driver.a().onTrue(Commands.runOnce(() -> arm.getShoulder().setBrakeMode(false)));
-    driver.b().onTrue(Commands.runOnce(() -> arm.getShoulder().setBrakeMode(true)));
-
-    // joystick.povLeft().whileTrue(AutoScore.scoreAtL4(drivetrain, arm, ReefDrive.Side.RIGHT));
+    // Operator Button Bindings
+    operator.coralL1().onTrue(new SmartArm(arm, SmartArm.Goal.CORAL_L1));
+    operator.coralL2().onTrue(new SmartArm(arm, SmartArm.Goal.CORAL_L2BACK));
+    operator.coralL3().onTrue(new SmartArm(arm, SmartArm.Goal.CORAL_L3BACK));
+    operator.coralL4().onTrue(new SmartArm(arm, SmartArm.Goal.CORAL_L4BACK));
+    operator.algaeL1().onTrue(new SmartArm(arm, SmartArm.Goal.ALGAE_L1));
+    operator.algaeL2().onTrue(new SmartArm(arm, SmartArm.Goal.ALGAE_L2));
+    operator.algaeScore().onTrue(new SmartArm(arm, SmartArm.Goal.ALGAE_SCORE));
 
     // Button bindings for the physical buttons on the robot
     new Trigger(onBoardButtons::getHomeButtonPressed)
         .onTrue(
             new DisabledInstantCommand(
-                    () -> {
-                      if (DriverStation.isDisabled()) {
-                        arm.getShoulder().setZero();
-                      }
-                    })
-                .alongWith(
-                    new DisabledInstantCommand(
-                        () -> {
-                          if (DriverStation.isDisabled()) {
-                            arm.getWrist().setZero();
-                          }
-                        })));
+                () -> {
+                  if (DriverStation.isDisabled()) {
+                    arm.getWrist().setZero();
+                  }
+                }));
 
     new Trigger(onBoardButtons::getBrakeButtonPressed)
         .onTrue(
             new DisabledInstantCommand(
-                    () -> {
-                      if (DriverStation.isDisabled()) {
-                        arm.getShoulder().toggleBrakeMode();
-                      }
-                    })
-                .alongWith(
-                    new DisabledInstantCommand(
-                        () -> {
-                          if (DriverStation.isDisabled()) {
-                            arm.getWrist().toggleBrakeMode();
-                          }
-                        })));
+                () -> {
+                  if (DriverStation.isDisabled()) {
+                    arm.getWrist().toggleBrakeMode();
+                  }
+                }));
   }
 
   public Command getAutonomousCommand() {

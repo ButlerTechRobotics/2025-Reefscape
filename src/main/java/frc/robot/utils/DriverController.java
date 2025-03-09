@@ -28,24 +28,24 @@ public class DriverController extends TunableController {
     return leftBumper();
   }
 
+  /** Gets trigger for station Intake */
+  public Trigger stationIntake() {
+    return rightBumper();
+  }
+
   /** Gets trigger for outtake */
   public Trigger outtake() {
-    return rightBumper();
+    return leftTrigger();
   }
 
   /** Gets trigger for reef alignment left. */
   public Trigger reefAlignLeft() {
-    return leftBumper();
+    return leftStick();
   }
 
   /** Gets trigger for reef alignment right. */
   public Trigger reefAlignRight() {
-    return rightBumper();
-  }
-
-  /** Gets trigger for braking/precision mode. */
-  public Trigger precisionMode() {
-    return leftTrigger(0.5);
+    return rightStick();
   }
 
   /** Gets trigger for reset heading. */

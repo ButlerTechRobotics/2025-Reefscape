@@ -27,4 +27,39 @@ public class OperatorController extends TunableController {
   public Trigger floorIntakeButton() {
     return leftBumper();
   }
+
+  /** Gets the Coral L1 button */
+  public Trigger coralL1() {
+    return a();
+  }
+
+  /** Gets the Coral L2 button */
+  public Trigger coralL2() {
+    return x();
+  }
+
+  /** Gets the Coral L3 button */
+  public Trigger coralL3() {
+    return b();
+  }
+
+  /** Gets the Coral L4 button */
+  public Trigger coralL4() {
+    return y();
+  }
+
+  /** Gets the Algae L1 button */
+  public Trigger algaeL1() {
+    return povDown();
+  }
+
+  /** Gets the Algae L2 button */
+  public Trigger algaeL2() {
+    return povDown();
+  }
+
+  /** Gets the Algae Score button */
+  public Trigger algaeScore() {
+    return povRight();
+  }
 }
