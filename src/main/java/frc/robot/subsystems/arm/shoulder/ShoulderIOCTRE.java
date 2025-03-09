@@ -42,16 +42,16 @@ public class ShoulderIOCTRE implements ShoulderIO {
   /** CAN bus that the devices are located on */
   public static final CANBus kCANBus = new CANBus("CANivore");
 
-  /** The back-right leader TalonFX motor controller (CAN ID: 16) */
+  /** The back-right leader TalonFX motor controller (CAN ID: 23) */
   public final TalonFX brLeader = new TalonFX(23, kCANBus);
-  /** The back-left follower TalonFX motor controller (CAN ID: 15) */
+  /** The back-left follower TalonFX motor controller (CAN ID: 22) */
   public final TalonFX blFollower = new TalonFX(22, kCANBus);
-  /** The front-right follower TalonFX motor controller (CAN ID: 14) */
+  /** The front-right follower TalonFX motor controller (CAN ID: 21) */
   public final TalonFX frFollower = new TalonFX(21, kCANBus);
-  /** The front-left follower TalonFX motor controller (CAN ID: 13) */
+  /** The front-left follower TalonFX motor controller (CAN ID: 20) */
   public final TalonFX flFollower = new TalonFX(20, kCANBus);
 
-  /** The CANcoder for position feedback (CAN ID: 17) */
+  /** The CANcoder for position feedback (CAN ID: 24) */
   public final CANcoder encoder = new CANcoder(24, kCANBus);
 
   // Status signals for monitoring motor and encoder states
