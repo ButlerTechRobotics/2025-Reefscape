@@ -150,7 +150,7 @@ public class Shoulder extends SubsystemBase {
     CORAL_L2BACK(Rotations.of(0.3)),
     CORAL_L3(Rotations.of(0)),
     CORAL_L3BACK(Rotations.of(0.3)),
-    CORAL_L4BACK(Rotations.of(0)),
+    CORAL_L4BACK(Rotations.of(0.267)),
 
     // Algae positions
     ALGAE_FLOOR_INTAKE(Rotations.of(0)),
@@ -167,7 +167,7 @@ public class Shoulder extends SubsystemBase {
     }
 
     ShoulderPosition(Angle targetAngle) {
-      this(targetAngle, Degrees.of(2.0)); // 2 degree default tolerance
+      this(targetAngle, Rotations.of(0.08)); // 2 degree default tolerance
     }
   }
 

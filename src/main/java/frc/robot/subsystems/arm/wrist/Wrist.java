@@ -143,7 +143,7 @@ public class Wrist extends SubsystemBase {
 
     CORAL_L3BACK(Rotations.of(0.897)),
     CORAL_L4(Rotations.of(0)),
-    CORAL_L4BACK(Rotations.of(0)),
+    CORAL_L4BACK(Rotations.of(0.4)),
 
     // Algae positions (all 0)
     ALGAE_FLOOR_INTAKE(Rotations.of(0)),

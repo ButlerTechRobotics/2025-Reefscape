@@ -271,33 +271,23 @@ public class Drive extends SubsystemBase {
     io.setControl(request);
   }
 
-  // /**
-  //  * Applies field-oriented chassis speeds to the drivetrain.
-  //  *
-  //  * @param fieldSpeeds The desired field-oriented chassis speeds
-  //  */
-  // public void applyFieldSpeeds(ChassisSpeeds fieldSpeeds) {
-  //   // Convert field-oriented speeds to robot-relative speeds
-  //   ChassisSpeeds robotSpeeds =
-  //       ChassisSpeeds.fromFieldRelativeSpeeds(fieldSpeeds, getPose().getRotation());
+  /**
+   * Applies field-oriented chassis speeds to the drivetrain.
+   *
+   * @param fieldSpeeds The desired field-oriented chassis speeds
+   */
+  public void applyFieldSpeeds(ChassisSpeeds fieldSpeeds) {
+    // Convert field-oriented speeds to robot-relative speeds
+    ChassisSpeeds robotSpeeds =
+        ChassisSpeeds.fromFieldRelativeSpeeds(fieldSpeeds, getPose().getRotation());
 
-  //   // Apply the robot-centric speeds
-  //   io.setControl(m_pathApplyRobotSpeeds.withSpeeds(robotSpeeds));
+    // Apply the robot-centric speeds
+    io.setControl(m_pathApplyRobotSpeeds.withSpeeds(robotSpeeds));
 
-  //   // Log the commanded speeds
-  //   Logger.recordOutput("SwerveChassisSpeeds/CommandedField", fieldSpeeds);
-  //   Logger.recordOutput("SwerveChassisSpeeds/CommandedRobot", robotSpeeds);
-  // }
-
-  // /**
-  //  * Creates a command to apply field-oriented chassis speeds.
-  //  *
-  //  * @param speedsSupplier Supplier for the field-oriented chassis speeds
-  //  * @return Command to run
-  //  */
-  // public Command applyFieldSpeedsCommand(Supplier<ChassisSpeeds> speedsSupplier) {
-  //   return run(() -> applyFieldSpeeds(speedsSupplier.get()));
-  // }
+    // Log the commanded speeds
+    Logger.recordOutput("SwerveChassisSpeeds/CommandedField", fieldSpeeds);
+    Logger.recordOutput("SwerveChassisSpeeds/CommandedRobot", robotSpeeds);
+  }
 
   public Command brake() {
     return applyRequest(() -> brakeRequest);

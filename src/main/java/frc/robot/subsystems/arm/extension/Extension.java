@@ -121,15 +121,15 @@ public class Extension extends SubsystemBase {
     CLIMB_DOWN(Inches.of(0)),
 
     // Coral positions
-    CORAL_FLOOR_INTAKE(Inches.of(36 - 24)),
-    CORAL_STATION_INTAKE(Inches.of(36 - 24)),
-    CORAL_L1(Inches.of(24 - 24)),
-    CORAL_L1BACK(Inches.of(24 - 24)),
-    CORAL_L2(Inches.of(28 - 24)),
-    CORAL_L2BACK(Inches.of(28 - 24)),
-    CORAL_L3(Inches.of(44 - 24)),
-    CORAL_L3BACK(Inches.of(44 - 24)),
-    CORAL_L4BACK(Inches.of(72 - 24)),
+    CORAL_FLOOR_INTAKE(Inches.of(0)),
+    CORAL_STATION_INTAKE(Inches.of(0)),
+    CORAL_L1(Inches.of(0)),
+    CORAL_L1BACK(Inches.of(0)),
+    CORAL_L2(Inches.of(0)),
+    CORAL_L2BACK(Inches.of(0)),
+    CORAL_L3(Inches.of(0)),
+    CORAL_L3BACK(Inches.of(0)),
+    CORAL_L4BACK(Inches.of(0)),  //1.3696
 
     // Algae positions
     ALGAE_FLOOR_INTAKE(Inches.of(0)),

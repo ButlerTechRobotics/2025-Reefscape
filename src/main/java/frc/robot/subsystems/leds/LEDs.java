@@ -9,12 +9,9 @@ package frc.robot.subsystems.leds;
 
 import com.ctre.phoenix.led.CANdle;
 import com.ctre.phoenix.led.CANdle.LEDStripType;
-import com.ctre.phoenix.led.LarsonAnimation;
-import com.ctre.phoenix.led.LarsonAnimation.BounceMode;
 import com.ctre.phoenix.led.SingleFadeAnimation;
 import com.ctre.phoenix.led.StrobeAnimation;
 import edu.wpi.first.wpilibj.DriverStation;
-import edu.wpi.first.wpilibj.DriverStation.Alliance;
 import edu.wpi.first.wpilibj2.command.SubsystemBase;
 import frc.robot.subsystems.vision.Vision;
 
@@ -30,9 +27,9 @@ public class LEDs extends SubsystemBase {
 
   /** Creates new LEDs. */
   public LEDs(Vision aprilTags) {
-    candle = new CANdle(0);
+    candle = new CANdle(14, "CANivore");
     candle.configLEDType(LEDStripType.GRB);
-    candle.configV5Enabled(true);
+    candle.configV5Enabled(false);
     this.aprilTags = aprilTags;
   }
 
@@ -47,26 +44,29 @@ public class LEDs extends SubsystemBase {
   @Override
   public void periodic() {
     // This method will be called once per scheduler run
-    if (DriverStation.isDisabled()) {
-      // if (aprilTags.getPoseEstimationCount() == 0 || DriverStation.getAlliance().isEmpty()) {
-      if (DriverStation.getAlliance().isEmpty()) {
-        candle.animate(new SingleFadeAnimation(0, 100, 0, 0, 0.3, stripLength, startOffset));
-        return;
-      }
-      if (DriverStation.getAlliance().get() == Alliance.Red) {
-        candle.animate(
-            new LarsonAnimation(150, 0, 0, 0, 0.05, stripLength, BounceMode.Front, 7, 8));
-      } else {
-        candle.animate(
-            new LarsonAnimation(0, 0, 150, 0, 0.05, stripLength, BounceMode.Front, 7, 8));
-      }
-      return;
-    }
+    // if (DriverStation.isDisabled()) {
+    //   // if (aprilTags.getPoseEstimationCount() == 0 || DriverStation.getAlliance().isEmpty()) {
+    //   if (DriverStation.getAlliance().isEmpty()) {
+    //     candle.animate(new SingleFadeAnimation(0, 100, 0, 0, 0.3, stripLength, startOffset));
+    //     return;
+    //   }
+    //   if (DriverStation.getAlliance().get() == Alliance.Red) {
+    //     candle.animate(
+    //         new LarsonAnimation(150, 0, 0, 0, 0.05, stripLength, BounceMode.Front, 7, 0));
+    //   } else {
+    //     candle.animate(
+    //         new LarsonAnimation(0, 0, 150, 0, 0.05, stripLength, BounceMode.Front, 7, 0));
+    //   }
+    //   return;
+    // }
 
-    if (hasGamePiece) {
-      candle.animate(new StrobeAnimation(255, 50, 0, 0, 1, stripLength, startOffset));
-    } else {
-      candle.animate(new SingleFadeAnimation(0, 0, 100, 0, 1, stripLength, startOffset));
+    if (DriverStation.isDisabled()) {
+
+      if (hasGamePiece) {
+        candle.animate(new StrobeAnimation(255, 50, 0, 0, 1, stripLength, startOffset));
+      } else {
+        candle.animate(new SingleFadeAnimation(0, 0, 100, 0, 1, stripLength, startOffset));
+      }
     }
   }
 }

@@ -151,7 +151,7 @@ public class ShoulderIOCTRE implements ShoulderIO {
     config.MotionMagic.MotionMagicCruiseVelocity = 2.5;
     config.MotionMagic.MotionMagicAcceleration = 5;
     config.SoftwareLimitSwitch.ForwardSoftLimitEnable = true;
-    config.SoftwareLimitSwitch.ForwardSoftLimitThreshold = 0.334;
+    config.SoftwareLimitSwitch.ForwardSoftLimitThreshold = 0.32;
     config.SoftwareLimitSwitch.ReverseSoftLimitEnable = true;
     config.SoftwareLimitSwitch.ReverseSoftLimitThreshold = 0;
 

@@ -23,11 +23,6 @@ public class OperatorController extends TunableController {
     withControllerType(type);
   }
 
-  /** Gets the Floor Intake button */
-  public Trigger floorIntakeButton() {
-    return leftBumper();
-  }
-
   /** Gets the Coral L1 button */
   public Trigger coralL1() {
     return a();
@@ -55,7 +50,7 @@ public class OperatorController extends TunableController {
 
   /** Gets the Algae L2 button */
   public Trigger algaeL2() {
-    return povDown();
+    return povUp();
   }
 
   /** Gets the Algae Score button */
