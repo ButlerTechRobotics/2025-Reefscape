@@ -7,37 +7,37 @@
         {
           "type": "path",
           "data": {
-            "pathName": "S4 - B-R"
+            "pathName": "S4 - BR-L"
           }
         },
         {
           "type": "path",
           "data": {
-            "pathName": "B-R - CS-3"
+            "pathName": "BR-L - CS-6"
           }
         },
         {
           "type": "path",
           "data": {
-            "pathName": "CS-3 - FL-L"
+            "pathName": "CS-6 - FR-R"
           }
         },
         {
           "type": "path",
           "data": {
-            "pathName": "FL-L - CS-3"
+            "pathName": "FR-R - CS-6"
           }
         },
         {
           "type": "path",
           "data": {
-            "pathName": "CS-3 - FL-R"
+            "pathName": "CS-6 - FR-L"
           }
         },
         {
           "type": "path",
           "data": {
-            "pathName": "FL-R - CS-3"
+            "pathName": "FR-L - CS-6"
           }
         }
       ]
