@@ -134,6 +134,8 @@ public class Wrist extends SubsystemBase {
 
     // Coral positions
     CORAL_FLOOR_INTAKE(Rotations.of(1.5)),
+    // CORAL_FLOOR_INTAKE(Rotations.of(0)),
+
     CORAL_STATION_INTAKE(Rotations.of(1.71)),
     CORAL_L1(Rotations.of(1.45)),
     CORAL_L1BACK(Rotations.of(0)),

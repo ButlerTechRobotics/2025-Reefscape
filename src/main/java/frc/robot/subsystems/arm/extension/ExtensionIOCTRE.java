@@ -108,7 +108,7 @@ public class ExtensionIOCTRE implements ExtensionIO {
   private TalonFXConfiguration createMotorConfiguration() {
     var config = new TalonFXConfiguration();
     // Set motor to coast when stopped
-    config.MotorOutput.NeutralMode = NeutralModeValue.Coast;
+    config.MotorOutput.NeutralMode = NeutralModeValue.Brake;
     config.TorqueCurrent.PeakForwardTorqueCurrent = 120.0;
     config.TorqueCurrent.PeakReverseTorqueCurrent = -120.0;
     config.CurrentLimits.StatorCurrentLimit = 80.0;
@@ -116,8 +116,8 @@ public class ExtensionIOCTRE implements ExtensionIO {
     config.MotorOutput.Inverted = InvertedValue.Clockwise_Positive;
     config.Slot0.GravityType = GravityTypeValue.Elevator_Static;
     config.Slot0.StaticFeedforwardSign = StaticFeedforwardSignValue.UseClosedLoopSign;
-    config.MotionMagic.MotionMagicCruiseVelocity = 1;
-    config.MotionMagic.MotionMagicAcceleration = 1;
+    config.MotionMagic.MotionMagicCruiseVelocity = 60;
+    config.MotionMagic.MotionMagicAcceleration = 40;
     config.SoftwareLimitSwitch.ForwardSoftLimitEnable = true;
     config.SoftwareLimitSwitch.ForwardSoftLimitThreshold = 25;
     config.SoftwareLimitSwitch.ReverseSoftLimitEnable = true;
@@ -136,13 +136,13 @@ public class ExtensionIOCTRE implements ExtensionIO {
    */
   protected TalonFXConfiguration configPID(TalonFXConfiguration config) {
     // Hardware-specific PID values
-    config.Slot0.kP = 0; // Proportional gain
+    config.Slot0.kP = 90; // Proportional gain
     config.Slot0.kI = 0; // Integral gain
     config.Slot0.kD = 0; // Derivative gain
-    config.Slot0.kS = 0; // Static friction compensation
+    config.Slot0.kS = 1; // Static friction compensation
     config.Slot0.kV = 0; // Velocity feedforward
     config.Slot0.kA = 0; // Acceleration feedforward
-    config.Slot0.kG = 0; // Gravity feedforward
+    config.Slot0.kG = 6; // Gravity feedforward
     return config;
   }
 

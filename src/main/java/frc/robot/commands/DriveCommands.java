@@ -27,7 +27,6 @@ import edu.wpi.first.wpilibj2.command.Command;
 import edu.wpi.first.wpilibj2.command.Commands;
 import frc.robot.Constants;
 import frc.robot.subsystems.drive.*;
-import frc.robot.subsystems.drive.requests.SwerveSetpointGen;
 import frc.robot.utils.FieldConstants.Reef;
 import frc.robot.utils.GeomUtil;
 import java.text.DecimalFormat;
@@ -138,7 +137,7 @@ public class DriveCommands extends Command {
     // Get the properly oriented target based on which side of the robot is closer to target
     // rotation
     Pose2d orientedTarget = getOptimalOrientedTarget(robotPose, target);
-    Pose2d newTarget = getDriveTarget(robotPose, orientedTarget, offset);
+    // Pose2d newTarget = getDriveTarget(robotPose, orientedTarget, offset);
 
     driveToPoint(orientedTarget, drive);
   }
@@ -224,19 +223,10 @@ public class DriveCommands extends Command {
     double pidRot =
         rotationController.calculate(
             drive.getRotation().getRotations(), target.getRotation().getRotations());
-    ChassisSpeeds speeds = new ChassisSpeeds(pidX, pidY, Rotations.of(pidRot).in(Radians));
 
-    SwerveSetpointGen setpointGenerator = drive.getSetpointGenerator();
+    ChassisSpeeds fieldSpeeds = new ChassisSpeeds(pidX, pidY, Rotations.of(pidRot).in(Radians));
 
-    setpointGenerator
-        .withVelocityX(speeds.vxMetersPerSecond)
-        .withVelocityY(speeds.vyMetersPerSecond)
-        .withRotationalRate(speeds.omegaRadiansPerSecond);
-    drive.setControl(setpointGenerator);
-
-    // ChassisSpeeds fieldSpeeds = new ChassisSpeeds(pidX, pidY, Rotations.of(pidRot).in(Radians));
-
-    // drive.applyFieldSpeeds(fieldSpeeds);
+    drive.applyFieldSpeeds(fieldSpeeds);
   }
 
   private static class WheelRadiusCharacterizationState {

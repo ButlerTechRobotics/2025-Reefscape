@@ -85,20 +85,22 @@ public class Arm extends SubsystemBase {
       }
       case STANDBY -> {
         shoulder.standby().schedule();
-        // extension.standby().schedule();
+        extension.standby().schedule();
         wrist.standby().schedule();
       }
       case CORAL_FLOOR_INTAKE -> {
+        extension.coralFloorIntake().schedule();
         wrist.coralFloorIntake().schedule();
-        if (wrist.isAtTarget()) {
-          shoulder.coralFloorIntake().schedule();
-        }
-        // extension.coralFloorIntake().schedule();
+        shoulder.coralFloorIntake().schedule();
       }
       case CORAL_STATION_INTAKE -> {
         shoulder.coralStationIntake().schedule();
-        wrist.coralStationIntake().schedule();
-        extension.coralStationIntake().schedule();
+        if (shoulder.isAtTarget()) {
+          wrist.coralStationIntake().schedule();
+        }
+        if (wrist.isAtTarget()) {
+          extension.coralStationIntake().schedule();
+        }
       }
       case CORAL_L1 -> {
         shoulder.coralL1().schedule();

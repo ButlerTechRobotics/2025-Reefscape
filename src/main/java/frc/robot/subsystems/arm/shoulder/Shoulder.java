@@ -141,7 +141,7 @@ public class Shoulder extends SubsystemBase {
     CLIMB_DOWN(Rotations.of(-0.01)),
 
     // Coral positions
-    CORAL_FLOOR_INTAKE(Rotations.of(0.1)),
+    CORAL_FLOOR_INTAKE(Rotations.of(0.05)),
     CORAL_STATION_INTAKE(Rotations.of(0.23)),
     CORAL_L1(Rotations.of(0.17)),
     CORAL_L1BACK(Rotations.of(0)),
@@ -167,7 +167,7 @@ public class Shoulder extends SubsystemBase {
     }
 
     ShoulderPosition(Angle targetAngle) {
-      this(targetAngle, Degrees.of(2.0)); // 2 degree default tolerance
+      this(targetAngle, Rotations.of(0.1)); // 2 degree default tolerance
     }
   }
 

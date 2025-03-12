@@ -126,13 +126,13 @@ public class WristIOCTRE implements WristIO {
    */
   protected TalonFXConfiguration configPID(TalonFXConfiguration config) {
     // Hardware-specific PID values
-    config.Slot0.kP = 135; // Proportional gain
+    config.Slot0.kP = 220; // Proportional gain
     config.Slot0.kI = 0; // Integral gain
-    config.Slot0.kD = 15; // Derivative gain
-    config.Slot0.kS = 1; // Static friction compensation
+    config.Slot0.kD = 8; // Derivative gain
+    config.Slot0.kS = 2; // Static friction compensation
     config.Slot0.kV = 0; // Velocity feedforward
     config.Slot0.kA = 0; // Acceleration feedforward
-    config.Slot0.kG = 5; // Gravity feedforward
+    config.Slot0.kG = 10; // Gravity feedforward
     return config;
   }
 

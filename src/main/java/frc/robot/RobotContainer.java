@@ -7,6 +7,8 @@
 
 package frc.robot;
 
+import com.ctre.phoenix6.swerve.SwerveModule.DriveRequestType;
+import com.ctre.phoenix6.swerve.SwerveRequest;
 import com.pathplanner.lib.auto.AutoBuilder;
 import com.pathplanner.lib.auto.NamedCommands;
 import edu.wpi.first.math.geometry.Pose2d;
@@ -22,6 +24,7 @@ import edu.wpi.first.wpilibj2.command.InstantCommand;
 import edu.wpi.first.wpilibj2.command.button.Trigger;
 import edu.wpi.first.wpilibj2.command.sysid.SysIdRoutine;
 import frc.robot.commands.DriveCommands;
+import frc.robot.commands.ReefDrive;
 import frc.robot.commands.SmartArm;
 import frc.robot.commands.SmartIntake;
 import frc.robot.generated.TunerConstants;
@@ -72,6 +75,12 @@ public class RobotContainer {
   private final LoggedDashboardChooser<Command> autoChooser;
 
   public final Drive drivetrain;
+  // CTRE Default Drive Request
+  private final SwerveRequest.FieldCentric drive =
+      new SwerveRequest.FieldCentric()
+          .withDeadband(MaxSpeed.times(0.15))
+          .withRotationalDeadband(Constants.MaxAngularRate.times(0.15)) // Add a 10% deadband
+          .withDriveRequestType(DriveRequestType.OpenLoopVoltage);
   public final Intake intake;
   public final BeamBreak beamBreak;
   public final Arm arm;
@@ -210,14 +219,20 @@ public class RobotContainer {
     arm = new Arm(shoulder, extension, wrist);
 
     // Set up the named commands
-    NamedCommands.registerCommand("Stow", arm.setGoalCommand(Arm.Goal.STOW));
-    NamedCommands.registerCommand("Standby", arm.setGoalCommand(Arm.Goal.STANDBY));
     NamedCommands.registerCommand(
-        "Coral_Floor_Intake", arm.setGoalCommand(Arm.Goal.CORAL_FLOOR_INTAKE));
+        "Stow", Commands.runOnce(() -> arm.setGoalCommand(Arm.Goal.STOW)));
+    NamedCommands.registerCommand(
+        "Standby", Commands.runOnce(() -> arm.setGoalCommand(Arm.Goal.STANDBY)));
+    NamedCommands.registerCommand(
+        "Coral_Floor_Intake",
+        Commands.runOnce(() -> arm.setGoalCommand(Arm.Goal.CORAL_FLOOR_INTAKE)));
     NamedCommands.registerCommand(
         "Coral_Station_Intake", arm.setGoalCommand(Arm.Goal.CORAL_STATION_INTAKE));
-    NamedCommands.registerCommand("Coral_L4Back", arm.setGoalCommand(Arm.Goal.CORAL_L4BACK));
+    NamedCommands.registerCommand(
+        "Coral_L4Back", Commands.runOnce(() -> arm.setGoalCommand(Arm.Goal.CORAL_L4BACK)));
     NamedCommands.registerCommand("Coral_L3Back", arm.setGoalCommand(Arm.Goal.CORAL_L3BACK));
+    NamedCommands.registerCommand("Coral_L1", arm.setGoalCommand(Arm.Goal.CORAL_L1));
+
     NamedCommands.registerCommand(
         "Score", new SmartIntake(intake, beamBreak, ClawMode.OUTTAKE, 0.25));
     NamedCommands.registerCommand(
@@ -247,19 +262,22 @@ public class RobotContainer {
     // Note that X is defined as forward according to WPILib convention,
     // and Y is defined as to the left according to WPILib convention.
 
-    // Custom Swerve Request that use PathPlanner Setpoint Generator. Tuning NEEDED. Instructions
-    // can be found here
-    // https://hemlock5712.github.io/Swerve-Setup/talonfx-swerve-tuning.html
     drivetrain.setDefaultCommand(
         // Drivetrain will execute this command periodically
         drivetrain.applyRequest(
             () ->
-                drivetrain
-                    .setpointGen
-                    .withVelocityX(MaxSpeed.times(-driver.getLeftY()))
-                    .withVelocityY(MaxSpeed.times(-driver.getLeftX()))
-                    .withRotationalRate(Constants.MaxAngularRate.times(-driver.getRightX()))
-                    .withOperatorForwardDirection(drivetrain.getOperatorForwardDirection())));
+                drive
+                    .withVelocityX(
+                        MaxSpeed.times(
+                            -driver.customLeft().getY())) // Drive forward with negative Y (forward)
+                    .withVelocityY(
+                        MaxSpeed.times(
+                            -driver.customLeft().getX())) // Drive left with negative X (left)
+                    .withRotationalRate(
+                        Constants.MaxAngularRate.times(
+                            -driver
+                                .customRight()
+                                .getX())))); // Drive counterclockwise with negative X (left)
 
     // Run SysId routines when holding back/start and X/Y.
     // Note that each routine should be run exactly once in a single log.
@@ -271,18 +289,18 @@ public class RobotContainer {
     // reset the field-centric heading on left bumper press
     driver.resetHeading().onTrue(Commands.runOnce(() -> drivetrain.resetPose(Pose2d.kZero)));
 
-    // joystick
-    //     .leftTrigger()
-    //     .and(joystick.a())
-    //     .whileTrue(new ReefDrive(drivetrain, ReefDrive.Side.LEFT));
+    driver.leftStick().whileTrue(new ReefDrive(drivetrain, ReefDrive.Side.LEFT));
+
+    driver.rightStick().whileTrue(new ReefDrive(drivetrain, ReefDrive.Side.RIGHT));
 
     // Driver Button Bindings
     driver
         .floorIntake()
-        .whileTrue(new SmartIntake(intake, beamBreak, Intake.ClawMode.STATION_INTAKE));
+        .whileTrue(new SmartIntake(intake, beamBreak, Intake.ClawMode.FLOOR_INTAKE, 0.0, 0.25));
     driver.outtake().whileTrue(new SmartIntake(intake, beamBreak, Intake.ClawMode.OUTTAKE, 0.5));
     driver.povUp().onTrue(new SmartArm(arm, SmartArm.Goal.CORAL_STATION_INTAKE));
     driver.povLeft().onTrue(new SmartArm(arm, SmartArm.Goal.STANDBY));
+    driver.povDown().onTrue(new SmartArm(arm, SmartArm.Goal.CORAL_FLOOR_INTAKE));
 
     driver.a().onTrue(new SmartArm(arm, SmartArm.Goal.CLIMB_DOWN));
     driver.y().onTrue(new SmartArm(arm, SmartArm.Goal.CLIMB));

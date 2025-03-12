@@ -121,15 +121,15 @@ public class Extension extends SubsystemBase {
     CLIMB_DOWN(Inches.of(0)),
 
     // Coral positions
-    CORAL_FLOOR_INTAKE(Inches.of(36 - 24)),
-    CORAL_STATION_INTAKE(Inches.of(36 - 24)),
-    CORAL_L1(Inches.of(24 - 24)),
-    CORAL_L1BACK(Inches.of(24 - 24)),
-    CORAL_L2(Inches.of(28 - 24)),
-    CORAL_L2BACK(Inches.of(28 - 24)),
-    CORAL_L3(Inches.of(44 - 24)),
-    CORAL_L3BACK(Inches.of(44 - 24)),
-    CORAL_L4BACK(Inches.of(72 - 24)),
+    CORAL_FLOOR_INTAKE(Inches.of(16)),
+    CORAL_STATION_INTAKE(Inches.of(30)),
+    CORAL_L1(Inches.of(0)),
+    CORAL_L1BACK(Inches.of(0)),
+    CORAL_L2(Inches.of(0)),
+    CORAL_L2BACK(Inches.of(0)),
+    CORAL_L3(Inches.of(0)),
+    CORAL_L3BACK(Inches.of(0)),
+    CORAL_L4BACK(Inches.of(0)),
 
     // Algae positions
     ALGAE_FLOOR_INTAKE(Inches.of(0)),
@@ -138,15 +138,15 @@ public class Extension extends SubsystemBase {
     ALGAE_L2(Inches.of(0));
 
     private final Distance targetDistance;
-    private final Distance angleTolerance;
+    private final Distance lengthTolerance;
 
-    ExtensionPosition(Distance targetDistance, Distance angleTolerance) {
+    ExtensionPosition(Distance targetDistance, Distance lengthTolerance) {
       this.targetDistance = targetDistance;
-      this.angleTolerance = angleTolerance;
+      this.lengthTolerance = lengthTolerance;
     }
 
     ExtensionPosition(Distance targetDistance) {
-      this(targetDistance, Inches.of(2)); // 2 degree default tolerance
+      this(targetDistance, Inches.of(0.3)); // 2 degree default tolerance
     }
   }
 
@@ -254,7 +254,7 @@ public class Extension extends SubsystemBase {
   @AutoLogOutput
   public boolean isAtTarget() {
     if (currentMode == ExtensionPosition.STOP) return true;
-    return getPosition().isNear(currentMode.targetDistance, currentMode.angleTolerance);
+    return getPosition().isNear(currentMode.targetDistance, currentMode.lengthTolerance);
   }
 
   /**
