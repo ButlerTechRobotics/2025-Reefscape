@@ -128,14 +128,14 @@ public class Extension extends SubsystemBase {
     CORAL_L2(Inches.of(0)),
     CORAL_L2BACK(Inches.of(0)),
     CORAL_L3(Inches.of(0)),
-    CORAL_L3BACK(Inches.of(0)),
+    CORAL_L3BACK(Inches.of(6)),
     CORAL_L4BACK(Inches.of(0)),
 
     // Algae positions
-    ALGAE_FLOOR_INTAKE(Inches.of(0)),
-    ALGAE_SCORE(Inches.of(0)),
+    ALGAE_FLOOR_INTAKE(Inches.of(16)),
+    ALGAE_SCORE(Inches.of(16)),
     ALGAE_L1(Inches.of(0)),
-    ALGAE_L2(Inches.of(0));
+    ALGAE_L2(Inches.of(8));
 
     private final Distance targetDistance;
     private final Distance lengthTolerance;
