@@ -77,7 +77,7 @@ public class Intake extends SubsystemBase {
     FLOOR_INTAKE(Voltage.ofBaseUnits(10, Volts)), // Position for floor intake
     STATION_INTAKE(Voltage.ofBaseUnits(10, Volts)), // Position for station intake
     ALGAE_INTAKE(Voltage.ofBaseUnits(12, Volts)), // Position for algae intake
-    OUTTAKE(Voltage.ofBaseUnits(-3, Volts)); // Position for gripping at level 1
+    OUTTAKE(Voltage.ofBaseUnits(-6, Volts)); // Position for gripping at level 1
 
     private final Voltage voltage;
 
