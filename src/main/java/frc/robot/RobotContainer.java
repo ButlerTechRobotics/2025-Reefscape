@@ -313,6 +313,7 @@ public class RobotContainer {
     operator.algaeL1().onTrue(new SmartArm(arm, SmartArm.Goal.ALGAE_L1));
     operator.algaeL2().onTrue(new SmartArm(arm, SmartArm.Goal.ALGAE_L2));
     operator.algaeScore().onTrue(new SmartArm(arm, SmartArm.Goal.ALGAE_SCORE));
+    operator.algaeFloorIntake().onTrue(new SmartArm(arm, SmartArm.Goal.ALGAE_FLOOR_INTAKE));
 
     // Button bindings for the physical buttons on the robot
     new Trigger(onBoardButtons::getHomeButtonPressed)
