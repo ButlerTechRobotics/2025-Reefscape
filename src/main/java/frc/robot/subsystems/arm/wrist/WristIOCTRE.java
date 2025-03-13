@@ -13,6 +13,7 @@ import com.ctre.phoenix6.StatusCode;
 import com.ctre.phoenix6.StatusSignal;
 import com.ctre.phoenix6.configs.TalonFXConfiguration;
 import com.ctre.phoenix6.controls.MotionMagicTorqueCurrentFOC;
+import com.ctre.phoenix6.controls.VoltageOut;
 import com.ctre.phoenix6.hardware.CANcoder;
 import com.ctre.phoenix6.hardware.TalonFX;
 import com.ctre.phoenix6.signals.GravityTypeValue;
@@ -178,6 +179,17 @@ public class WristIOCTRE implements WristIO {
 
     // Calculate wrist angle using encoder position
     inputs.wristAngle = inputs.encoderPosition;
+  }
+
+  /**
+   * Sets the desired voltage for the wrist to move with.
+   *
+   * @param volts The target voltage for the wrist mechanism
+   */
+  @Override
+  public void setVoltage(Voltage volts) {
+    // Convert desired angle to encoder rotations
+    leader.setControl(new VoltageOut(volts));
   }
 
   /**

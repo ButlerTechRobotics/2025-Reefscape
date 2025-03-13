@@ -153,8 +153,8 @@ public class Shoulder extends SubsystemBase {
     CORAL_L4BACK(Rotations.of(0.28)),
 
     // Algae positions
-    ALGAE_FLOOR_INTAKE(Rotations.of(0.1)),
-    ALGAE_SCORE(Rotations.of(0.14)),
+    ALGAE_FLOOR_INTAKE(Rotations.of(0.08)),
+    ALGAE_SCORE(Rotations.of(0.15)),
     ALGAE_L1(Rotations.of(0.21)),
     ALGAE_L2(Rotations.of(0.32));
 
