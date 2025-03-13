@@ -37,8 +37,6 @@ public class Wrist extends SubsystemBase {
   // Alerts for motor connection status
   private final Alert leaderMotorAlert =
       new Alert("Wrist leader motor isn't connected", AlertType.kError);
-  private final Alert followerMotorAlert =
-      new Alert("Wrist follower motor isn't connected", AlertType.kError);
   private final Alert encoderAlert = new Alert("Wrist encoder isn't connected", AlertType.kError);
 
   private boolean zeroed = false;
@@ -61,7 +59,6 @@ public class Wrist extends SubsystemBase {
 
     // Update motor connection status alerts
     leaderMotorAlert.set(!inputs.leaderConnected);
-    followerMotorAlert.set(!inputs.followerConnected);
     encoderAlert.set(!inputs.encoderConnected);
   }
 
