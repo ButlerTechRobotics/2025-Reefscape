@@ -133,7 +133,7 @@ public class Wrist extends SubsystemBase {
     CLIMB_DOWN(Rotations.of(0.9)),
 
     // Coral positions
-    CORAL_FLOOR_INTAKE(Rotations.of(1.5)),
+    CORAL_FLOOR_INTAKE(Rotations.of(1.55)),
     // CORAL_FLOOR_INTAKE(Rotations.of(0)),
 
     CORAL_STATION_INTAKE(Rotations.of(1.71)),
