@@ -247,6 +247,12 @@ public class ShoulderIOCTRE implements ShoulderIO {
     inputs.brakeMode = isBrakeMode;
   }
 
+  @Override
+  public void setVoltage(Voltage volts) {
+    // Convert desired angle to encoder rotations
+    brLeader.setControl(new VoltageOut(volts));
+  }
+
   /**
    * Sets the desired angle for the shoulder to move to. This should be based off encoder rotations
    * to shoulder.

@@ -7,6 +7,8 @@
 
 package frc.robot;
 
+import static edu.wpi.first.units.Units.Volts;
+
 import com.ctre.phoenix6.swerve.SwerveModule.DriveRequestType;
 import com.ctre.phoenix6.swerve.SwerveRequest;
 import com.pathplanner.lib.auto.AutoBuilder;
@@ -312,6 +314,34 @@ public class RobotContainer {
     operator.algaeL2().onTrue(new SmartArm(arm, SmartArm.Goal.ALGAE_L2));
     operator.algaeScore().onTrue(new SmartArm(arm, SmartArm.Goal.ALGAE_SCORE));
     operator.algaeFloorIntake().onTrue(new SmartArm(arm, SmartArm.Goal.ALGAE_FLOOR_INTAKE));
+    operator
+        .axisGreaterThan(1, 0.5)
+        .whileTrue(
+            Commands.runEnd(
+                () -> arm.getShoulder().setVoltage(Volts.of(1)),
+                () -> arm.getShoulder().setVoltage(Volts.of(0)),
+                arm.getShoulder()));
+    operator
+        .axisLessThan(1, -0.5)
+        .whileTrue(
+            Commands.runEnd(
+                () -> arm.getShoulder().setVoltage(Volts.of(-1)),
+                () -> arm.getShoulder().setVoltage(Volts.of(0)),
+                arm.getShoulder()));
+    operator
+        .axisGreaterThan(5, 0.5)
+        .whileTrue(
+            Commands.runEnd(
+                () -> arm.getWrist().setVoltage(Volts.of(1)),
+                () -> arm.getWrist().setVoltage(Volts.of(0)),
+                arm.getWrist()));
+    operator
+        .axisLessThan(5, -0.5)
+        .whileTrue(
+            Commands.runEnd(
+                () -> arm.getWrist().setVoltage(Volts.of(-1)),
+                () -> arm.getWrist().setVoltage(Volts.of(0)),
+                arm.getWrist()));
 
     // Button bindings for the physical buttons on the robot
     new Trigger(onBoardButtons::getHomeButtonPressed)
