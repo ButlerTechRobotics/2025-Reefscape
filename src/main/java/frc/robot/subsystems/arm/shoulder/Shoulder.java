@@ -141,7 +141,7 @@ public class Shoulder extends SubsystemBase {
     CLIMB_DOWN(Rotations.of(-0.01)),
 
     // Coral positions
-    CORAL_FLOOR_INTAKE(Rotations.of(0.1)),
+    CORAL_FLOOR_INTAKE(Rotations.of(0.06)),
     CORAL_STATION_INTAKE(Rotations.of(0.23)),
     CORAL_L1(Rotations.of(0.17)),
     CORAL_L1BACK(Rotations.of(0)),
@@ -150,13 +150,13 @@ public class Shoulder extends SubsystemBase {
     CORAL_L2BACK(Rotations.of(0.3)),
     CORAL_L3(Rotations.of(0)),
     CORAL_L3BACK(Rotations.of(0.3)),
-    CORAL_L4BACK(Rotations.of(0.267)),
+    CORAL_L4BACK(Rotations.of(0.28)),
 
     // Algae positions
-    ALGAE_FLOOR_INTAKE(Rotations.of(0)),
-    ALGAE_SCORE(Rotations.of(0)),
-    ALGAE_L1(Rotations.of(0)),
-    ALGAE_L2(Rotations.of(0));
+    ALGAE_FLOOR_INTAKE(Rotations.of(0.1)),
+    ALGAE_SCORE(Rotations.of(0.14)),
+    ALGAE_L1(Rotations.of(0.21)),
+    ALGAE_L2(Rotations.of(0.32));
 
     private final Angle targetAngle;
     private final Angle angleTolerance;

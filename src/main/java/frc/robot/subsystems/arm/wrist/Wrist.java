@@ -133,7 +133,9 @@ public class Wrist extends SubsystemBase {
     CLIMB_DOWN(Rotations.of(0.9)),
 
     // Coral positions
-    CORAL_FLOOR_INTAKE(Rotations.of(1.5)),
+    CORAL_FLOOR_INTAKE(Rotations.of(1.6)),
+    // CORAL_FLOOR_INTAKE(Rotations.of(0.0)),
+
     CORAL_STATION_INTAKE(Rotations.of(1.71)),
     CORAL_L1(Rotations.of(1.45)),
     CORAL_L1BACK(Rotations.of(0)),
@@ -141,15 +143,15 @@ public class Wrist extends SubsystemBase {
     CORAL_L2BACK(Rotations.of(0.4)),
     CORAL_L3(Rotations.of(0)),
 
-    CORAL_L3BACK(Rotations.of(0.897)),
+    CORAL_L3BACK(Rotations.of(0.88)),
     CORAL_L4(Rotations.of(0)),
-    CORAL_L4BACK(Rotations.of(0.4)),
+    CORAL_L4BACK(Rotations.of(0.65)),
 
     // Algae positions (all 0)
-    ALGAE_FLOOR_INTAKE(Rotations.of(0)),
-    ALGAE_SCORE(Rotations.of(0)),
-    ALGAE_L1(Rotations.of(0)),
-    ALGAE_L2(Rotations.of(0));
+    ALGAE_FLOOR_INTAKE(Rotations.of(1.6)),
+    ALGAE_SCORE(Rotations.of(1.6)),
+    ALGAE_L1(Rotations.of(1.65)),
+    ALGAE_L2(Rotations.of(0.87));
 
     private final Angle targetAngle;
     private final Angle angleTolerance;

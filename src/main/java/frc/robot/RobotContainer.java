@@ -231,7 +231,7 @@ public class RobotContainer {
         "Coral_L1", Commands.runOnce(() -> arm.setGoalCommand(Arm.Goal.CORAL_L1)));
 
     NamedCommands.registerCommand(
-        "Score", new SmartIntake(intake, beamBreak, ClawMode.OUTTAKE, 0.5));
+        "Score", new SmartIntake(intake, beamBreak, ClawMode.OUTTAKE, 0.5, 0.25));
     NamedCommands.registerCommand(
         "SIMGamePiecePickup", new InstantCommand(() -> beamBreak.setGamePiece(true)));
 
@@ -298,6 +298,7 @@ public class RobotContainer {
     driver.outtake().whileTrue(new SmartIntake(intake, beamBreak, Intake.ClawMode.OUTTAKE, 0.5));
     driver.povUp().onTrue(new SmartArm(arm, SmartArm.Goal.CORAL_STATION_INTAKE));
     driver.povLeft().onTrue(new SmartArm(arm, SmartArm.Goal.STANDBY));
+    driver.povDown().onTrue(new SmartArm(arm, SmartArm.Goal.CORAL_FLOOR_INTAKE));
 
     driver.a().onTrue(new SmartArm(arm, SmartArm.Goal.CLIMB_DOWN));
     driver.y().onTrue(new SmartArm(arm, SmartArm.Goal.CLIMB));
@@ -310,6 +311,7 @@ public class RobotContainer {
     operator.algaeL1().onTrue(new SmartArm(arm, SmartArm.Goal.ALGAE_L1));
     operator.algaeL2().onTrue(new SmartArm(arm, SmartArm.Goal.ALGAE_L2));
     operator.algaeScore().onTrue(new SmartArm(arm, SmartArm.Goal.ALGAE_SCORE));
+    operator.algaeFloorIntake().onTrue(new SmartArm(arm, SmartArm.Goal.ALGAE_FLOOR_INTAKE));
 
     // Button bindings for the physical buttons on the robot
     new Trigger(onBoardButtons::getHomeButtonPressed)

@@ -136,13 +136,13 @@ public class ExtensionIOCTRE implements ExtensionIO {
    */
   protected TalonFXConfiguration configPID(TalonFXConfiguration config) {
     // Hardware-specific PID values
-    config.Slot0.kP = 100; // Proportional gain //120
+    config.Slot0.kP = 90; // Proportional gain
     config.Slot0.kI = 0; // Integral gain
     config.Slot0.kD = 0; // Derivative gain
-    config.Slot0.kS = 4; // Static friction compensation
+    config.Slot0.kS = 1; // Static friction compensation
     config.Slot0.kV = 0; // Velocity feedforward
     config.Slot0.kA = 0; // Acceleration feedforward
-    config.Slot0.kG = 58; // Gravity feedforward
+    config.Slot0.kG = 6; // Gravity feedforward
     return config;
   }
 
