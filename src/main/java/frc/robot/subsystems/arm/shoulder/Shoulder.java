@@ -138,7 +138,7 @@ public class Shoulder extends SubsystemBase {
     STOW(Rotations.of(0)),
     STANDBY(Rotations.of(0.14)),
     CLIMB(Rotations.of(.3)),
-    CLIMB_DOWN(Rotations.of(-0.01)),
+    CLIMB_DOWN(Rotations.of(-0.16)),
 
     // Coral positions
     CORAL_FLOOR_INTAKE(Rotations.of(0.06)),

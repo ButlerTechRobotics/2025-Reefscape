@@ -59,7 +59,7 @@ public class Wrist extends SubsystemBase {
 
     // Update motor connection status alerts
     leaderMotorAlert.set(!inputs.leaderConnected);
-        encoderAlert.set(!inputs.encoderConnected);
+    encoderAlert.set(!inputs.encoderConnected);
   }
 
   /**
