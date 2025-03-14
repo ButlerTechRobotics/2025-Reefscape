@@ -133,7 +133,7 @@ public class WristIOCTRE implements WristIO {
     config.Slot0.kS = 2; // Static friction compensation
     config.Slot0.kV = 0; // Velocity feedforward
     config.Slot0.kA = 0; // Acceleration feedforward
-    config.Slot0.kG = 10; // Gravity feedforward
+    config.Slot0.kG = 12; // Gravity feedforward
     return config;
   }
 

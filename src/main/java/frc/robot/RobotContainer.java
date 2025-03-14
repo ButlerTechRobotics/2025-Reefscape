@@ -55,6 +55,7 @@ import frc.robot.subsystems.intake.Intake.ClawMode;
 import frc.robot.subsystems.intake.IntakeIO;
 import frc.robot.subsystems.intake.IntakeIOCTRE;
 import frc.robot.subsystems.intake.IntakeIOSIM;
+import frc.robot.subsystems.leds.LEDs;
 import frc.robot.subsystems.onboardbuttons.OnBoardButtons;
 import frc.robot.subsystems.onboardbuttons.OnBoardButtonsIO;
 import frc.robot.subsystems.onboardbuttons.OnBoardButtonsIOReal;
@@ -87,6 +88,7 @@ public class RobotContainer {
   public final BeamBreak beamBreak;
   public final Arm arm;
   public final OnBoardButtons onBoardButtons;
+  public final LEDs leds = new LEDs();
 
   public RobotContainer() {
     // Declare component subsystems (not visible outside constructor)

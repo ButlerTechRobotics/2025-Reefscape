@@ -129,6 +129,7 @@ public class Arm extends SubsystemBase {
       }
       case CORAL_L3BACK -> {
         wrist.coralL3Back().schedule();
+        extension.coralL3Back().schedule();
         shoulder.coralL3Back().schedule();
       }
       case CORAL_L4BACK -> {
