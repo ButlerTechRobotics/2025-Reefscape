@@ -116,8 +116,8 @@ public class ExtensionIOCTRE implements ExtensionIO {
     config.MotorOutput.Inverted = InvertedValue.Clockwise_Positive;
     config.Slot0.GravityType = GravityTypeValue.Elevator_Static;
     config.Slot0.StaticFeedforwardSign = StaticFeedforwardSignValue.UseClosedLoopSign;
-    config.MotionMagic.MotionMagicCruiseVelocity = 60;
-    config.MotionMagic.MotionMagicAcceleration = 40;
+    config.MotionMagic.MotionMagicCruiseVelocity = 90; // 60 3/14
+    config.MotionMagic.MotionMagicAcceleration = 70; // 40 3/14
     config.SoftwareLimitSwitch.ForwardSoftLimitEnable = true;
     config.SoftwareLimitSwitch.ForwardSoftLimitThreshold = 25;
     config.SoftwareLimitSwitch.ReverseSoftLimitEnable = true;
