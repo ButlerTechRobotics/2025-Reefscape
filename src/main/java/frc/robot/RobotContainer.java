@@ -17,6 +17,7 @@ import edu.wpi.first.math.geometry.Pose2d;
 import edu.wpi.first.math.geometry.Rotation3d;
 import edu.wpi.first.math.geometry.Transform3d;
 import edu.wpi.first.math.geometry.Translation3d;
+import edu.wpi.first.math.kinematics.ChassisSpeeds;
 import edu.wpi.first.math.util.Units;
 import edu.wpi.first.units.measure.LinearVelocity;
 import edu.wpi.first.wpilibj.DriverStation;
@@ -362,6 +363,44 @@ public class RobotContainer {
                 () -> {
                   if (DriverStation.isDisabled()) {
                     arm.getWrist().toggleBrakeMode();
+                  }
+                }));
+
+    new Trigger(beamBreak::hasGamePiece)
+        .onTrue(
+            new InstantCommand(
+                () -> {
+                  if (beamBreak.hasGamePiece()) {
+                    if (arm.getGoal() == Arm.Goal.CORAL_FLOOR_INTAKE) {
+                      System.out.println("Beam break detected a game piece, stowing arm.");
+                      arm.setGoalCommand(Arm.Goal.STOW).schedule();
+                    }
+                  }
+                }));
+    new Trigger(arm::atArmGoal)
+        .onTrue(
+            new InstantCommand(
+                () -> {
+                  if (beamBreak.hasGamePiece()) {
+                    if (arm.getGoal() == Arm.Goal.CORAL_L4BACK
+                        ||
+                        // arm.getGoal() == Arm.Goal.CORAL_L3BACK ||
+                        arm.getGoal() == Arm.Goal.CORAL_L2BACK
+                        || arm.getGoal() == Arm.Goal.CLIMB) {
+                      System.out.println(
+                          "Beam break has piece, L2, L3, L4, or Climb enabled, Slowing down");
+                      ChassisSpeeds currentSpeeds = drivetrain.getChassisSpeeds();
+                      double slowFactor = 0.5;
+                      ChassisSpeeds slowedSpeeds =
+                          new ChassisSpeeds(
+                              currentSpeeds.vxMetersPerSecond * slowFactor,
+                              currentSpeeds.vyMetersPerSecond * slowFactor,
+                              currentSpeeds.omegaRadiansPerSecond * slowFactor);
+                      drivetrain.setChassisSpeeds(
+                          slowedSpeeds.vxMetersPerSecond,
+                          slowedSpeeds.vyMetersPerSecond,
+                          slowedSpeeds.omegaRadiansPerSecond);
+                    }
                   }
                 }));
   }

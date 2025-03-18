@@ -18,13 +18,13 @@ public class LEDs extends SubsystemBase {
 
   boolean isIntaking;
   boolean hasGamePiece;
-  int stripLength = 100;
+  int stripLength = 49;
   int startOffset = 0;
 
   /** Creates new LEDs. */
   public LEDs() {
     candle = new CANdle(14, "CANivore");
-    candle.configLEDType(LEDStripType.GRB);
+    candle.configLEDType(LEDStripType.RGB);
     candle.configV5Enabled(false);
   }
 

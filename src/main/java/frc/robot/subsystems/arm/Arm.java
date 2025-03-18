@@ -203,6 +203,10 @@ public class Arm extends SubsystemBase {
     desiredGoal = goal;
   }
 
+  public Goal getGoal() {
+    return currentGoal;
+  }
+
   /** Command to set goal of arm */
   public Command setGoalCommand(Goal goal) {
     return startEnd(() -> setGoal(goal), () -> setGoal(Goal.STOW)).withName("Arm " + goal);
