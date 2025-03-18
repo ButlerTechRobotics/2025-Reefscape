@@ -61,6 +61,9 @@ public interface ShoulderIO {
 
     // Derived angle measurement
     public Angle shoulderAngle = Rotations.of(0);
+
+    /** Current control slot being used (0 or 1) */
+    public int activeControlSlot = 0;
   }
 
   /** Updates the set of loggable inputs. */
@@ -107,5 +110,12 @@ public interface ShoulderIO {
    * @param disabled True to disable the motors, false to enable them
    */
   public default void setDisableOverride(boolean disabled) {}
-  ;
+
+  /**
+   * Sets which control slot to use. Slot 0 is typically for no game piece, Slot 1 is for when
+   * holding a game piece.
+   *
+   * @param slot The slot number to use (0 or 1)
+   */
+  public default void setControlSlot(int slot) {}
 }

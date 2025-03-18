@@ -42,6 +42,9 @@ public class Extension extends SubsystemBase {
 
   @AutoLogOutput private boolean brakeModeEnabled = true;
 
+  // Arm is vertical when the shoulder is between 45 and 90 degrees
+  private boolean isVertical = false;
+
   /**
    * Creates a new Extension subsystem with the specified hardware interface.
    *
@@ -61,6 +64,32 @@ public class Extension extends SubsystemBase {
     // Update motor connection status alerts
     leaderMotorAlert.set(!inputs.leaderConnected);
     followerMotorAlert.set(!inputs.followerConnected);
+
+    // Update which slot is being used based on game piece status
+    io.setControlSlot(isVertical ? 0 : 1);
+
+    // Log which control slot is being used
+    Logger.recordOutput("Extension/UsingVerticalSlot", isVertical);
+  }
+
+  /**
+   * Sets whether the arm currently is vertical. This will switch between PID slots for different
+   * control characteristics.
+   *
+   * @param isVertical true if arm is vertical, false otherwise
+   */
+  public void setIsVertical(boolean isVertical) {
+    this.isVertical = isVertical;
+  }
+
+  /**
+   * Gets whether the extension currently is vertical.
+   *
+   * @return true if arm is vertical, false otherwise
+   */
+  @AutoLogOutput(key = "Extension/IsVertical")
+  public boolean getIsVertical() {
+    return isVertical;
   }
 
   /**
@@ -404,5 +433,17 @@ public class Extension extends SubsystemBase {
    */
   public final Command climbDown() {
     return setPositionCommand(ExtensionPosition.CLIMB_DOWN);
+  }
+
+  /**
+   * Checks if the shoulder is in a vertical position (greater than 45 degrees).
+   *
+   * @return true if shoulder is greater than 45 degrees, false otherwise
+   */
+  @AutoLogOutput(key = "Extension/IsExtended")
+  public boolean isExtended() {
+    // Convert current position to degrees (0.125 rotations = 45°)
+    double currentInches = getPosition().in(Inches);
+    return currentInches >= 22;
   }
 }

@@ -220,7 +220,7 @@ public class RobotContainer {
         break;
     }
 
-    arm = new Arm(shoulder, extension, wrist);
+    arm = new Arm(shoulder, extension, wrist, beamBreak);
 
     // Set up the named commands
     NamedCommands.registerCommand("Stow", arm.setGoalCommand(Arm.Goal.STOW));
