@@ -53,6 +53,13 @@ import org.littletonrobotics.junction.Logger;
  * be used in command-based projects.
  */
 public class Drive extends SubsystemBase {
+
+  public void setChassisSpeeds(
+      double vxMetersPerSecond, double vyMetersPerSecond, double omegaRadiansPerSecond) {
+    currentSpeed = new ChassisSpeeds(vxMetersPerSecond, vyMetersPerSecond, omegaRadiansPerSecond);
+  }
+
+  private ChassisSpeeds currentSpeed = new ChassisSpeeds(0, 0, 0);
   private final DriveIO io;
   private final DriveIOInputsAutoLogged inputs;
   private final ModuleIOInputsAutoLogged[] modules =
