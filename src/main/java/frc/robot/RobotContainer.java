@@ -22,13 +22,11 @@ import edu.wpi.first.units.measure.LinearVelocity;
 import edu.wpi.first.wpilibj.DriverStation;
 import edu.wpi.first.wpilibj2.command.Command;
 import edu.wpi.first.wpilibj2.command.Commands;
-import edu.wpi.first.wpilibj2.command.InstantCommand;
 import edu.wpi.first.wpilibj2.command.button.Trigger;
 import edu.wpi.first.wpilibj2.command.sysid.SysIdRoutine;
 import frc.robot.commands.DriveCommands;
 import frc.robot.commands.ReefDrive;
 import frc.robot.commands.SmartArm;
-import frc.robot.commands.SmartIntake;
 import frc.robot.generated.TunerConstants;
 import frc.robot.subsystems.arm.Arm;
 import frc.robot.subsystems.arm.extension.Extension;
@@ -43,15 +41,10 @@ import frc.robot.subsystems.arm.wrist.Wrist;
 import frc.robot.subsystems.arm.wrist.WristIO;
 import frc.robot.subsystems.arm.wrist.WristIOCTRE;
 import frc.robot.subsystems.arm.wrist.WristIOSIM;
-import frc.robot.subsystems.beambreak.BeamBreak;
-import frc.robot.subsystems.beambreak.BeamBreakIO;
-import frc.robot.subsystems.beambreak.BeamBreakIOReal;
-import frc.robot.subsystems.beambreak.BeamBreakIOSim;
 import frc.robot.subsystems.drive.Drive;
 import frc.robot.subsystems.drive.DriveIO;
 import frc.robot.subsystems.drive.DriveIOCTRE;
 import frc.robot.subsystems.intake.Intake;
-import frc.robot.subsystems.intake.Intake.ClawMode;
 import frc.robot.subsystems.intake.IntakeIO;
 import frc.robot.subsystems.intake.IntakeIOCTRE;
 import frc.robot.subsystems.intake.IntakeIOSIM;
@@ -85,7 +78,6 @@ public class RobotContainer {
           .withRotationalDeadband(Constants.MaxAngularRate.times(0.15)) // Add a 10% deadband
           .withDriveRequestType(DriveRequestType.OpenLoopVoltage);
   public final Intake intake;
-  public final BeamBreak beamBreak;
   public final Arm arm;
   public final OnBoardButtons onBoardButtons;
   public final LEDs leds = new LEDs();
@@ -142,7 +134,6 @@ public class RobotContainer {
                 drivetrain::getVisionParameters));
 
         intake = new Intake(new IntakeIOCTRE());
-        beamBreak = new BeamBreak(new BeamBreakIOReal(0));
         extension = new Extension(new ExtensionIOCTRE());
         shoulder = new Shoulder(new ShoulderIOCTRE());
         wrist = new Wrist(new WristIOCTRE());
@@ -193,7 +184,6 @@ public class RobotContainer {
                 drivetrain::getVisionParameters));
 
         intake = new Intake(new IntakeIOSIM());
-        beamBreak = new BeamBreak(new BeamBreakIOSim(0));
         extension = new Extension(new ExtensionIOSIM());
         shoulder = new Shoulder(new ShoulderIOSIM());
         wrist = new Wrist(new WristIOSIM());
@@ -212,7 +202,6 @@ public class RobotContainer {
             new VisionIO() {});
 
         intake = new Intake(new IntakeIO() {});
-        beamBreak = new BeamBreak(new BeamBreakIO() {});
         extension = new Extension(new ExtensionIO() {});
         shoulder = new Shoulder(new ShoulderIO() {});
         wrist = new Wrist(new WristIO() {});
@@ -220,7 +209,7 @@ public class RobotContainer {
         break;
     }
 
-    arm = new Arm(shoulder, extension, wrist, beamBreak);
+    arm = new Arm(shoulder, extension, wrist, intake);
 
     // Set up the named commands
     NamedCommands.registerCommand("Stow", arm.setGoalCommand(Arm.Goal.STOW));
@@ -232,11 +221,6 @@ public class RobotContainer {
     NamedCommands.registerCommand("Coral_L4Back", arm.setGoalCommand(Arm.Goal.CORAL_L4BACK));
     NamedCommands.registerCommand("Coral_L3Back", arm.setGoalCommand(Arm.Goal.CORAL_L3BACK));
     NamedCommands.registerCommand("Coral_L1", arm.setGoalCommand(Arm.Goal.CORAL_L1));
-
-    NamedCommands.registerCommand(
-        "Score", new SmartIntake(intake, beamBreak, ClawMode.OUTTAKE, 0.25));
-    NamedCommands.registerCommand(
-        "SIMGamePiecePickup", new InstantCommand(() -> beamBreak.setGamePiece(true)));
 
     // Set up auto routines
     autoChooser = new LoggedDashboardChooser<>("Auto Choices", AutoBuilder.buildAutoChooser());
@@ -259,9 +243,16 @@ public class RobotContainer {
   }
 
   private void configureBindings() {
+    // Set up the default drive command with pre-allocated request object
+    configureDriveCommand();
+
+    // Set up manual control buttons
+    configureManualButtons();
+  }
+  /** Configure the default drive command using pre-allocated request objects. */
+  private void configureDriveCommand() {
     // Note that X is defined as forward according to WPILib convention,
     // and Y is defined as to the left according to WPILib convention.
-
     drivetrain.setDefaultCommand(
         // Drivetrain will execute this command periodically
         drivetrain.applyRequest(
@@ -278,7 +269,9 @@ public class RobotContainer {
                             -driver
                                 .customRight()
                                 .getX())))); // Drive counterclockwise with negative X (left)
+  }
 
+  private void configureManualButtons() {
     // Run SysId routines when holding back/start and X/Y.
     // Note that each routine should be run exactly once in a single log.
     // joystick.back().and(joystick.y()).whileTrue(drivetrain.sysIdDynamic(Direction.kForward));
@@ -294,13 +287,12 @@ public class RobotContainer {
     driver.rightStick().whileTrue(new ReefDrive(drivetrain, ReefDrive.Side.RIGHT));
 
     // Driver Button Bindings
+    driver.intake().whileTrue(intake.intakeCoralToFront());
     driver
-        .floorIntake()
-        .whileTrue(new SmartIntake(intake, beamBreak, Intake.ClawMode.FLOOR_INTAKE, 0.0, 0.25));
-    driver
-        .rightTrigger()
-        .whileTrue(new SmartIntake(intake, beamBreak, Intake.ClawMode.ALGAE_INTAKE, 0.0, 0.0));
-    driver.outtake().whileTrue(new SmartIntake(intake, beamBreak, Intake.ClawMode.OUTTAKE, 0.5));
+        .shoot()
+        .onTrue(
+            Commands.either(
+                intake.scoreCoralFromFront(), intake.scoreCoralFromBack(), arm::isScoringFront));
     driver.povUp().onTrue(new SmartArm(arm, SmartArm.Goal.CORAL_STATION_INTAKE));
     driver.povLeft().onTrue(new SmartArm(arm, SmartArm.Goal.STANDBY));
     driver.povDown().onTrue(new SmartArm(arm, SmartArm.Goal.CORAL_FLOOR_INTAKE));

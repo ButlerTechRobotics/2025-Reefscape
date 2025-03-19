@@ -14,7 +14,7 @@ import edu.wpi.first.wpilibj2.command.SubsystemBase;
 import frc.robot.subsystems.arm.extension.Extension;
 import frc.robot.subsystems.arm.shoulder.Shoulder;
 import frc.robot.subsystems.arm.wrist.Wrist;
-import frc.robot.subsystems.beambreak.BeamBreak;
+import frc.robot.subsystems.intake.Intake;
 import org.littletonrobotics.junction.AutoLogOutput;
 import org.littletonrobotics.junction.Logger;
 
@@ -45,7 +45,7 @@ public class Arm extends SubsystemBase {
   private final Shoulder shoulder;
   private final Extension extension;
   private final Wrist wrist;
-  private final BeamBreak beamBreak;
+  private final Intake intake;
 
   private Timer goalTimer = new Timer();
 
@@ -54,11 +54,11 @@ public class Arm extends SubsystemBase {
 
   private boolean zeroed = false;
 
-  public Arm(Shoulder shoulder, Extension extension, Wrist wrist, BeamBreak beamBreak) {
+  public Arm(Shoulder shoulder, Extension extension, Wrist wrist, Intake intake) {
     this.shoulder = shoulder;
     this.extension = extension;
     this.wrist = wrist;
-    this.beamBreak = beamBreak;
+    this.intake = intake;
 
     setDefaultCommand(setGoalCommand(Goal.STOW));
     goalTimer.start();
@@ -68,7 +68,7 @@ public class Arm extends SubsystemBase {
   public void periodic() {
     shoulder.setIsExtended(extension.isExtended());
     extension.setIsVertical(shoulder.isVertical());
-    wrist.setHasGamePiece(beamBreak.hasGamePiece());
+    wrist.setHasGamePiece(intake.hasGamePiece());
 
     if (DriverStation.isDisabled()) {
       setDefaultCommand(setGoalCommand(Goal.STOW));
@@ -203,6 +203,10 @@ public class Arm extends SubsystemBase {
     desiredGoal = goal;
   }
 
+  public Goal getGoal() {
+    return currentGoal;
+  }
+
   /** Command to set goal of arm */
   public Command setGoalCommand(Goal goal) {
     return startEnd(() -> setGoal(goal), () -> setGoal(Goal.STOW)).withName("Arm " + goal);
@@ -238,5 +242,11 @@ public class Arm extends SubsystemBase {
   @AutoLogOutput(key = "Arm/IsZeroed")
   public boolean isZeroed() {
     return zeroed;
+  }
+
+  public boolean isScoringFront() {
+    return currentGoal == Goal.CORAL_L1
+        || currentGoal == Goal.CORAL_L2
+        || currentGoal == Goal.CORAL_L3;
   }
 }

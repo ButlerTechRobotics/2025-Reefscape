@@ -56,7 +56,7 @@ public class IntakeIOSIM extends IntakeIOCTRE {
   }
 
   @Override
-  public void updateInputs(ClawIOInputs inputs) {
+  public void updateInputs(IntakeIOInputs inputs) {
     super.updateInputs(inputs);
     leaderSim.setSupplyVoltage(RobotController.getBatteryVoltage());
 
