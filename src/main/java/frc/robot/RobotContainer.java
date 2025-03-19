@@ -7,6 +7,7 @@
 
 package frc.robot;
 
+import static edu.wpi.first.units.Units.MetersPerSecond;
 import static edu.wpi.first.units.Units.Volts;
 
 import com.ctre.phoenix6.swerve.SwerveModule.DriveRequestType;
@@ -17,12 +18,12 @@ import edu.wpi.first.math.geometry.Pose2d;
 import edu.wpi.first.math.geometry.Rotation3d;
 import edu.wpi.first.math.geometry.Transform3d;
 import edu.wpi.first.math.geometry.Translation3d;
-import edu.wpi.first.math.kinematics.ChassisSpeeds;
 import edu.wpi.first.math.util.Units;
 import edu.wpi.first.units.measure.LinearVelocity;
 import edu.wpi.first.wpilibj.DriverStation;
 import edu.wpi.first.wpilibj2.command.Command;
 import edu.wpi.first.wpilibj2.command.Commands;
+import edu.wpi.first.wpilibj2.command.InstantCommand;
 import edu.wpi.first.wpilibj2.command.button.Trigger;
 import edu.wpi.first.wpilibj2.command.sysid.SysIdRoutine;
 import frc.robot.commands.DriveCommands;
@@ -30,6 +31,7 @@ import frc.robot.commands.ReefDrive;
 import frc.robot.commands.SmartArm;
 import frc.robot.generated.TunerConstants;
 import frc.robot.subsystems.arm.Arm;
+import frc.robot.subsystems.arm.Arm.Goal;
 import frc.robot.subsystems.arm.extension.Extension;
 import frc.robot.subsystems.arm.extension.ExtensionIO;
 import frc.robot.subsystems.arm.extension.ExtensionIOCTRE;
@@ -247,6 +249,9 @@ public class RobotContainer {
     // Set up the default drive command with pre-allocated request object
     configureDriveCommand();
 
+    // Create shared triggers to avoid duplicate condition objects
+    configureSharedTriggers();
+
     // Set up manual control buttons
     configureManualButtons();
   }
@@ -270,6 +275,33 @@ public class RobotContainer {
                             -driver
                                 .customRight()
                                 .getX())))); // Drive counterclockwise with negative X (left)
+  }
+
+  /** Create shared trigger objects for commonly used conditions. */
+  private void configureSharedTriggers() {
+    // Define commonly used triggers once to avoid duplicate object creation
+    Trigger isInIntakePosition = new Trigger(() -> arm.getGoal() == Goal.CORAL_FLOOR_INTAKE);
+
+    Trigger isScoringPosition =
+        new Trigger(
+            () ->
+                (arm.getGoal() == Goal.CORAL_L1
+                    || arm.getGoal() == Goal.CORAL_L1BACK
+                    || arm.getGoal() == Goal.CORAL_L2
+                    || arm.getGoal() == Goal.CORAL_L2BACK
+                    || arm.getGoal() == Goal.CORAL_L3
+                    || arm.getGoal() == Goal.CORAL_L3BACK
+                    || arm.getGoal() == Goal.CORAL_L4BACK));
+
+    // Use slower driving while in scoring position
+    isScoringPosition.whileTrue(
+        drivetrain.applyRequest(
+            () ->
+                drive
+                    .withVelocityX(MetersPerSecond.of(0.5).times(-driver.customLeft().getY()))
+                    .withVelocityY(MetersPerSecond.of(0.5).times(-driver.customLeft().getX()))
+                    .withRotationalRate(
+                        Constants.MaxAngularRate.times(-driver.customRight().getX()))));
   }
 
   private void configureManualButtons() {
@@ -358,40 +390,14 @@ public class RobotContainer {
                   }
                 }));
 
-    new Trigger(beamBreak::hasGamePiece)
+    new Trigger(intake::hasGamePiece)
         .onTrue(
             new InstantCommand(
                 () -> {
-                  if (beamBreak.hasGamePiece()) {
+                  if (intake.hasGamePiece()) {
                     if (arm.getGoal() == Arm.Goal.CORAL_FLOOR_INTAKE) {
                       System.out.println("Beam break detected a game piece, stowing arm.");
                       arm.setGoalCommand(Arm.Goal.STOW).schedule();
-                    }
-                  }
-                }));
-    new Trigger(arm::atArmGoal)
-        .onTrue(
-            new InstantCommand(
-                () -> {
-                  if (beamBreak.hasGamePiece()) {
-                    if (arm.getGoal() == Arm.Goal.CORAL_L4BACK
-                        ||
-                        // arm.getGoal() == Arm.Goal.CORAL_L3BACK ||
-                        arm.getGoal() == Arm.Goal.CORAL_L2BACK
-                        || arm.getGoal() == Arm.Goal.CLIMB) {
-                      System.out.println(
-                          "Beam break has piece, L2, L3, L4, or Climb enabled, Slowing down");
-                      ChassisSpeeds currentSpeeds = drivetrain.getChassisSpeeds();
-                      double slowFactor = 0.5;
-                      ChassisSpeeds slowedSpeeds =
-                          new ChassisSpeeds(
-                              currentSpeeds.vxMetersPerSecond * slowFactor,
-                              currentSpeeds.vyMetersPerSecond * slowFactor,
-                              currentSpeeds.omegaRadiansPerSecond * slowFactor);
-                      drivetrain.setChassisSpeeds(
-                          slowedSpeeds.vxMetersPerSecond,
-                          slowedSpeeds.vyMetersPerSecond,
-                          slowedSpeeds.omegaRadiansPerSecond);
                     }
                   }
                 }));
