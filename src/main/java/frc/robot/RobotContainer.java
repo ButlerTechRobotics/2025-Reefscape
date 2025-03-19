@@ -280,8 +280,6 @@ public class RobotContainer {
   /** Create shared trigger objects for commonly used conditions. */
   private void configureSharedTriggers() {
     // Define commonly used triggers once to avoid duplicate object creation
-    Trigger isInIntakePosition = new Trigger(() -> arm.getGoal() == Goal.CORAL_FLOOR_INTAKE);
-
     Trigger isScoringPosition =
         new Trigger(
             () ->

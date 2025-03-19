@@ -87,7 +87,7 @@ public class ShoulderIOCTRE implements ShoulderIO {
 
   private boolean isBrakeMode = true; // Default to brake mode
 
-  private boolean disableOverride = false; // Default to enabled
+  // private boolean disableOverride = false; // Default to enabled
 
   /**
    * Constructs a new ShoulderIOCTRE instance and initializes all hardware components. This includes
