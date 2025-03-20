@@ -40,9 +40,7 @@ public interface IntakeIO {
     public boolean hasBackGamePiece = false;
 
     public Distance frontCANrangeDistance = Inches.of(0);
-    public Distance rearCANrangeDistance = Inches.of(0);
-
-    public Distance rangeFinderDistance = Inches.of(0);
+    public Distance backCANrangeDistance = Inches.of(0);
   }
 
   /** Updates the set of loggable inputs. */

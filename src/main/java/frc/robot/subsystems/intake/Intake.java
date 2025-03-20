@@ -249,13 +249,23 @@ public class Intake extends SubsystemBase {
   }
 
   /**
-   * Gets the current distance reading from the range finder.
+   * Gets the current distance reading from the front CANrange.
    *
-   * @return The current range finder distance
+   * @return The current front CANrange distance
    */
   @AutoLogOutput
-  private Distance rangeFinderDistance() {
-    return inputs.rangeFinderDistance;
+  private Distance frontCANrangeDistance() {
+    return inputs.frontCANrangeDistance;
+  }
+
+  /**
+   * Gets the current distance reading from the back CANrange.
+   *
+   * @return The current back CANrange distance
+   */
+  @AutoLogOutput
+  private Distance backCANrangeDistance() {
+    return inputs.backCANrangeDistance;
   }
 
   /**

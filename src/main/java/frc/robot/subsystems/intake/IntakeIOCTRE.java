@@ -105,21 +105,11 @@ public class IntakeIOCTRE implements IntakeIO {
     inputs.leaderSupplyCurrent = leaderSupplyCurrent.getValue();
 
     inputs.frontCANrangeDistance = frontCANrangeDistance.getValue();
-    inputs.rearCANrangeDistance = backCANrangeDistance.getValue();
+    inputs.backCANrangeDistance = backCANrangeDistance.getValue();
 
     inputs.hasFrontGamePiece = hasFrontGamePiece();
     inputs.hasBackGamePiece = hasBackGamePiece();
     inputs.hasGamePiece = inputs.hasFrontGamePiece || inputs.hasBackGamePiece;
-
-    // Set the rangeFinderDistance to the sensor that's detecting the game piece
-    // This maintains compatibility with the existing code
-    if (inputs.hasFrontGamePiece) {
-      inputs.rangeFinderDistance = inputs.frontCANrangeDistance;
-    } else if (inputs.hasBackGamePiece) {
-      inputs.rangeFinderDistance = inputs.rearCANrangeDistance;
-    } else {
-      inputs.rangeFinderDistance = Inches.of(10); // No game piece detected
-    }
   }
 
   public boolean hasFrontGamePiece() {
