@@ -297,6 +297,9 @@ public class RobotContainer {
     driver
         .floorIntake()
         .whileTrue(new SmartIntake(intake, beamBreak, Intake.ClawMode.STATION_INTAKE));
+    driver
+        .rightTrigger()
+        .whileTrue(new SmartIntake(intake, beamBreak, Intake.ClawMode.ALGAE_INTAKE, 0.0, 0.0));
     driver.outtake().whileTrue(new SmartIntake(intake, beamBreak, Intake.ClawMode.OUTTAKE, 0.5));
     driver.povUp().onTrue(new SmartArm(arm, SmartArm.Goal.CORAL_STATION_INTAKE));
     driver.povLeft().onTrue(new SmartArm(arm, SmartArm.Goal.STANDBY));
