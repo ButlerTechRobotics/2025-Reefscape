@@ -327,19 +327,17 @@ public class Intake extends SubsystemBase {
   }
 
   /**
-   * Creates a command to set the wheels to shoot a game piece
-   * out the front of the intake.
-   * 
+   * Creates a command to set the wheels to shoot a game piece out the front of the intake.
+   *
    * @return A command that sets the wheels to shoot front
    */
   public Command SHOOT_FRONT() {
     return setIntakeStateCommand(IntakeMode.SHOOT_FRONT);
   }
 
-   /**
-   * Creates a command to set the wheels to shoot a game piece
-   * out the back of the intake.
-   * 
+  /**
+   * Creates a command to set the wheels to shoot a game piece out the back of the intake.
+   *
    * @return A command that sets the wheels to shoot back
    */
   public Command SHOOT_BACK() {

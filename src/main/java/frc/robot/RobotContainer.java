@@ -394,7 +394,7 @@ public class RobotContainer {
                 () -> {
                   if (intake.hasGamePiece()) {
                     if (arm.getGoal() == Arm.Goal.CORAL_FLOOR_INTAKE) {
-                      System.out.println("Beam break detected a game piece, stowing arm.");
+                      System.out.println("Intake detected a game piece, stowing arm.");
                       arm.setGoalCommand(Arm.Goal.STOW).schedule();
                     }
                   }
