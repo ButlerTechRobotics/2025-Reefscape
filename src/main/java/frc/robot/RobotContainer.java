@@ -231,11 +231,12 @@ public class RobotContainer {
     NamedCommands.registerCommand("Coral_L3Back", arm.setGoalCommand(Arm.Goal.CORAL_L3BACK));
     NamedCommands.registerCommand(
         "Coral_L1", Commands.runOnce(() -> arm.setGoalCommand(Arm.Goal.CORAL_L1)));
-
     NamedCommands.registerCommand(
         "Score", new SmartIntake(intake, beamBreak, ClawMode.OUTTAKE, 0.5, 0.25));
     NamedCommands.registerCommand(
         "SIMGamePiecePickup", new InstantCommand(() -> beamBreak.setGamePiece(true)));
+    NamedCommands.registerCommand(
+        "Intake", new SmartIntake(intake, beamBreak, ClawMode.FLOOR_INTAKE));
 
     // Set up auto routines
     autoChooser = new LoggedDashboardChooser<>("Auto Choices", AutoBuilder.buildAutoChooser());
