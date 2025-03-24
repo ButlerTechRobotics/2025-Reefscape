@@ -339,7 +339,6 @@ public class RobotContainer {
     // Operator Button Bindings
     operator.coralL1().onTrue(new SmartArm(arm, SmartArm.Goal.CORAL_L1));
     operator.coralL2().onTrue(new SmartArm(arm, SmartArm.Goal.CORAL_L2BACK));
-    // operator.coralL3().whileTrue(new SmartArm(arm, SmartArm.Goal.CORAL_L3BACK));
     operator.coralL3().onTrue(new SmartArm(arm, SmartArm.Goal.CORAL_L3BACK));
     operator.coralL4().onTrue(new SmartArm(arm, SmartArm.Goal.CORAL_L4BACK));
     operator
@@ -406,11 +405,9 @@ public class RobotContainer {
         .onTrue(
             new InstantCommand(
                 () -> {
-                  if (intake.hasGamePiece()) {
-                    if (arm.getGoal() == Arm.Goal.CORAL_FLOOR_INTAKE) {
-                      System.out.println("Beam break detected a game piece, stowing arm.");
-                      arm.setGoalCommand(Arm.Goal.STOW).schedule();
-                    }
+                  if (intake.hasGamePiece() && arm.getGoal() == Arm.Goal.CORAL_FLOOR_INTAKE) {
+                    System.out.println("Beam break detected a game piece, stowing arm.");
+                    new SmartArm(arm, SmartArm.Goal.STANDBY);
                   }
                 }));
   }

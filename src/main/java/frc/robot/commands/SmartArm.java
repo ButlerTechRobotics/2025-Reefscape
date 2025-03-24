@@ -99,7 +99,7 @@ public class SmartArm extends Command {
 
   @Override
   public void end(boolean interrupted) {
-    arm.setGoalCommand(Arm.Goal.STOW).schedule();
+    arm.setGoalCommand(Arm.Goal.STANDBY).schedule();
   }
 
   @Override
