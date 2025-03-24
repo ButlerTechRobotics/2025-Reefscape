@@ -53,7 +53,7 @@ public class OperatorController extends TunableController {
     return povUp();
   }
 
-  /** Gets the Algae Score button */
+  /** Gets the Algae Intake button */
   public Trigger algaeFloorIntake() {
     return povLeft();
   }
@@ -61,5 +61,10 @@ public class OperatorController extends TunableController {
   /** Gets the Algae Score button */
   public Trigger algaeScore() {
     return povRight();
+  }
+
+  /** Gets the Algae Score button */
+  public Trigger frontModifier() {
+    return rightTrigger();
   }
 }

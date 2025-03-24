@@ -140,9 +140,11 @@ public class Arm extends SubsystemBase {
         shoulder.coralL3Back().schedule();
       }
       case CORAL_L4BACK -> {
-        shoulder.coralL4Back().schedule();
-        extension.coralL4Back().schedule();
         wrist.coralL4Back().schedule();
+        if (wrist.isAtTarget()) {
+          shoulder.coralL4Back().schedule();
+          extension.coralL4Back().schedule();
+        }
       }
       case ALGAE_FLOOR_INTAKE -> {
         shoulder.algaeFloorIntake().schedule();
@@ -244,6 +246,7 @@ public class Arm extends SubsystemBase {
     return zeroed;
   }
 
+  @AutoLogOutput(key = "Arm/IsScoringFront")
   public boolean isScoringFront() {
     return currentGoal == Goal.CORAL_L1
         || currentGoal == Goal.CORAL_L2

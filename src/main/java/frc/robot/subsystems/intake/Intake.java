@@ -42,7 +42,6 @@ public class Intake extends SubsystemBase {
   private final BooleanSupplier hasGamePieceTrigger = this::hasGamePiece;
   private final BooleanSupplier hasFrontGamePieceTrigger = this::hasFrontGamePiece;
   private final BooleanSupplier hasBackGamePieceTrigger = this::hasBackGamePiece;
-  private final BooleanSupplier isShufflingTrigger = this::isShuffling;
 
   /**
    * Creates a new Intake subsystem with the specified hardware interface.
@@ -78,18 +77,20 @@ public class Intake extends SubsystemBase {
 
     if (!hasFront && !hasBack) {
       currentCoralState = CoralState.NONE;
-    } else if (hasFront && !hasBack) {
-      currentCoralState = CoralState.FRONT;
     } else if (!hasFront && hasBack) {
+      currentCoralState = CoralState.FRONT;
+    } else if (hasFront && !hasBack) {
       currentCoralState = CoralState.BACK;
     } else {
-      currentCoralState = CoralState.SHUFFLING;
+      // Both sensors detect a game piece
+      currentCoralState = CoralState.BOTH;
     }
   }
 
   /** Stops the intake motor. */
   public void stop() {
     io.stop();
+    currentMode = IntakeMode.STOP;
   }
 
   /**
@@ -104,15 +105,12 @@ public class Intake extends SubsystemBase {
 
   /** Enumeration of available intake positions with their corresponding target angles. */
   public enum IntakeMode {
-    STOP(Voltage.ofBaseUnits(0, Volts)), // Voltage for stopping the intake
-    CORAL_INTAKE(Voltage.ofBaseUnits(5, Volts)), // Voltage for coral intake
-    CORAL_SHUFFLE_IN(
-        Voltage.ofBaseUnits(1, Volts)), // Voltage for shuffling coral from front to back
-    CORAL_SHUFFLE_OUT(
-        Voltage.ofBaseUnits(-1, Volts)), // Voltage for shuffling coral from back to front
-    ALGAE_INTAKE(Voltage.ofBaseUnits(12, Volts)), // Voltage for algae intake
-    SHOOT_FRONT(Voltage.ofBaseUnits(-5, Volts)), // Voltage for shooting a game piece out the front
-    SHOOT_BACK(Voltage.ofBaseUnits(5, Volts)); // Voltage for shooting a game piece out the back
+    STOP(Voltage.ofBaseUnits(0, Volts)),
+    INTAKE(Voltage.ofBaseUnits(8, Volts)),
+    SHUFFLE_TO_FRONT(Voltage.ofBaseUnits(-1, Volts)),
+    SHUFFLE_TO_BACK(Voltage.ofBaseUnits(1, Volts)),
+    SHOOT_FRONT(Voltage.ofBaseUnits(-5, Volts)),
+    SHOOT_BACK(Voltage.ofBaseUnits(5, Volts));
 
     private final Voltage targetVoltage;
 
@@ -131,7 +129,7 @@ public class Intake extends SubsystemBase {
     NONE, // No coral detected
     FRONT, // Coral detected at front sensor only
     BACK, // Coral detected at back sensor only
-    SHUFFLING // Coral detected at both sensors (transitioning)
+    BOTH // Coral detected at both sensors
   }
 
   /**
@@ -194,16 +192,6 @@ public class Intake extends SubsystemBase {
   }
 
   /**
-   * Checks if the intake has a game piece detected by both sensors (shuffling).
-   *
-   * @return true if a game piece is detected by both sensors, false otherwise
-   */
-  @AutoLogOutput
-  public boolean isShuffling() {
-    return inputs.hasFrontGamePiece && inputs.hasBackGamePiece;
-  }
-
-  /**
    * Creates a command that waits until a game piece is detected by either sensor.
    *
    * @return A command that waits for game piece detection
@@ -222,30 +210,21 @@ public class Intake extends SubsystemBase {
   }
 
   /**
-   * Creates a command that waits until a game piece is detected at the front sensor.
+   * Creates a command that waits until a game piece is detected at the front sensor only.
    *
-   * @return A command that waits for front game piece detection
+   * @return A command that waits for front-only game piece detection
    */
   public Command waitForFrontGamePiece() {
     return Commands.waitUntil(hasFrontGamePieceTrigger);
   }
 
   /**
-   * Creates a command that waits until a game piece is detected at the back sensor.
+   * Creates a command that waits until a game piece is detected at the back sensor only.
    *
-   * @return A command that waits for back game piece detection
+   * @return A command that waits for back-only game piece detection
    */
   public Command waitForBackGamePiece() {
     return Commands.waitUntil(hasBackGamePieceTrigger);
-  }
-
-  /**
-   * Creates a command that waits until the game piece is in a shuffling state.
-   *
-   * @return A command that waits for shuffling state
-   */
-  public Command waitForShuffling() {
-    return Commands.waitUntil(isShufflingTrigger);
   }
 
   /**
@@ -269,15 +248,13 @@ public class Intake extends SubsystemBase {
   }
 
   /**
-   * Sets the intake to a new mode if different from the current mode.
+   * Sets the intake to a new mode and applies the corresponding voltage.
    *
    * @param mode The new IntakeMode to set
    */
   private void setIntakeMode(IntakeMode mode) {
-    if (currentMode != mode) {
-      currentMode = mode;
-      io.setVoltage(mode.targetVoltage);
-    }
+    currentMode = mode;
+    io.setVoltage(mode.targetVoltage);
   }
 
   /**
@@ -295,67 +272,44 @@ public class Intake extends SubsystemBase {
    *
    * @return A command that sets the wheels to intake coral
    */
-  public Command CORAL_INTAKE() {
-    return setIntakeStateCommand(IntakeMode.CORAL_INTAKE);
+  public Command INTAKE() {
+    return setIntakeStateCommand(IntakeMode.INTAKE);
   }
 
   /**
-   * Creates a command to set the wheels to shuffle coral from front to back.
+   * Creates a command to set the wheels to shuffle coral toward front.
    *
-   * @return A command that sets the wheels to shuffle coral
+   * @return A command that sets the wheels to shuffle toward front
    */
-  public Command CORAL_SHUFFLE_IN() {
-    return setIntakeStateCommand(IntakeMode.CORAL_SHUFFLE_IN);
+  public Command SHUFFLE_TO_FRONT() {
+    return setIntakeStateCommand(IntakeMode.SHUFFLE_TO_FRONT);
   }
 
   /**
-   * Creates a command to set the wheels to shuffle coral from back to front.
+   * Creates a command to set the wheels to shuffle coral toward back.
    *
-   * @return A command that sets the wheels to shuffle coral
+   * @return A command that sets the wheels to shuffle toward back
    */
-  public Command CORAL_SHUFFLE_OUT() {
-    return setIntakeStateCommand(IntakeMode.CORAL_SHUFFLE_OUT);
+  public Command SHUFFLE_TO_BACK() {
+    return setIntakeStateCommand(IntakeMode.SHUFFLE_TO_BACK);
   }
 
   /**
-   * Creates a command to set the wheels to intake algae.
+   * Creates a command to set the wheels to shoot a game piece out the front of the intake.
    *
-   * @return A command that sets the wheels to intake algae
-   */
-  public Command ALGAE_INTAKE() {
-    return setIntakeStateCommand(IntakeMode.ALGAE_INTAKE);
-  }
-
-  /**
-   * Creates a command to set the wheels to shoot a game piece
-   * out the front of the intake.
-   * 
    * @return A command that sets the wheels to shoot front
    */
   public Command SHOOT_FRONT() {
     return setIntakeStateCommand(IntakeMode.SHOOT_FRONT);
   }
 
-   /**
-   * Creates a command to set the wheels to shoot a game piece
-   * out the back of the intake.
-   * 
+  /**
+   * Creates a command to set the wheels to shoot a game piece out the back of the intake.
+   *
    * @return A command that sets the wheels to shoot back
    */
   public Command SHOOT_BACK() {
-    return setIntakeStateCommand(IntakeMode.SHOOT_FRONT);
-  }
-
-  /**
-   * Creates a command to automatically outtake a game piece.
-   *
-   * @return A command that outtakes a game piece
-   */
-  public Command AUTO_OUTTAKE() {
-    return Commands.runOnce(() -> io.setVoltage(Volts.of(-3)))
-        .andThen(gamePieceLoaded())
-        .andThen(waitForNoGamePiece())
-        .andThen(STOP());
+    return setIntakeStateCommand(IntakeMode.SHOOT_BACK);
   }
 
   /**
@@ -364,99 +318,19 @@ public class Intake extends SubsystemBase {
    * @return A command that stops the intake
    */
   public Command STOP() {
-    return Commands.runOnce(this::stop, this).withName("Stop");
+    return setIntakeStateCommand(IntakeMode.STOP);
   }
 
   /**
-   * Creates a command to set the simulated range finder distance.
-   *
-   * @param distance The distance to simulate
-   * @return A command that sets the simulated range finder distance
-   */
-  private Command setCANrangeDistanceSim(Distance distance) {
-    return Commands.runOnce(() -> io.setCANrangeDistanceSim(distance));
-  }
-
-  /**
-   * Creates a command to simulate a game piece being loaded.
-   *
-   * @return A command that simulates a game piece being loaded
-   */
-  public Command gamePieceLoaded() {
-    return setCANrangeDistanceSim(Inches.of(0.5));
-  }
-
-  /**
-   * Creates a command to simulate a game piece being unloaded.
-   *
-   * @return A command that simulates a game piece being unloaded
-   */
-  public Command gamePieceUnloaded() {
-    return setCANrangeDistanceSim(Inches.of(1.5));
-  }
-
-  /**
-   * Creates a command to intake a coral to the back position.
+   * Creates a command to intake a coral until it's detected by the back sensor.
    *
    * @return A command that intakes a coral to the back position
    */
   public Command intakeCoralToBack() {
-    return CORAL_INTAKE()
-        .andThen(waitForBackGamePiece())
+    return INTAKE()
+        .andThen(Commands.waitUntil(hasBackGamePieceTrigger))
         .andThen(STOP())
         .withName("Intake Coral To Back");
-  }
-
-  /**
-   * Creates a command to intake a coral to the front position.
-   *
-   * @return A command that intakes a coral to the front position
-   */
-  public Command intakeCoralToFront() {
-    return CORAL_INTAKE()
-        .andThen(waitForFrontGamePiece())
-        .andThen(STOP())
-        .withName("Intake Coral To Front");
-  }
-
-  /**
-   * Creates a command to shuffle a coral from the front to the back.
-   *
-   * @return A command that shuffles a coral from front to back
-   */
-  public Command shuffleCoralToBack() {
-    return Commands.sequence(
-            Commands.runOnce(
-                () -> {
-                  if (currentCoralState != CoralState.FRONT) {
-                    System.out.println(
-                        "Warning: Attempting to shuffle from front when coral is not at front");
-                  }
-                }),
-            CORAL_SHUFFLE_IN(),
-            waitForBackGamePiece(),
-            STOP())
-        .withName("Shuffle Coral To Back");
-  }
-
-  /**
-   * Creates a command to shuffle a coral from the back to the front.
-   *
-   * @return A command that shuffles a coral from back to front
-   */
-  public Command shuffleCoralToFront() {
-    return Commands.sequence(
-            Commands.runOnce(
-                () -> {
-                  if (currentCoralState != CoralState.BACK) {
-                    System.out.println(
-                        "Warning: Attempting to shuffle from back when coral is not at back");
-                  }
-                }),
-            CORAL_SHUFFLE_OUT(),
-            waitForFrontGamePiece(),
-            STOP())
-        .withName("Shuffle Coral To Front");
   }
 
   /**
@@ -465,17 +339,7 @@ public class Intake extends SubsystemBase {
    * @return A command that scores a coral from the front
    */
   public Command scoreCoralFromFront() {
-    return Commands.sequence(
-            Commands.runOnce(
-                () -> {
-                  if (currentCoralState != CoralState.FRONT) {
-                    System.out.println(
-                        "Warning: Attempting to score from front when coral is not at front");
-                  }
-                }),
-            SHOOT_FRONT(),
-            waitForNoGamePiece(),
-            STOP())
+    return Commands.sequence(SHOOT_FRONT(), waitForNoGamePiece(), STOP())
         .withName("Score Coral From Front");
   }
 
@@ -485,17 +349,87 @@ public class Intake extends SubsystemBase {
    * @return A command that scores a coral from the back
    */
   public Command scoreCoralFromBack() {
-    return Commands.sequence(
-            Commands.runOnce(
-                () -> {
-                  if (currentCoralState != CoralState.BACK) {
-                    System.out.println(
-                        "Warning: Attempting to score from back when coral is not at back");
-                  }
-                }),
-            SHOOT_BACK(),
-            waitForNoGamePiece(),
-            STOP())
+    return Commands.sequence(SHOOT_BACK(), waitForNoGamePiece(), STOP())
         .withName("Score Coral From Back");
+  }
+
+  /**
+   * Creates a command that pulses the intake at a specified voltage.
+   *
+   * @param mode The IntakeMode to pulse
+   * @param pulseDurationSeconds How long each pulse should last in seconds
+   * @param pauseDurationSeconds How long to pause between pulses in seconds
+   * @return A command that pulses the intake
+   */
+  private Command pulseIntake(
+      IntakeMode mode, double pulseDurationSeconds, double pauseDurationSeconds) {
+    return Commands.sequence(
+            setIntakeStateCommand(mode),
+            Commands.waitSeconds(pulseDurationSeconds),
+            STOP(),
+            Commands.waitSeconds(pauseDurationSeconds))
+        .withName("Pulse " + mode.toString());
+  }
+
+  /**
+   * Creates a command to shuffle a coral to the back position using pulses. Will stop when the game
+   * piece is no longer detected at the front sensor.
+   *
+   * @return A command that shuffles a coral to the back with pulsing
+   */
+  public Command shuffleCoralToBack() {
+    return Commands.sequence(
+            // Log start of operation
+            Commands.runOnce(
+                () ->
+                    System.out.println(
+                        "Starting shuffle to back with pulsing, current state: "
+                            + currentCoralState)),
+
+            // Repeat pulses until condition is met
+            Commands.repeatingSequence(pulseIntake(IntakeMode.SHUFFLE_TO_BACK, 0.05, 0.05))
+                .until(() -> !hasFrontGamePiece()),
+
+            // Final pulse to position
+            SHUFFLE_TO_FRONT(),
+            Commands.waitSeconds(0.1),
+            STOP(),
+
+            // Log completion
+            Commands.runOnce(
+                () -> System.out.println("Finished shuffle to back, state: " + currentCoralState)))
+        .withName("Shuffle Coral To Back")
+        .withTimeout(3); // Add safety timeout
+  }
+
+  /**
+   * Creates a command to shuffle a coral to the front position using pulses. Will stop when the
+   * game piece is no longer detected at the back sensor.
+   *
+   * @return A command that shuffles a coral to the front with pulsing
+   */
+  public Command shuffleCoralToFront() {
+    return Commands.sequence(
+            // Log start of operation
+            Commands.runOnce(
+                () ->
+                    System.out.println(
+                        "Starting shuffle to front with pulsing, current state: "
+                            + currentCoralState)),
+
+            // Repeat pulses until condition is met
+            Commands.repeatingSequence(pulseIntake(IntakeMode.SHUFFLE_TO_FRONT, 0.2, 0.05))
+                .until(() -> !hasBackGamePiece()),
+
+            // Final pulse to position
+            SHUFFLE_TO_BACK(),
+            Commands.waitSeconds(0.1),
+            STOP(),
+
+            // Log completion
+            Commands.runOnce(
+                () -> System.out.println("Finished shuffle to front, state: " + currentCoralState)))
+        .withName("Shuffle Coral To Front")
+        .withTimeout(3); // Add safety timeout
   }
 }

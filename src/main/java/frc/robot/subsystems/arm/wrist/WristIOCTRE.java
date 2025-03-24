@@ -108,9 +108,9 @@ public class WristIOCTRE implements WristIO {
     config.CurrentLimits.StatorCurrentLimit = 30.0;
     config.CurrentLimits.StatorCurrentLimitEnable = true;
     config.MotorOutput.Inverted = InvertedValue.Clockwise_Positive;
-    config.MotionMagic.MotionMagicCruiseVelocity = 4;
+    config.MotionMagic.MotionMagicCruiseVelocity = 6;
     // config.MotionMagic.MotionMagicAcceleration = 10;
-    config.MotionMagic.MotionMagicAcceleration = 5;
+    config.MotionMagic.MotionMagicAcceleration = 7;
 
     // Apply PID and feedforward values from protected method
     configPID(config);

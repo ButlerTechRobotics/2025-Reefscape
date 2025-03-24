@@ -117,8 +117,8 @@ public class ExtensionIOCTRE implements ExtensionIO {
     config.CurrentLimits.StatorCurrentLimit = 80.0;
     config.CurrentLimits.StatorCurrentLimitEnable = true;
     config.MotorOutput.Inverted = InvertedValue.Clockwise_Positive;
-    config.MotionMagic.MotionMagicCruiseVelocity = 90; // 60 3/14
-    config.MotionMagic.MotionMagicAcceleration = 70; // 40 3/14
+    config.MotionMagic.MotionMagicCruiseVelocity = 140; // 90 3/20
+    config.MotionMagic.MotionMagicAcceleration = 120; // 70 3/20
     config.SoftwareLimitSwitch.ForwardSoftLimitEnable = true;
     config.SoftwareLimitSwitch.ForwardSoftLimitThreshold = 25;
     config.SoftwareLimitSwitch.ReverseSoftLimitEnable = true;

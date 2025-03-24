@@ -55,16 +55,16 @@ public class IntakeIOCTRE implements IntakeIO {
     TalonFXConfiguration config = createMotorConfiguration();
     leader.getConfigurator().apply(config);
     BaseStatusSignal.setUpdateFrequencyForAll(
-        50.0,
+        100.0,
         leaderPosition,
         leaderVelocity,
         leaderAppliedVolts,
         leaderStatorCurrent,
         leaderSupplyCurrent);
 
-    leader.optimizeBusUtilization(4, 0.1);
-    frontCANrange.optimizeBusUtilization(4, 0.1);
-    backCANrange.optimizeBusUtilization(4, 0.1);
+    leader.optimizeBusUtilization(100, 0.1);
+    frontCANrange.optimizeBusUtilization(100, 0.1);
+    backCANrange.optimizeBusUtilization(100, 0.1);
   }
 
   private TalonFXConfiguration createMotorConfiguration() {
@@ -74,7 +74,7 @@ public class IntakeIOCTRE implements IntakeIO {
     config.CurrentLimits.StatorCurrentLimitEnable = true;
     config.MotorOutput.NeutralMode = NeutralModeValue.Brake;
 
-    config.MotorOutput.Inverted = InvertedValue.Clockwise_Positive;
+    config.MotorOutput.Inverted = InvertedValue.CounterClockwise_Positive;
     return config;
   }
 

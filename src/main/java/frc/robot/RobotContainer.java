@@ -296,8 +296,8 @@ public class RobotContainer {
         drivetrain.applyRequest(
             () ->
                 drive
-                    .withVelocityX(MetersPerSecond.of(0.5).times(-driver.customLeft().getY()))
-                    .withVelocityY(MetersPerSecond.of(0.5).times(-driver.customLeft().getX()))
+                    .withVelocityX(MetersPerSecond.of(1).times(-driver.customLeft().getY()))
+                    .withVelocityY(MetersPerSecond.of(1).times(-driver.customLeft().getX()))
                     .withRotationalRate(
                         Constants.MaxAngularRate.times(-driver.customRight().getX()))));
   }
@@ -318,24 +318,33 @@ public class RobotContainer {
     driver.rightStick().whileTrue(new ReefDrive(drivetrain, ReefDrive.Side.RIGHT));
 
     // Driver Button Bindings
-    driver.intake().whileTrue(intake.intakeCoralToFront());
+    driver.intake().whileTrue(intake.intakeCoralToBack()).onFalse(intake.STOP());
     driver
         .shoot()
         .onTrue(
             Commands.either(
-                intake.scoreCoralFromFront(), intake.scoreCoralFromBack(), arm::isScoringFront));
+                intake.scoreCoralFromBack(), intake.scoreCoralFromFront(), arm::isScoringFront));
     driver.povUp().onTrue(new SmartArm(arm, SmartArm.Goal.CORAL_STATION_INTAKE));
     driver.povLeft().onTrue(new SmartArm(arm, SmartArm.Goal.STANDBY));
     driver.povDown().onTrue(new SmartArm(arm, SmartArm.Goal.CORAL_FLOOR_INTAKE));
 
     driver.a().onTrue(new SmartArm(arm, SmartArm.Goal.CLIMB_DOWN));
     driver.y().onTrue(new SmartArm(arm, SmartArm.Goal.CLIMB));
+    driver.b().onTrue(intake.shuffleCoralToBack());
 
     // Operator Button Bindings
     operator.coralL1().onTrue(new SmartArm(arm, SmartArm.Goal.CORAL_L1));
     operator.coralL2().onTrue(new SmartArm(arm, SmartArm.Goal.CORAL_L2BACK));
     operator.coralL3().onTrue(new SmartArm(arm, SmartArm.Goal.CORAL_L3BACK));
     operator.coralL4().onTrue(new SmartArm(arm, SmartArm.Goal.CORAL_L4BACK));
+    operator
+        .coralL2()
+        .and(operator.frontModifier())
+        .onTrue(new SmartArm(arm, SmartArm.Goal.CORAL_L2));
+    operator
+        .coralL3()
+        .and(operator.frontModifier())
+        .onTrue(new SmartArm(arm, SmartArm.Goal.CORAL_L3));
     operator.algaeL1().onTrue(new SmartArm(arm, SmartArm.Goal.ALGAE_L1));
     operator.algaeL2().onTrue(new SmartArm(arm, SmartArm.Goal.ALGAE_L2));
     operator.algaeScore().onTrue(new SmartArm(arm, SmartArm.Goal.ALGAE_SCORE));
@@ -388,18 +397,16 @@ public class RobotContainer {
                   }
                 }));
 
-    new Trigger(intake::hasGamePiece)
-        .onTrue(
-            new InstantCommand(
-                () -> {
-                  if (intake.hasGamePiece()) {
-                    if (arm.getGoal() == Arm.Goal.CORAL_FLOOR_INTAKE) {
-                      System.out.println("Beam break detected a game piece, stowing arm.");
-                      arm.setGoalCommand(Arm.Goal.STOW).schedule();
-                    }
-                  }
-                }));
-  }
+                new Trigger(intake::hasGamePiece)
+                .onTrue(
+                    new InstantCommand(
+                        () -> {
+                          if (intake.hasGamePiece() && arm.getGoal() == Arm.Goal.CORAL_FLOOR_INTAKE) {
+                            System.out.println("Beam break detected a game piece, stowing arm.");
+                            new SmartArm(arm, SmartArm.Goal.STANDBY);
+                          }
+                        }));
+          }
 
   public Command getAutonomousCommand() {
     return autoChooser.get();
