@@ -39,6 +39,9 @@ public interface ExtensionIO {
     public Current followerSupplyCurrent = Amps.of(0);
 
     public Distance extensionDistance = Inches.of(0);
+
+    /** Current control slot being used (0 or 1) */
+    public int activeControlSlot = 0;
   }
 
   /** Updates the set of loggable inputs. */
@@ -54,4 +57,12 @@ public interface ExtensionIO {
   public default void stop() {}
 
   public default void setBrakeMode(boolean enabled) {}
+
+  /**
+   * Sets which control slot to use. Slot 0 is typically for no game piece, Slot 1 is for when
+   * holding a game piece.
+   *
+   * @param slot The slot number to use (0 or 1)
+   */
+  public default void setControlSlot(int slot) {}
 }

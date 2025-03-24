@@ -42,9 +42,9 @@ public class ShoulderIOCTRE implements ShoulderIO {
   /** CAN bus that the devices are located on */
   public static final CANBus kCANBus = new CANBus("CANivore");
 
-  /** The back-right leader TalonFX motor controller (CAN ID: 23) */
+  /** The back-right leader TalonFX motor controller (CAN ID: 16) */
   public final TalonFX brLeader = new TalonFX(23, kCANBus);
-  /** The back-left follower TalonFX motor controller (CAN ID: 22) */
+  /** The back-left follower TalonFX motor controller (CAN ID: 15) */
   public final TalonFX blFollower = new TalonFX(22, kCANBus);
   /** The front-right follower TalonFX motor controller (CAN ID: 21) */
   public final TalonFX frFollower = new TalonFX(21, kCANBus);
@@ -82,9 +82,12 @@ public class ShoulderIOCTRE implements ShoulderIO {
   private final Debouncer flFollowerDebounce = new Debouncer(0.5);
   private final Debouncer encoderDebounce = new Debouncer(0.5);
 
+  // Current control slot
+  private int activeSlot = 0;
+
   private boolean isBrakeMode = true; // Default to brake mode
 
-  private boolean disableOverride = false; // Default to enabled
+  // private boolean disableOverride = false; // Default to enabled
 
   /**
    * Constructs a new ShoulderIOCTRE instance and initializes all hardware components. This includes
@@ -124,11 +127,11 @@ public class ShoulderIOCTRE implements ShoulderIO {
         encoderVelocity);
 
     // Optimize CAN bus usage for all devices
-    brLeader.optimizeBusUtilization(4, 0.1);
-    blFollower.optimizeBusUtilization(4, 0.1);
-    frFollower.optimizeBusUtilization(4, 0.1);
-    flFollower.optimizeBusUtilization(4, 0.1);
-    encoder.optimizeBusUtilization(4, 0.1);
+    brLeader.optimizeBusUtilization(100, 0.1);
+    blFollower.optimizeBusUtilization(100, 0.1);
+    frFollower.optimizeBusUtilization(100, 0.1);
+    flFollower.optimizeBusUtilization(100, 0.1);
+    encoder.optimizeBusUtilization(100, 0.1);
   }
 
   /**
@@ -146,12 +149,10 @@ public class ShoulderIOCTRE implements ShoulderIO {
     config.CurrentLimits.StatorCurrentLimit = 80.0;
     config.CurrentLimits.StatorCurrentLimitEnable = true;
     config.MotorOutput.Inverted = InvertedValue.CounterClockwise_Positive;
-    config.Slot0.GravityType = GravityTypeValue.Arm_Cosine;
-    config.Slot0.StaticFeedforwardSign = StaticFeedforwardSignValue.UseClosedLoopSign;
     config.MotionMagic.MotionMagicCruiseVelocity = 2.5;
     config.MotionMagic.MotionMagicAcceleration = 5;
     config.SoftwareLimitSwitch.ForwardSoftLimitEnable = true;
-    config.SoftwareLimitSwitch.ForwardSoftLimitThreshold = 0.32;
+    config.SoftwareLimitSwitch.ForwardSoftLimitThreshold = 0.334;
     config.SoftwareLimitSwitch.ReverseSoftLimitEnable = true;
     config.SoftwareLimitSwitch.ReverseSoftLimitThreshold = 0;
 
@@ -170,7 +171,10 @@ public class ShoulderIOCTRE implements ShoulderIO {
    * @return The updated configuration with PID values applied
    */
   protected TalonFXConfiguration configPID(TalonFXConfiguration config) {
-    // Hardware-specific PID values
+
+    // Configure Slot 0 (Extension in)
+    config.Slot0.GravityType = GravityTypeValue.Arm_Cosine;
+    config.Slot0.StaticFeedforwardSign = StaticFeedforwardSignValue.UseClosedLoopSign;
     config.Slot0.kP = 110; // Proportional gain
     config.Slot0.kI = 0; // Integral gain
     config.Slot0.kD = 25; // Derivative gain
@@ -178,6 +182,17 @@ public class ShoulderIOCTRE implements ShoulderIO {
     config.Slot0.kV = 0; // Velocity feedforward
     config.Slot0.kA = 0; // Acceleration feedforward
     config.Slot0.kG = 0; // Gravity feedforward
+
+    // Configure Slot 1 (Extension out)
+    config.Slot1.GravityType = GravityTypeValue.Arm_Cosine;
+    config.Slot1.StaticFeedforwardSign = StaticFeedforwardSignValue.UseClosedLoopSign;
+    config.Slot1.kP = 110; // Proportional gain
+    config.Slot1.kI = 0; // Integral gain
+    config.Slot1.kD = 25; // Derivative gain
+    config.Slot1.kS = 1; // Static friction compensation
+    config.Slot1.kV = 0; // Velocity feedforward
+    config.Slot1.kA = 0; // Acceleration feedforward
+    config.Slot1.kG = 0; // Gravity feedforward
     return config;
   }
   /**
@@ -245,6 +260,9 @@ public class ShoulderIOCTRE implements ShoulderIO {
 
     // Update brake mode status from our tracked variable
     inputs.brakeMode = isBrakeMode;
+
+    // Record the active control slot
+    inputs.activeControlSlot = activeSlot;
   }
 
   @Override
@@ -262,7 +280,19 @@ public class ShoulderIOCTRE implements ShoulderIO {
   @Override
   public void setPosition(Angle angle) {
     // Convert desired angle to encoder rotations
-    brLeader.setControl(new MotionMagicTorqueCurrentFOC(angle));
+    brLeader.setControl(new MotionMagicTorqueCurrentFOC(angle).withSlot(activeSlot));
+  }
+
+  /**
+   * Sets which control slot to use for the wrist motor.
+   *
+   * @param slot The slot number to use (0 = no game piece, 1 = with game piece)
+   */
+  @Override
+  public void setControlSlot(int slot) {
+    if (slot != activeSlot) {
+      activeSlot = slot;
+    }
   }
 
   /**

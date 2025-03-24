@@ -67,6 +67,9 @@ public class ExtensionIOCTRE implements ExtensionIO {
    */
   protected final Distance extensionRadius = Inches.of(0.5);
 
+  // Current control slot
+  private int activeSlot = 0;
+
   /**
    * Constructs a new ExtensionIOCTRE instance and initializes all hardware components. This
    * includes configuring both motors, setting up the follower relationship, and optimizing CAN bus
@@ -95,8 +98,8 @@ public class ExtensionIOCTRE implements ExtensionIO {
         followerSupplyCurrent);
 
     // Optimize CAN bus usage for all devices
-    leader.optimizeBusUtilization(4, 0.1);
-    follower.optimizeBusUtilization(4, 0.1);
+    leader.optimizeBusUtilization(50, 0.1);
+    follower.optimizeBusUtilization(50, 0.1);
   }
 
   /**
@@ -114,12 +117,10 @@ public class ExtensionIOCTRE implements ExtensionIO {
     config.CurrentLimits.StatorCurrentLimit = 80.0;
     config.CurrentLimits.StatorCurrentLimitEnable = true;
     config.MotorOutput.Inverted = InvertedValue.Clockwise_Positive;
-    config.Slot0.GravityType = GravityTypeValue.Elevator_Static;
-    config.Slot0.StaticFeedforwardSign = StaticFeedforwardSignValue.UseClosedLoopSign;
-    config.MotionMagic.MotionMagicCruiseVelocity = 80;
-    config.MotionMagic.MotionMagicAcceleration = 20;
+    config.MotionMagic.MotionMagicCruiseVelocity = 140; // 90 3/20
+    config.MotionMagic.MotionMagicAcceleration = 120; // 70 3/20
     config.SoftwareLimitSwitch.ForwardSoftLimitEnable = true;
-    config.SoftwareLimitSwitch.ForwardSoftLimitThreshold = 18.3;
+    config.SoftwareLimitSwitch.ForwardSoftLimitThreshold = 25;
     config.SoftwareLimitSwitch.ReverseSoftLimitEnable = true;
     config.SoftwareLimitSwitch.ReverseSoftLimitThreshold = 0;
 
@@ -136,6 +137,10 @@ public class ExtensionIOCTRE implements ExtensionIO {
    */
   protected TalonFXConfiguration configPID(TalonFXConfiguration config) {
     // Hardware-specific PID values
+
+    // Configure Slot 0 (Horizontal)
+    config.Slot0.GravityType = GravityTypeValue.Elevator_Static;
+    config.Slot0.StaticFeedforwardSign = StaticFeedforwardSignValue.UseClosedLoopSign;
     config.Slot0.kP = 90; // Proportional gain
     config.Slot0.kI = 0; // Integral gain
     config.Slot0.kD = 0; // Derivative gain
@@ -143,6 +148,18 @@ public class ExtensionIOCTRE implements ExtensionIO {
     config.Slot0.kV = 0; // Velocity feedforward
     config.Slot0.kA = 0; // Acceleration feedforward
     config.Slot0.kG = 6; // Gravity feedforward
+
+    // Configure Slot 1 (Vertical)
+    config.Slot1.GravityType = GravityTypeValue.Elevator_Static;
+    config.Slot1.StaticFeedforwardSign = StaticFeedforwardSignValue.UseClosedLoopSign;
+    config.Slot1.kP = 90; // Higher P gain for increased load
+    config.Slot1.kI = 0; // Integral gain
+    config.Slot1.kD = 0; // Higher D gain for better damping
+    config.Slot1.kS = 1; // Higher static friction compensation
+    config.Slot1.kV = 0; // Velocity feedforward
+    config.Slot1.kA = 0; // Acceleration feedforward
+    config.Slot1.kG = 6; // Higher gravity compensation for added mass
+
     return config;
   }
 
@@ -190,6 +207,9 @@ public class ExtensionIOCTRE implements ExtensionIO {
     // Note: Using gear ratio of 1 since encoder rotations match extension movement
     inputs.extensionDistance =
         Conversions.rotationsToMeters(inputs.leaderPosition, 1, extensionRadius);
+
+    // Record the active control slot
+    inputs.activeControlSlot = activeSlot;
   }
 
   /**
@@ -202,8 +222,20 @@ public class ExtensionIOCTRE implements ExtensionIO {
   public void setDistance(Distance distance) {
     // Convert desired distance to rotations and set position control
     leader.setControl(
-        new MotionMagicTorqueCurrentFOC(
-            Conversions.metersToRotations(distance, 1, extensionRadius)));
+        new MotionMagicTorqueCurrentFOC(Conversions.metersToRotations(distance, 1, extensionRadius))
+            .withSlot(activeSlot));
+  }
+
+  /**
+   * Sets which control slot to use for the wrist motor.
+   *
+   * @param slot The slot number to use (0 = no game piece, 1 = with game piece)
+   */
+  @Override
+  public void setControlSlot(int slot) {
+    if (slot != activeSlot) {
+      activeSlot = slot;
+    }
   }
 
   /**

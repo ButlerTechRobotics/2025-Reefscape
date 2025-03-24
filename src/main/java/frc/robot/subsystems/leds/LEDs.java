@@ -10,27 +10,22 @@ package frc.robot.subsystems.leds;
 import com.ctre.phoenix.led.CANdle;
 import com.ctre.phoenix.led.CANdle.LEDStripType;
 import com.ctre.phoenix.led.SingleFadeAnimation;
-import com.ctre.phoenix.led.StrobeAnimation;
-import edu.wpi.first.wpilibj.DriverStation;
 import edu.wpi.first.wpilibj2.command.SubsystemBase;
-import frc.robot.subsystems.vision.Vision;
 
 public class LEDs extends SubsystemBase {
 
   CANdle candle;
-  Vision aprilTags;
 
   boolean isIntaking;
   boolean hasGamePiece;
-  int stripLength = 100;
+  int stripLength = 49;
   int startOffset = 0;
 
   /** Creates new LEDs. */
-  public LEDs(Vision aprilTags) {
+  public LEDs() {
     candle = new CANdle(14, "CANivore");
-    candle.configLEDType(LEDStripType.GRB);
+    candle.configLEDType(LEDStripType.RGB);
     candle.configV5Enabled(false);
-    this.aprilTags = aprilTags;
   }
 
   public void setIsIntaking(boolean isIntaking) {
@@ -59,14 +54,10 @@ public class LEDs extends SubsystemBase {
     //   }
     //   return;
     // }
-
-    if (DriverStation.isDisabled()) {
-
-      if (hasGamePiece) {
-        candle.animate(new StrobeAnimation(255, 50, 0, 0, 1, stripLength, startOffset));
-      } else {
-        candle.animate(new SingleFadeAnimation(0, 0, 100, 0, 1, stripLength, startOffset));
-      }
+    if (hasGamePiece) {
+      candle.animate(new SingleFadeAnimation(0, 255, 0, 0, 1, stripLength, startOffset));
+    } else {
+      candle.animate(new SingleFadeAnimation(0, 0, 255, 0, 1, stripLength, startOffset));
     }
   }
 }

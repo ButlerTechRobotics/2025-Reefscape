@@ -59,6 +59,9 @@ public class WristIOCTRE implements WristIO {
   private final Debouncer leaderDebounce = new Debouncer(0.5);
   private final Debouncer encoderDebounce = new Debouncer(0.5);
 
+  // Current control slot
+  private int activeSlot = 0;
+
   /**
    * Constructs a new WristIOCTRE instance and initializes all hardware components. This includes
    * configuring the motor, and optimizing CAN bus utilization for all devices.
@@ -86,8 +89,8 @@ public class WristIOCTRE implements WristIO {
         encoderVelocity);
 
     // Optimize CAN bus usage for all devices
-    leader.optimizeBusUtilization(4, 0.1);
-    encoder.optimizeBusUtilization(4, 0.1);
+    leader.optimizeBusUtilization(100, 0.1);
+    encoder.optimizeBusUtilization(100, 0.1);
   }
 
   /**
@@ -105,11 +108,9 @@ public class WristIOCTRE implements WristIO {
     config.CurrentLimits.StatorCurrentLimit = 30.0;
     config.CurrentLimits.StatorCurrentLimitEnable = true;
     config.MotorOutput.Inverted = InvertedValue.Clockwise_Positive;
-    config.Slot0.GravityType = GravityTypeValue.Arm_Cosine;
-    config.Slot0.StaticFeedforwardSign = StaticFeedforwardSignValue.UseClosedLoopSign;
-    config.MotionMagic.MotionMagicCruiseVelocity = 3;
+    config.MotionMagic.MotionMagicCruiseVelocity = 6;
     // config.MotionMagic.MotionMagicAcceleration = 10;
-    config.MotionMagic.MotionMagicAcceleration = 4;
+    config.MotionMagic.MotionMagicAcceleration = 7;
 
     // Apply PID and feedforward values from protected method
     configPID(config);
@@ -126,7 +127,10 @@ public class WristIOCTRE implements WristIO {
    * @return The updated configuration with PID values applied
    */
   protected TalonFXConfiguration configPID(TalonFXConfiguration config) {
-    // Hardware-specific PID values
+
+    // Configure Slot 0 (No game piece)
+    config.Slot0.GravityType = GravityTypeValue.Arm_Cosine;
+    config.Slot0.StaticFeedforwardSign = StaticFeedforwardSignValue.UseClosedLoopSign;
     config.Slot0.kP = 135; // Proportional gain
     config.Slot0.kI = 0; // Integral gain
     config.Slot0.kD = 15; // Derivative gain
@@ -134,6 +138,18 @@ public class WristIOCTRE implements WristIO {
     config.Slot0.kV = 0; // Velocity feedforward
     config.Slot0.kA = 0; // Acceleration feedforward
     config.Slot0.kG = 7; // Gravity feedforward
+
+    // Configure Slot 1 (With game piece - adjusted for added mass)
+    config.Slot1.GravityType = GravityTypeValue.Arm_Cosine;
+    config.Slot1.StaticFeedforwardSign = StaticFeedforwardSignValue.UseClosedLoopSign;
+    config.Slot1.kP = 240; // Higher P gain for increased load
+    config.Slot1.kI = 0; // Integral gain
+    config.Slot1.kD = 26; // Higher D gain for better damping
+    config.Slot1.kS = 2; // Higher static friction compensation
+    config.Slot1.kV = 0; // Velocity feedforward
+    config.Slot1.kA = 0; // Acceleration feedforward
+    config.Slot1.kG = 0; // Higher gravity compensation for added mass
+
     return config;
   }
 
@@ -179,6 +195,9 @@ public class WristIOCTRE implements WristIO {
 
     // Calculate wrist angle using encoder position
     inputs.wristAngle = inputs.encoderPosition;
+
+    // Record the active control slot
+    inputs.activeControlSlot = activeSlot;
   }
 
   /**
@@ -201,7 +220,29 @@ public class WristIOCTRE implements WristIO {
   @Override
   public void setPosition(Angle angle) {
     // Convert desired angle to encoder rotations
-    leader.setControl(new MotionMagicTorqueCurrentFOC(angle));
+    leader.setControl(new MotionMagicTorqueCurrentFOC(angle).withSlot(activeSlot));
+  }
+
+  /**
+   * Sets which control slot to use for the wrist motor.
+   *
+   * @param slot The slot number to use (0 = no game piece, 1 = with game piece)
+   */
+  @Override
+  public void setControlSlot(int slot) {
+    if (slot != activeSlot) {
+      activeSlot = slot;
+    }
+  }
+
+  /**
+   * Sets the encoder position to a specific value.
+   *
+   * @param position The position to set the encoder to
+   */
+  @Override
+  public void setEncoderPosition(Angle position) {
+    encoder.setPosition(position);
   }
 
   /**

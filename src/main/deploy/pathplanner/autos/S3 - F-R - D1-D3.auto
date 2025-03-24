@@ -11,21 +11,34 @@
           }
         },
         {
-          "type": "path",
+          "type": "race",
           "data": {
-            "pathName": "FL-R - D1 - F-L"
+            "commands": [
+              {
+                "type": "named",
+                "data": {
+                  "name": "Coral_L4Back"
+                }
+              },
+              {
+                "type": "wait",
+                "data": {
+                  "waitTime": 1.5
+                }
+              }
+            ]
+          }
+        },
+        {
+          "type": "named",
+          "data": {
+            "name": "Score"
           }
         },
         {
           "type": "path",
           "data": {
-            "pathName": "F-L - D2 - F-R"
-          }
-        },
-        {
-          "type": "path",
-          "data": {
-            "pathName": "F-R - D3 - FR-L"
+            "pathName": "FL-R - D1"
           }
         }
       ]

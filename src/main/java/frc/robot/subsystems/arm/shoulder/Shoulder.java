@@ -49,6 +49,9 @@ public class Shoulder extends SubsystemBase {
 
   private boolean zeroed = false;
 
+  // Flag to track if the extension is extended
+  private boolean isExtended = false;
+
   /**
    * Creates a new Shoulder subsystem with the specified hardware interface.
    *
@@ -71,6 +74,32 @@ public class Shoulder extends SubsystemBase {
     frFollowerMotorAlert.set(!inputs.frFollowerConnected);
     flFollowerMotorAlert.set(!inputs.flFollowerConnected);
     encoderAlert.set(!inputs.encoderConnected);
+
+    // Update which slot is being used based on game piece status
+    io.setControlSlot(isExtended ? 1 : 0);
+
+    // Log which control slot is being used
+    Logger.recordOutput("Shoulder/UsingExtendedSlot", isExtended);
+  }
+
+  /**
+   * Sets whether the robot currently has a game piece. This will switch between PID slots for
+   * different control characteristics.
+   *
+   * @param isExtended true if robot has a game piece, false otherwise
+   */
+  public void setIsExtended(boolean isExtended) {
+    this.isExtended = isExtended;
+  }
+
+  /**
+   * Gets whether the robot currently has a game piece.
+   *
+   * @return true if robot has a game piece, false otherwise
+   */
+  @AutoLogOutput(key = "Shoulder/IsExtended")
+  public boolean getIsExtended() {
+    return isExtended;
   }
 
   /**
@@ -141,7 +170,7 @@ public class Shoulder extends SubsystemBase {
     CLIMB_DOWN(Rotations.of(-0.16)),
 
     // Coral positions
-    CORAL_FLOOR_INTAKE(Rotations.of(0.06)),
+    CORAL_FLOOR_INTAKE(Rotations.of(0.05)),
     CORAL_STATION_INTAKE(Rotations.of(0.23)),
     CORAL_L1(Rotations.of(0.17)),
     CORAL_L1BACK(Rotations.of(0)),
@@ -149,14 +178,14 @@ public class Shoulder extends SubsystemBase {
     CORAL_L2(Rotations.of(0)),
     CORAL_L2BACK(Rotations.of(0.3)),
     CORAL_L3(Rotations.of(0)),
-    CORAL_L3BACK(Rotations.of(0.3)),
+    CORAL_L3BACK(Rotations.of(0.32)),
     CORAL_L4BACK(Rotations.of(0.29)),
 
     // Algae positions
-    ALGAE_FLOOR_INTAKE(Rotations.of(0.1)),
-    ALGAE_SCORE(Rotations.of(0.14)),
+    ALGAE_FLOOR_INTAKE(Rotations.of(0.08)),
+    ALGAE_SCORE(Rotations.of(0.15)),
     ALGAE_L1(Rotations.of(0.21)),
-    ALGAE_L2(Rotations.of(0.32));
+    ALGAE_L2(Rotations.of(0.33));
 
     private final Angle targetAngle;
     private final Angle angleTolerance;
@@ -167,7 +196,7 @@ public class Shoulder extends SubsystemBase {
     }
 
     ShoulderPosition(Angle targetAngle) {
-      this(targetAngle, Rotations.of(0.08)); // 2 degree default tolerance
+      this(targetAngle, Rotations.of(0.1)); // 2 degree default tolerance
     }
   }
 
@@ -428,6 +457,18 @@ public class Shoulder extends SubsystemBase {
    */
   public final Command climbDown() {
     return setPositionCommand(ShoulderPosition.CLIMB_DOWN);
+  }
+
+  /**
+   * Checks if the shoulder is in a vertical position (greater than 45 degrees).
+   *
+   * @return true if shoulder is greater than 45 degrees, false otherwise
+   */
+  @AutoLogOutput(key = "Shoulder/IsVertical")
+  public boolean isVertical() {
+    // Convert current position to degrees (0.125 rotations = 45°)
+    double currentRotations = getPosition().in(Rotations);
+    return currentRotations >= 0.125;
   }
 
   @AutoLogOutput(key = "Shoulder/BrakeMode")

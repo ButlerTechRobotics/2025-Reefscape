@@ -41,6 +41,9 @@ public class Wrist extends SubsystemBase {
 
   private boolean zeroed = false;
 
+  // Game piece detection flag
+  private boolean hasGamePiece = false;
+
   /**
    * Creates a new Wrist subsystem with the specified hardware interface.
    *
@@ -60,6 +63,32 @@ public class Wrist extends SubsystemBase {
     // Update motor connection status alerts
     leaderMotorAlert.set(!inputs.leaderConnected);
     encoderAlert.set(!inputs.encoderConnected);
+
+    // Update which slot is being used based on game piece status
+    io.setControlSlot(hasGamePiece ? 1 : 0);
+
+    // Log which control slot is being used
+    Logger.recordOutput("Wrist/UsingGamePieceSlot", hasGamePiece);
+  }
+
+  /**
+   * Sets whether the robot currently has a game piece. This will switch between PID slots for
+   * different control characteristics.
+   *
+   * @param hasGamePiece true if robot has a game piece, false otherwise
+   */
+  public void setHasGamePiece(boolean hasGamePiece) {
+    this.hasGamePiece = hasGamePiece;
+  }
+
+  /**
+   * Gets whether the robot currently has a game piece.
+   *
+   * @return true if robot has a game piece, false otherwise
+   */
+  @AutoLogOutput(key = "Wrist/HasGamePiece")
+  public boolean getHasGamePiece() {
+    return hasGamePiece;
   }
 
   /**
@@ -130,8 +159,8 @@ public class Wrist extends SubsystemBase {
     CLIMB_DOWN(Rotations.of(0.9)),
 
     // Coral positions
-    CORAL_FLOOR_INTAKE(Rotations.of(1.6)),
-    // CORAL_FLOOR_INTAKE(Rotations.of(0.0)),
+    CORAL_FLOOR_INTAKE(Rotations.of(1.55)),
+    // CORAL_FLOOR_INTAKE(Rotations.of(0)),
 
     CORAL_STATION_INTAKE(Rotations.of(1.71)),
     CORAL_L1(Rotations.of(1.45)),
@@ -139,10 +168,10 @@ public class Wrist extends SubsystemBase {
     CORAL_L2(Rotations.of(0)),
     CORAL_L2BACK(Rotations.of(0.4)),
     CORAL_L3(Rotations.of(0)),
-
-    CORAL_L3BACK(Rotations.of(0.88)),
+    // CORAL_L3BACK(Rotations.of(0.897)),
+    CORAL_L3BACK(Rotations.of(0.72)),
     CORAL_L4(Rotations.of(0)),
-    CORAL_L4BACK(Rotations.of(0.65)),
+    CORAL_L4BACK(Rotations.of(0.45)),
 
     // Algae positions (all 0)
     ALGAE_FLOOR_INTAKE(Rotations.of(1.6)),

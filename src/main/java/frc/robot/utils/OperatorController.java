@@ -62,4 +62,9 @@ public class OperatorController extends TunableController {
   public Trigger algaeScore() {
     return povRight();
   }
+
+  /** Gets the Algae Score button */
+  public Trigger frontModifier() {
+    return rightTrigger();
+  }
 }

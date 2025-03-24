@@ -3,25 +3,25 @@
   "waypoints": [
     {
       "anchor": {
-        "x": 3.65,
-        "y": 5.15
+        "x": 3.7282692307692304,
+        "y": 5.015769230769231
       },
       "prevControl": null,
       "nextControl": {
-        "x": 2.6210715431335423,
-        "y": 5.80585180243095
+        "x": 3.460142045454545,
+        "y": 5.50578125
       },
       "isLocked": false,
       "linkedName": "FL-R"
     },
     {
       "anchor": {
-        "x": 1.7382172131147542,
-        "y": 5.823155737704918
+        "x": 1.4061538461538456,
+        "y": 5.727884615384616
       },
       "prevControl": {
-        "x": 2.8302172131147536,
-        "y": 5.754905737704918
+        "x": 2.5703442705411437,
+        "y": 5.3774402579289475
       },
       "nextControl": null,
       "isLocked": false,
@@ -31,10 +31,33 @@
   "rotationTargets": [],
   "constraintZones": [],
   "pointTowardsZones": [],
-  "eventMarkers": [],
+  "eventMarkers": [
+    {
+      "name": "Standby",
+      "waypointRelativePos": 0.1,
+      "endWaypointRelativePos": null,
+      "command": {
+        "type": "named",
+        "data": {
+          "name": "Standby"
+        }
+      }
+    },
+    {
+      "name": "Coral_Floor_Intake",
+      "waypointRelativePos": 0.75,
+      "endWaypointRelativePos": null,
+      "command": {
+        "type": "named",
+        "data": {
+          "name": "Coral_Floor_Intake"
+        }
+      }
+    }
+  ],
   "globalConstraints": {
     "maxVelocity": 10000.0,
-    "maxAcceleration": 6.0,
+    "maxAcceleration": 4.0,
     "maxAngularVelocity": 540.0,
     "maxAngularAcceleration": 720.0,
     "nominalVoltage": 12.0,
@@ -42,13 +65,13 @@
   },
   "goalEndState": {
     "velocity": 0,
-    "rotation": 0.0
+    "rotation": 144.5301278325999
   },
   "reversed": false,
   "folder": "FL-R",
   "idealStartingState": {
     "velocity": 0,
-    "rotation": -59.99999999999999
+    "rotation": 119.99999999999999
   },
   "useDefaultConstraints": true
 }

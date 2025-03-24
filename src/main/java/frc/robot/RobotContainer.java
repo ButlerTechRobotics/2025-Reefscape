@@ -28,9 +28,9 @@ import edu.wpi.first.wpilibj2.command.sysid.SysIdRoutine;
 import frc.robot.commands.DriveCommands;
 import frc.robot.commands.ReefDrive;
 import frc.robot.commands.SmartArm;
-import frc.robot.commands.SmartIntake;
 import frc.robot.generated.TunerConstants;
 import frc.robot.subsystems.arm.Arm;
+import frc.robot.subsystems.arm.Arm.Goal;
 import frc.robot.subsystems.arm.extension.Extension;
 import frc.robot.subsystems.arm.extension.ExtensionIO;
 import frc.robot.subsystems.arm.extension.ExtensionIOCTRE;
@@ -43,15 +43,10 @@ import frc.robot.subsystems.arm.wrist.Wrist;
 import frc.robot.subsystems.arm.wrist.WristIO;
 import frc.robot.subsystems.arm.wrist.WristIOCTRE;
 import frc.robot.subsystems.arm.wrist.WristIOSIM;
-import frc.robot.subsystems.beambreak.BeamBreak;
-import frc.robot.subsystems.beambreak.BeamBreakIO;
-import frc.robot.subsystems.beambreak.BeamBreakIOReal;
-import frc.robot.subsystems.beambreak.BeamBreakIOSim;
 import frc.robot.subsystems.drive.Drive;
 import frc.robot.subsystems.drive.DriveIO;
 import frc.robot.subsystems.drive.DriveIOCTRE;
 import frc.robot.subsystems.intake.Intake;
-import frc.robot.subsystems.intake.Intake.ClawMode;
 import frc.robot.subsystems.intake.IntakeIO;
 import frc.robot.subsystems.intake.IntakeIOCTRE;
 import frc.robot.subsystems.intake.IntakeIOSIM;
@@ -84,9 +79,9 @@ public class RobotContainer {
           .withRotationalDeadband(Constants.MaxAngularRate.times(0.15)) // Add a 10% deadband
           .withDriveRequestType(DriveRequestType.OpenLoopVoltage);
   public final Intake intake;
-  public final BeamBreak beamBreak;
   public final Arm arm;
   public final OnBoardButtons onBoardButtons;
+  //   public final LEDs leds = new LEDs();
 
   public RobotContainer() {
     // Declare component subsystems (not visible outside constructor)
@@ -140,7 +135,6 @@ public class RobotContainer {
                 drivetrain::getVisionParameters));
 
         intake = new Intake(new IntakeIOCTRE());
-        beamBreak = new BeamBreak(new BeamBreakIOReal(0));
         extension = new Extension(new ExtensionIOCTRE());
         shoulder = new Shoulder(new ShoulderIOCTRE());
         wrist = new Wrist(new WristIOCTRE());
@@ -191,7 +185,6 @@ public class RobotContainer {
                 drivetrain::getVisionParameters));
 
         intake = new Intake(new IntakeIOSIM());
-        beamBreak = new BeamBreak(new BeamBreakIOSim(0));
         extension = new Extension(new ExtensionIOSIM());
         shoulder = new Shoulder(new ShoulderIOSIM());
         wrist = new Wrist(new WristIOSIM());
@@ -210,7 +203,6 @@ public class RobotContainer {
             new VisionIO() {});
 
         intake = new Intake(new IntakeIO() {});
-        beamBreak = new BeamBreak(new BeamBreakIO() {});
         extension = new Extension(new ExtensionIO() {});
         shoulder = new Shoulder(new ShoulderIO() {});
         wrist = new Wrist(new WristIO() {});
@@ -218,24 +210,24 @@ public class RobotContainer {
         break;
     }
 
-    arm = new Arm(shoulder, extension, wrist);
+    arm = new Arm(shoulder, extension, wrist, intake);
 
     // Set up the named commands
     NamedCommands.registerCommand("Stow", arm.setGoalCommand(Arm.Goal.STOW));
     NamedCommands.registerCommand("Standby", arm.setGoalCommand(Arm.Goal.STANDBY));
+    NamedCommands.registerCommand("Score", intake.scoreCoralFromFront());
     NamedCommands.registerCommand(
-        "Coral_Floor_Intake", arm.setGoalCommand(Arm.Goal.CORAL_FLOOR_INTAKE));
+        "Coral_Floor_Intake",
+        Commands.startEnd(
+            () ->
+                arm.setGoalCommand(Arm.Goal.CORAL_FLOOR_INTAKE)
+                    .alongWith(intake.intakeCoralToBack()),
+            () -> arm.setGoalCommand(Arm.Goal.STOW)));
     NamedCommands.registerCommand(
         "Coral_Station_Intake", arm.setGoalCommand(Arm.Goal.CORAL_STATION_INTAKE));
     NamedCommands.registerCommand("Coral_L4Back", arm.setGoalCommand(Arm.Goal.CORAL_L4BACK));
     NamedCommands.registerCommand("Coral_L3Back", arm.setGoalCommand(Arm.Goal.CORAL_L3BACK));
-    NamedCommands.registerCommand(
-        "Coral_L1", Commands.runOnce(() -> arm.setGoalCommand(Arm.Goal.CORAL_L1)));
-
-    NamedCommands.registerCommand(
-        "Score", new SmartIntake(intake, beamBreak, ClawMode.OUTTAKE, 0.5, 0.25));
-    NamedCommands.registerCommand(
-        "SIMGamePiecePickup", new InstantCommand(() -> beamBreak.setGamePiece(true)));
+    NamedCommands.registerCommand("Coral_L1", arm.setGoalCommand(Arm.Goal.CORAL_L1));
 
     // Set up auto routines
     autoChooser = new LoggedDashboardChooser<>("Auto Choices", AutoBuilder.buildAutoChooser());
@@ -258,8 +250,17 @@ public class RobotContainer {
   }
 
   private void configureBindings() {
-    // Note that X is defined as forward according to WPILib convention,
-    // and Y is defined as to the left according to WPILib convention.
+    // Set up the default drive command with pre-allocated request object
+    configureDriveCommand();
+
+    // Create shared triggers to avoid duplicate condition objects
+    configureSharedTriggers();
+
+    // Set up manual control buttons
+    configureManualButtons();
+  }
+  /** Configure the default drive command using pre-allocated request objects. */
+  private void configureDriveCommand() {
     // Note that X is defined as forward according to WPILib convention,
     // and Y is defined as to the left according to WPILib convention.
     drivetrain.setDefaultCommand(
@@ -278,7 +279,34 @@ public class RobotContainer {
                             -driver
                                 .customRight()
                                 .getX())))); // Drive counterclockwise with negative X (left)
+  }
 
+  /** Create shared trigger objects for commonly used conditions. */
+  private void configureSharedTriggers() {
+    // Define commonly used triggers once to avoid duplicate object creation
+    Trigger isScoringPosition =
+        new Trigger(
+            () ->
+                (arm.getGoal() == Goal.CORAL_L1
+                    || arm.getGoal() == Goal.CORAL_L1BACK
+                    || arm.getGoal() == Goal.CORAL_L2
+                    || arm.getGoal() == Goal.CORAL_L2BACK
+                    || arm.getGoal() == Goal.CORAL_L3
+                    || arm.getGoal() == Goal.CORAL_L3BACK
+                    || arm.getGoal() == Goal.CORAL_L4BACK));
+
+    // Use slower driving while in scoring position
+    // isScoringPosition.whileTrue(
+    //     drivetrain.applyRequest(
+    //         () ->
+    //             drive
+    //                 .withVelocityX(MetersPerSecond.of(1).times(-driver.customLeft().getY()))
+    //                 .withVelocityY(MetersPerSecond.of(1).times(-driver.customLeft().getX()))
+    //                 .withRotationalRate(
+    //                     Constants.MaxAngularRate.times(-driver.customRight().getX()))));
+  }
+
+  private void configureManualButtons() {
     // Run SysId routines when holding back/start and X/Y.
     // Note that each routine should be run exactly once in a single log.
     // joystick.back().and(joystick.y()).whileTrue(drivetrain.sysIdDynamic(Direction.kForward));
@@ -294,25 +322,34 @@ public class RobotContainer {
     driver.rightStick().whileTrue(new ReefDrive(drivetrain, ReefDrive.Side.RIGHT));
 
     // Driver Button Bindings
+    driver.intake().whileTrue(intake.intakeCoralToBack()).onFalse(intake.STOP());
     driver
-        .floorIntake()
-        .whileTrue(new SmartIntake(intake, beamBreak, Intake.ClawMode.STATION_INTAKE));
-    driver
-        .rightTrigger()
-        .whileTrue(new SmartIntake(intake, beamBreak, Intake.ClawMode.ALGAE_INTAKE, 0.0, 0.0));
-    driver.outtake().whileTrue(new SmartIntake(intake, beamBreak, Intake.ClawMode.OUTTAKE, 0.5));
+        .shoot()
+        .onTrue(
+            Commands.either(
+                intake.scoreCoralFromBack(), intake.scoreCoralFromFront(), arm::isScoringFront));
     driver.povUp().onTrue(new SmartArm(arm, SmartArm.Goal.CORAL_STATION_INTAKE));
     driver.povLeft().onTrue(new SmartArm(arm, SmartArm.Goal.STANDBY));
     driver.povDown().onTrue(new SmartArm(arm, SmartArm.Goal.CORAL_FLOOR_INTAKE));
 
     driver.a().onTrue(new SmartArm(arm, SmartArm.Goal.CLIMB_DOWN));
     driver.y().onTrue(new SmartArm(arm, SmartArm.Goal.CLIMB));
+    driver.b().onTrue(intake.shuffleCoralToBack());
 
     // Operator Button Bindings
     operator.coralL1().onTrue(new SmartArm(arm, SmartArm.Goal.CORAL_L1));
     operator.coralL2().onTrue(new SmartArm(arm, SmartArm.Goal.CORAL_L2BACK));
+    // operator.coralL3().whileTrue(new SmartArm(arm, SmartArm.Goal.CORAL_L3BACK));
     operator.coralL3().onTrue(new SmartArm(arm, SmartArm.Goal.CORAL_L3BACK));
     operator.coralL4().onTrue(new SmartArm(arm, SmartArm.Goal.CORAL_L4BACK));
+    operator
+        .coralL2()
+        .and(operator.frontModifier())
+        .onTrue(new SmartArm(arm, SmartArm.Goal.CORAL_L2));
+    operator
+        .coralL3()
+        .and(operator.frontModifier())
+        .onTrue(new SmartArm(arm, SmartArm.Goal.CORAL_L3));
     operator.algaeL1().onTrue(new SmartArm(arm, SmartArm.Goal.ALGAE_L1));
     operator.algaeL2().onTrue(new SmartArm(arm, SmartArm.Goal.ALGAE_L2));
     operator.algaeScore().onTrue(new SmartArm(arm, SmartArm.Goal.ALGAE_SCORE));
@@ -362,6 +399,18 @@ public class RobotContainer {
                 () -> {
                   if (DriverStation.isDisabled()) {
                     arm.getWrist().toggleBrakeMode();
+                  }
+                }));
+
+    new Trigger(intake::hasGamePiece)
+        .onTrue(
+            new InstantCommand(
+                () -> {
+                  if (intake.hasGamePiece()) {
+                    if (arm.getGoal() == Arm.Goal.CORAL_FLOOR_INTAKE) {
+                      System.out.println("Beam break detected a game piece, stowing arm.");
+                      arm.setGoalCommand(Arm.Goal.STOW).schedule();
+                    }
                   }
                 }));
   }

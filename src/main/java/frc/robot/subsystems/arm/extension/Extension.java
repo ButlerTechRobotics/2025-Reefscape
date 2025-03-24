@@ -42,6 +42,9 @@ public class Extension extends SubsystemBase {
 
   @AutoLogOutput private boolean brakeModeEnabled = true;
 
+  // Arm is vertical when the shoulder is between 45 and 90 degrees
+  private boolean isVertical = false;
+
   /**
    * Creates a new Extension subsystem with the specified hardware interface.
    *
@@ -61,6 +64,32 @@ public class Extension extends SubsystemBase {
     // Update motor connection status alerts
     leaderMotorAlert.set(!inputs.leaderConnected);
     followerMotorAlert.set(!inputs.followerConnected);
+
+    // Update which slot is being used based on game piece status
+    io.setControlSlot(isVertical ? 1 : 0);
+
+    // Log which control slot is being used
+    Logger.recordOutput("Extension/UsingVerticalSlot", isVertical);
+  }
+
+  /**
+   * Sets whether the arm currently is vertical. This will switch between PID slots for different
+   * control characteristics.
+   *
+   * @param isVertical true if arm is vertical, false otherwise
+   */
+  public void setIsVertical(boolean isVertical) {
+    this.isVertical = isVertical;
+  }
+
+  /**
+   * Gets whether the extension currently is vertical.
+   *
+   * @return true if arm is vertical, false otherwise
+   */
+  @AutoLogOutput(key = "Extension/IsVertical")
+  public boolean getIsVertical() {
+    return isVertical;
   }
 
   /**
@@ -121,7 +150,7 @@ public class Extension extends SubsystemBase {
     CLIMB_DOWN(Inches.of(0)),
 
     // Coral positions
-    CORAL_FLOOR_INTAKE(Inches.of(14)),
+    CORAL_FLOOR_INTAKE(Inches.of(12)),
     CORAL_STATION_INTAKE(Inches.of(30)),
     CORAL_L1(Inches.of(0)),
     CORAL_L1BACK(Inches.of(0)),
@@ -129,24 +158,24 @@ public class Extension extends SubsystemBase {
     CORAL_L2BACK(Inches.of(0)),
     CORAL_L3(Inches.of(0)),
     CORAL_L3BACK(Inches.of(6)),
-    CORAL_L4BACK(Inches.of(56)),
+    CORAL_L4BACK(Inches.of(60)),
 
     // Algae positions
     ALGAE_FLOOR_INTAKE(Inches.of(14)),
     ALGAE_SCORE(Inches.of(0)),
     ALGAE_L1(Inches.of(0)),
-    ALGAE_L2(Inches.of(8));
+    ALGAE_L2(Inches.of(12));
 
     private final Distance targetDistance;
-    private final Distance angleTolerance;
+    private final Distance lengthTolerance;
 
-    ExtensionPosition(Distance targetDistance, Distance angleTolerance) {
+    ExtensionPosition(Distance targetDistance, Distance lengthTolerance) {
       this.targetDistance = targetDistance;
-      this.angleTolerance = angleTolerance;
+      this.lengthTolerance = lengthTolerance;
     }
 
     ExtensionPosition(Distance targetDistance) {
-      this(targetDistance, Inches.of(2)); // 2 degree default tolerance
+      this(targetDistance, Inches.of(1)); // 2 degree default tolerance
     }
   }
 
@@ -254,7 +283,7 @@ public class Extension extends SubsystemBase {
   @AutoLogOutput
   public boolean isAtTarget() {
     if (currentMode == ExtensionPosition.STOP) return true;
-    return getPosition().isNear(currentMode.targetDistance, currentMode.angleTolerance);
+    return getPosition().isNear(currentMode.targetDistance, currentMode.lengthTolerance);
   }
 
   /**
@@ -404,5 +433,17 @@ public class Extension extends SubsystemBase {
    */
   public final Command climbDown() {
     return setPositionCommand(ExtensionPosition.CLIMB_DOWN);
+  }
+
+  /**
+   * Checks if the shoulder is in a vertical position (greater than 45 degrees).
+   *
+   * @return true if shoulder is greater than 45 degrees, false otherwise
+   */
+  @AutoLogOutput(key = "Extension/IsExtended")
+  public boolean isExtended() {
+    // Convert current position to degrees (0.125 rotations = 45°)
+    double currentInches = getPosition().in(Inches);
+    return currentInches >= 22;
   }
 }

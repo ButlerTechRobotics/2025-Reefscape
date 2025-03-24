@@ -23,18 +23,13 @@ public class DriverController extends TunableController {
     withControllerType(type);
   }
 
-  /** Gets trigger for floor intake. */
-  public Trigger floorIntake() {
+  /** Gets trigger for intake. */
+  public Trigger intake() {
     return leftBumper();
   }
 
-  /** Gets trigger for station Intake */
-  public Trigger stationIntake() {
-    return rightBumper();
-  }
-
-  /** Gets trigger for outtake */
-  public Trigger outtake() {
+  /** Gets trigger for shoot */
+  public Trigger shoot() {
     return leftTrigger();
   }
 
