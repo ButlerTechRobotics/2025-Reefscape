@@ -397,16 +397,18 @@ public class RobotContainer {
                   }
                 }));
 
-                new Trigger(intake::hasGamePiece)
-                .onTrue(
-                    new InstantCommand(
-                        () -> {
-                          if (intake.hasGamePiece() && arm.getGoal() == Arm.Goal.CORAL_FLOOR_INTAKE) {
-                            System.out.println("Beam break detected a game piece, stowing arm.");
-                            new SmartArm(arm, SmartArm.Goal.STANDBY);
-                          }
-                        }));
-          }
+    new Trigger(intake::hasGamePiece)
+        .onTrue(
+            new InstantCommand(
+                () -> {
+                  if (intake.hasGamePiece()) {
+                    if (arm.getGoal() == Arm.Goal.CORAL_FLOOR_INTAKE) {
+                      System.out.println("Beam break detected a game piece, stowing arm.");
+                      arm.setGoalCommand(Arm.Goal.STOW).schedule();
+                    }
+                  }
+                }));
+  }
 
   public Command getAutonomousCommand() {
     return autoChooser.get();
