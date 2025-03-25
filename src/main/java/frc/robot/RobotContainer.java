@@ -14,6 +14,7 @@ import com.ctre.phoenix6.swerve.SwerveModule.DriveRequestType;
 import com.ctre.phoenix6.swerve.SwerveRequest;
 import com.pathplanner.lib.auto.AutoBuilder;
 import com.pathplanner.lib.auto.NamedCommands;
+import com.pathplanner.lib.events.EventTrigger;
 import edu.wpi.first.math.geometry.Pose2d;
 import edu.wpi.first.math.geometry.Rotation3d;
 import edu.wpi.first.math.geometry.Transform3d;
@@ -215,15 +216,31 @@ public class RobotContainer {
     arm = new Arm(shoulder, extension, wrist, intake);
 
     // Set up the named commands
-    NamedCommands.registerCommand("Stow", arm.setGoalCommand(Arm.Goal.STOW));
     NamedCommands.registerCommand("Standby", arm.setGoalCommand(Arm.Goal.STANDBY));
+    NamedCommands.registerCommand("Score", intake.scoreCoralFromFront());
     NamedCommands.registerCommand(
-        "Coral_Floor_Intake", arm.setGoalCommand(Arm.Goal.CORAL_FLOOR_INTAKE));
+        "Coral_Floor_Intake",
+        Commands.startEnd(
+            () ->
+                arm.setGoalCommand(Arm.Goal.CORAL_FLOOR_INTAKE)
+                    .alongWith(intake.intakeCoralToBack()),
+            () -> arm.setGoalCommand(Arm.Goal.STOW)));
     NamedCommands.registerCommand(
-        "Coral_Station_Intake", arm.setGoalCommand(Arm.Goal.CORAL_STATION_INTAKE));
-    NamedCommands.registerCommand("Coral_L4Back", arm.setGoalCommand(Arm.Goal.CORAL_L4BACK));
-    NamedCommands.registerCommand("Coral_L3Back", arm.setGoalCommand(Arm.Goal.CORAL_L3BACK));
-    NamedCommands.registerCommand("Coral_L1", arm.setGoalCommand(Arm.Goal.CORAL_L1));
+        "Coral_L4Back", Commands.runOnce(() -> arm.setGoalCommand(Arm.Goal.CORAL_L4BACK)));
+    new EventTrigger("Align_Left")
+        .onTrue(
+            Commands.parallel(
+                new ReefDrive(drivetrain, ReefDrive.Side.LEFT),
+                arm.setGoalCommand(Arm.Goal.CORAL_L4BACK)));
+    new EventTrigger("Align_Right")
+        .onTrue(
+            Commands.parallel(
+                new ReefDrive(drivetrain, ReefDrive.Side.RIGHT),
+                Commands.sequence(
+                    Commands.waitSeconds(1), arm.setGoalAutoCommand(Arm.Goal.CORAL_L4BACK))));
+    // new EventTrigger("Coral_L4Back").onTrue(new SmartArm(arm, SmartArm.Goal.CORAL_L4BACK));
+    // NamedCommands.registerCommand("Coral_L4Back", arm.setGoalCommand(Arm.Goal.CORAL_L4BACK));
+    // NamedCommands.registerCommand("Coral_L3Back", arm.setGoalCommand(Arm.Goal.CORAL_L3BACK));
 
     // Set up auto routines
     autoChooser = new LoggedDashboardChooser<>("Auto Choices", AutoBuilder.buildAutoChooser());

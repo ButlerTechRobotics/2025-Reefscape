@@ -16,12 +16,12 @@
     },
     {
       "anchor": {
-        "x": 1.7382172131147542,
-        "y": 5.823155737704918
+        "x": 1.4061538461538456,
+        "y": 5.727884615384616
       },
       "prevControl": {
-        "x": 3.596311475409836,
-        "y": 5.967008196721312
+        "x": 3.2642481084489274,
+        "y": 5.871737074401009
       },
       "nextControl": null,
       "isLocked": false,
@@ -34,7 +34,7 @@
   "eventMarkers": [],
   "globalConstraints": {
     "maxVelocity": 10000.0,
-    "maxAcceleration": 6.0,
+    "maxAcceleration": 4.0,
     "maxAngularVelocity": 540.0,
     "maxAngularAcceleration": 720.0,
     "nominalVoltage": 12.0,
@@ -42,7 +42,7 @@
   },
   "goalEndState": {
     "velocity": 0,
-    "rotation": 0.0
+    "rotation": 144.5301278325999
   },
   "reversed": false,
   "folder": "FR-R",

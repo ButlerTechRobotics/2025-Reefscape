@@ -13,6 +13,7 @@ import frc.robot.subsystems.arm.Arm;
 public class SmartArm extends Command {
   private final Arm arm;
   private final Goal goal;
+  private Command armCommand;
 
   public enum Goal {
     STOW,
@@ -38,6 +39,17 @@ public class SmartArm extends Command {
     this.arm = arm;
     this.goal = goal;
     addRequirements(arm, arm.getShoulder(), arm.getExtension(), arm.getWrist());
+  }
+
+  /**
+   * Static factory method to create a SmartArm command.
+   *
+   * @param arm The arm subsystem
+   * @param goal The goal position for the arm
+   * @return A command that will move the arm to the specified goal
+   */
+  public static Command createCommand(Arm arm, Goal goal) {
+    return new SmartArm(arm, goal);
   }
 
   @Override
@@ -99,11 +111,18 @@ public class SmartArm extends Command {
 
   @Override
   public void end(boolean interrupted) {
-    arm.setGoalCommand(Arm.Goal.STANDBY).schedule();
+    System.out.println("SmartArm ending, interrupted: " + interrupted);
+    if (interrupted && armCommand != null) {
+      armCommand.cancel();
+    }
   }
 
   @Override
   public boolean isFinished() {
-    return false;
+    boolean finished = arm.isAtTarget();
+    if (finished) {
+      System.out.println("SmartArm goal reached: " + goal);
+    }
+    return finished;
   }
 }

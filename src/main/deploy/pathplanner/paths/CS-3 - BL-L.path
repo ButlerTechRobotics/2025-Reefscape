@@ -3,13 +3,13 @@
   "waypoints": [
     {
       "anchor": {
-        "x": 1.7037877957203234,
-        "y": 7.314485091013194
+        "x": 2.0242329545454547,
+        "y": 6.911775568181818
       },
       "prevControl": null,
       "nextControl": {
-        "x": 2.909025338860962,
-        "y": 6.476292144507586
+        "x": 3.2294704976860933,
+        "y": 6.07358262167621
       },
       "isLocked": false,
       "linkedName": "CS-3"
@@ -34,7 +34,7 @@
   "eventMarkers": [],
   "globalConstraints": {
     "maxVelocity": 10000.0,
-    "maxAcceleration": 6.0,
+    "maxAcceleration": 4.0,
     "maxAngularVelocity": 540.0,
     "maxAngularAcceleration": 720.0,
     "nominalVoltage": 12.0,
@@ -42,13 +42,13 @@
   },
   "goalEndState": {
     "velocity": 0,
-    "rotation": -119.99999999999999
+    "rotation": 59.99999999999999
   },
   "reversed": false,
   "folder": "CS-3",
   "idealStartingState": {
     "velocity": 0,
-    "rotation": -55.0
+    "rotation": 125.00000000000001
   },
   "useDefaultConstraints": true
 }

@@ -3,13 +3,13 @@
   "waypoints": [
     {
       "anchor": {
-        "x": 3.1287909836065575,
-        "y": 3.881147540983607
+        "x": 2.7023011363636362,
+        "y": 3.6510653409090907
       },
       "prevControl": null,
       "nextControl": {
-        "x": 1.6757746933171644,
-        "y": 3.3861220090051933
+        "x": 1.2492848460742432,
+        "y": 3.156039808930677
       },
       "isLocked": false,
       "linkedName": "F-R"
@@ -32,11 +32,11 @@
     },
     {
       "anchor": {
-        "x": 3.1785,
+        "x": 2.6,
         "y": 4.1907499999999995
       },
       "prevControl": {
-        "x": 1.6762623144247977,
+        "x": 1.0977623144247977,
         "y": 4.763841373575249
       },
       "nextControl": null,
@@ -69,7 +69,7 @@
   "eventMarkers": [],
   "globalConstraints": {
     "maxVelocity": 10000.0,
-    "maxAcceleration": 6.0,
+    "maxAcceleration": 4.0,
     "maxAngularVelocity": 540.0,
     "maxAngularAcceleration": 720.0,
     "nominalVoltage": 12.0,
@@ -77,13 +77,13 @@
   },
   "goalEndState": {
     "velocity": 0,
-    "rotation": 0.0
+    "rotation": 180.0
   },
   "reversed": false,
   "folder": "D CURVE",
   "idealStartingState": {
     "velocity": 0,
-    "rotation": 0.0
+    "rotation": 180.0
   },
   "useDefaultConstraints": true
 }

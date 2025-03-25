@@ -98,8 +98,8 @@ public class ExtensionIOCTRE implements ExtensionIO {
         followerSupplyCurrent);
 
     // Optimize CAN bus usage for all devices
-    leader.optimizeBusUtilization(4, 0.1);
-    follower.optimizeBusUtilization(4, 0.1);
+    leader.optimizeBusUtilization(50, 0.1);
+    follower.optimizeBusUtilization(50, 0.1);
   }
 
   /**

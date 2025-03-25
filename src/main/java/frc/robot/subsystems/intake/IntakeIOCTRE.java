@@ -70,7 +70,7 @@ public class IntakeIOCTRE implements IntakeIO {
   private TalonFXConfiguration createMotorConfiguration() {
     var config = new TalonFXConfiguration();
     config.CurrentLimits.StatorCurrentLimit = 120.0;
-    config.CurrentLimits.SupplyCurrentLimit = 30.0;
+    config.CurrentLimits.SupplyCurrentLimit = 59.0;
     config.CurrentLimits.StatorCurrentLimitEnable = true;
     config.MotorOutput.NeutralMode = NeutralModeValue.Brake;
 

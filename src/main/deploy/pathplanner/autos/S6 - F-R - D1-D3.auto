@@ -5,15 +5,15 @@
     "data": {
       "commands": [
         {
-          "type": "named",
+          "type": "path",
           "data": {
-            "name": "Coral_Floor_Intake"
+            "pathName": "S6 - F-R"
           }
         }
       ]
     }
   },
   "resetOdom": true,
-  "folder": null,
+  "folder": "DANDELION",
   "choreoAuto": false
 }

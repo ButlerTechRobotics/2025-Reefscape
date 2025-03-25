@@ -3,13 +3,13 @@
   "waypoints": [
     {
       "anchor": {
-        "x": 3.65,
-        "y": 5.15
+        "x": 3.7282692307692304,
+        "y": 5.015769230769231
       },
       "prevControl": null,
       "nextControl": {
-        "x": 3.952994662347632,
-        "y": 5.27127329675607
+        "x": 4.031263893116863,
+        "y": 5.137042527525301
       },
       "isLocked": false,
       "linkedName": "FL-R"
@@ -34,7 +34,7 @@
   "eventMarkers": [],
   "globalConstraints": {
     "maxVelocity": 10000.0,
-    "maxAcceleration": 6.0,
+    "maxAcceleration": 4.0,
     "maxAngularVelocity": 540.0,
     "maxAngularAcceleration": 720.0,
     "nominalVoltage": 12.0,
@@ -48,7 +48,7 @@
   "folder": "FL-R",
   "idealStartingState": {
     "velocity": 0,
-    "rotation": -59.99999999999999
+    "rotation": 119.99999999999999
   },
   "useDefaultConstraints": true
 }

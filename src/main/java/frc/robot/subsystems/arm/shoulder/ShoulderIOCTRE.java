@@ -127,11 +127,11 @@ public class ShoulderIOCTRE implements ShoulderIO {
         encoderVelocity);
 
     // Optimize CAN bus usage for all devices
-    brLeader.optimizeBusUtilization(4, 0.1);
-    blFollower.optimizeBusUtilization(4, 0.1);
-    frFollower.optimizeBusUtilization(4, 0.1);
-    flFollower.optimizeBusUtilization(4, 0.1);
-    encoder.optimizeBusUtilization(4, 0.1);
+    brLeader.optimizeBusUtilization(50, 0.1);
+    blFollower.optimizeBusUtilization(50, 0.1);
+    frFollower.optimizeBusUtilization(50, 0.1);
+    flFollower.optimizeBusUtilization(50, 0.1);
+    encoder.optimizeBusUtilization(50, 0.1);
   }
 
   /**

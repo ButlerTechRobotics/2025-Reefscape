@@ -3,25 +3,25 @@
   "waypoints": [
     {
       "anchor": {
-        "x": 7.117,
-        "y": 0.8
+        "x": 7.089801136363636,
+        "y": 0.519985795454545
       },
       "prevControl": null,
       "nextControl": {
-        "x": 1.90125,
-        "y": 2.7965
+        "x": 1.8740511363636365,
+        "y": 2.516485795454545
       },
       "isLocked": false,
       "linkedName": "S6"
     },
     {
       "anchor": {
-        "x": 3.65,
-        "y": 5.15
+        "x": 3.7282692307692304,
+        "y": 5.015769230769231
       },
       "prevControl": {
-        "x": 1.4371348684210532,
-        "y": 4.764361842105264
+        "x": 1.5154040991902837,
+        "y": 4.630131072874494
       },
       "nextControl": null,
       "isLocked": false,
@@ -45,7 +45,7 @@
   "eventMarkers": [],
   "globalConstraints": {
     "maxVelocity": 10000.0,
-    "maxAcceleration": 6.0,
+    "maxAcceleration": 4.0,
     "maxAngularVelocity": 540.0,
     "maxAngularAcceleration": 720.0,
     "nominalVoltage": 12.0,
@@ -53,13 +53,13 @@
   },
   "goalEndState": {
     "velocity": 0,
-    "rotation": -59.99999999999999
+    "rotation": 119.99999999999999
   },
   "reversed": false,
   "folder": "S6",
   "idealStartingState": {
     "velocity": 0,
-    "rotation": 0.0
+    "rotation": 180.0
   },
   "useDefaultConstraints": true
 }

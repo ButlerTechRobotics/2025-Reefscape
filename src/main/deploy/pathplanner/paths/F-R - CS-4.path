@@ -3,13 +3,13 @@
   "waypoints": [
     {
       "anchor": {
-        "x": 3.1287909836065575,
-        "y": 3.881147540983607
+        "x": 2.7023011363636362,
+        "y": 3.6510653409090907
       },
       "prevControl": null,
       "nextControl": {
-        "x": 2.971192622950819,
-        "y": 2.8286270491803296
+        "x": 2.544702775707898,
+        "y": 2.598544849105813
       },
       "isLocked": false,
       "linkedName": "F-R"
@@ -34,7 +34,7 @@
   "eventMarkers": [],
   "globalConstraints": {
     "maxVelocity": 10000.0,
-    "maxAcceleration": 6.0,
+    "maxAcceleration": 4.0,
     "maxAngularVelocity": 540.0,
     "maxAngularAcceleration": 720.0,
     "nominalVoltage": 12.0,
@@ -48,7 +48,7 @@
   "folder": "F-R",
   "idealStartingState": {
     "velocity": 0,
-    "rotation": 0.0
+    "rotation": 180.0
   },
   "useDefaultConstraints": true
 }

@@ -141,10 +141,8 @@ public class Arm extends SubsystemBase {
       }
       case CORAL_L4BACK -> {
         wrist.coralL4Back().schedule();
-        if (wrist.isAtTarget()) {
-          shoulder.coralL4Back().schedule();
-          extension.coralL4Back().schedule();
-        }
+        shoulder.coralL4Back().schedule();
+        extension.coralL4Back().schedule();
       }
       case ALGAE_FLOOR_INTAKE -> {
         shoulder.algaeFloorIntake().schedule();
@@ -212,6 +210,11 @@ public class Arm extends SubsystemBase {
   /** Command to set goal of arm */
   public Command setGoalCommand(Goal goal) {
     return startEnd(() -> setGoal(goal), () -> setGoal(Goal.STOW)).withName("Arm " + goal);
+  }
+
+  /** Command to set goal of arm */
+  public Command setGoalAutoCommand(Goal goal) {
+    return runOnce(() -> setGoal(goal)).withName("Arm " + goal);
   }
 
   @AutoLogOutput(key = "Arm/AtGoal")

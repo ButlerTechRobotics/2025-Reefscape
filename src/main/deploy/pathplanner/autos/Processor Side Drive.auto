@@ -7,19 +7,13 @@
         {
           "type": "path",
           "data": {
-            "pathName": "S2 - BL-L"
+            "pathName": "Processor Side Path"
           }
         },
         {
-          "type": "path",
+          "type": "named",
           "data": {
-            "pathName": "BL-L - D1"
-          }
-        },
-        {
-          "type": "path",
-          "data": {
-            "pathName": "D1 - FL-R"
+            "name": "Score"
           }
         }
       ]

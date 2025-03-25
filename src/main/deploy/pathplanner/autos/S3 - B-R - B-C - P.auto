@@ -7,49 +7,61 @@
         {
           "type": "path",
           "data": {
-            "pathName": "S1 - BL-L"
+            "pathName": "S3 - B-R"
           }
         },
         {
           "type": "path",
           "data": {
-            "pathName": "BL-L - D1"
+            "pathName": "B-R - B-C"
           }
         },
         {
           "type": "path",
           "data": {
-            "pathName": "D1 - FL-R"
+            "pathName": "B-C - P"
           }
         },
         {
           "type": "path",
           "data": {
-            "pathName": "FL-R - D2"
+            "pathName": "P - CS-6"
           }
         },
         {
           "type": "path",
           "data": {
-            "pathName": "D2 - F-R"
+            "pathName": "CS-6 - FR-R"
           }
         },
         {
           "type": "path",
           "data": {
-            "pathName": "F-R - D3"
+            "pathName": "FR-R - CS-6"
           }
         },
         {
           "type": "path",
           "data": {
-            "pathName": "D3 - FR-L"
+            "pathName": "CS-6 - FR-L"
+          }
+        },
+        {
+          "type": "path",
+          "data": {
+            "pathName": "FR-L - FR-C"
+          }
+        },
+        {
+          "type": "path",
+          "data": {
+            "pathName": "FR-C - P"
           }
         }
       ]
     }
   },
   "resetOdom": true,
-  "folder": null,
+  "folder": "REEF AND PROCESSOR",
   "choreoAuto": false
 }

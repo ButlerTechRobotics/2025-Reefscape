@@ -175,7 +175,7 @@ public class Extension extends SubsystemBase {
     }
 
     ExtensionPosition(Distance targetDistance) {
-      this(targetDistance, Inches.of(1)); // 2 degree default tolerance
+      this(targetDistance, Inches.of(4)); // 2 degree default tolerance
     }
   }
 

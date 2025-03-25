@@ -89,8 +89,8 @@ public class WristIOCTRE implements WristIO {
         encoderVelocity);
 
     // Optimize CAN bus usage for all devices
-    leader.optimizeBusUtilization(4, 0.1);
-    encoder.optimizeBusUtilization(4, 0.1);
+    leader.optimizeBusUtilization(50, 0.1);
+    encoder.optimizeBusUtilization(50, 0.1);
   }
 
   /**
