@@ -3,29 +3,29 @@
   "waypoints": [
     {
       "anchor": {
-        "x": 7.1175,
-        "y": 6.140750000000001
+        "x": 7.936499999995732,
+        "y": 7.29125
       },
       "prevControl": null,
       "nextControl": {
-        "x": 5.317628205128204,
-        "y": 6.357435897435897
+        "x": 7.12725,
+        "y": 4.951249999999998
       },
       "isLocked": false,
-      "linkedName": "S2"
+      "linkedName": "S1-H"
     },
     {
       "anchor": {
-        "x": 3.6464999999999996,
-        "y": 5.117
+        "x": 5.3105532786885234,
+        "y": 2.934118852459016
       },
       "prevControl": {
-        "x": 3.40697567016317,
-        "y": 6.511307619463869
+        "x": 5.664749999999999,
+        "y": 2.0164999999999997
       },
       "nextControl": null,
       "isLocked": false,
-      "linkedName": "FL-R"
+      "linkedName": "BR-R"
     }
   ],
   "rotationTargets": [],
@@ -33,8 +33,8 @@
   "pointTowardsZones": [],
   "eventMarkers": [],
   "globalConstraints": {
-    "maxVelocity": 3.0,
-    "maxAcceleration": 3.0,
+    "maxVelocity": 10000.0,
+    "maxAcceleration": 4.0,
     "maxAngularVelocity": 540.0,
     "maxAngularAcceleration": 720.0,
     "nominalVoltage": 12.0,
@@ -42,13 +42,13 @@
   },
   "goalEndState": {
     "velocity": 0,
-    "rotation": 119.99999999999999
+    "rotation": -59.99999999999999
   },
   "reversed": false,
-  "folder": "S3",
+  "folder": "START HELP",
   "idealStartingState": {
     "velocity": 0,
     "rotation": 180.0
   },
-  "useDefaultConstraints": false
+  "useDefaultConstraints": true
 }

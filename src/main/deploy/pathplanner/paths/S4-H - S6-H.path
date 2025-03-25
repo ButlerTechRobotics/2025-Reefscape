@@ -9,7 +9,7 @@
       "prevControl": null,
       "nextControl": {
         "x": 7.995,
-        "y": 1.0512500000000002
+        "y": 1.0512500000000005
       },
       "isLocked": false,
       "linkedName": "S4-H"
@@ -45,7 +45,7 @@
     "rotation": 180.0
   },
   "reversed": false,
-  "folder": "HELPING TEAMATES (RP)",
+  "folder": "START HELP",
   "idealStartingState": {
     "velocity": 0,
     "rotation": 180.0
