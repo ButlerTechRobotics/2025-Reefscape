@@ -3,29 +3,29 @@
   "waypoints": [
     {
       "anchor": {
-        "x": 7.167,
-        "y": 5.079
+        "x": 7.936499999995732,
+        "y": 5.117
       },
       "prevControl": null,
       "nextControl": {
-        "x": 3.9319672131147545,
-        "y": 6.170799180327871
+        "x": 8.0925,
+        "y": 6.45275
       },
       "isLocked": false,
-      "linkedName": "S3"
+      "linkedName": "S3-H"
     },
     {
       "anchor": {
-        "x": 2.6,
-        "y": 4.1907499999999995
+        "x": 7.936499999995732,
+        "y": 7.29125
       },
       "prevControl": {
-        "x": 1.8669918032786885,
-        "y": 5.415573770491803
+        "x": 8.385,
+        "y": 7.34975
       },
       "nextControl": null,
       "isLocked": false,
-      "linkedName": "F-L"
+      "linkedName": "S1-H"
     }
   ],
   "rotationTargets": [],
@@ -34,7 +34,7 @@
   "eventMarkers": [],
   "globalConstraints": {
     "maxVelocity": 10000.0,
-    "maxAcceleration": 4.0,
+    "maxAcceleration": 6.0,
     "maxAngularVelocity": 540.0,
     "maxAngularAcceleration": 720.0,
     "nominalVoltage": 12.0,
@@ -45,7 +45,7 @@
     "rotation": 180.0
   },
   "reversed": false,
-  "folder": "S3",
+  "folder": "HELPING TEAMATES (RP)",
   "idealStartingState": {
     "velocity": 0,
     "rotation": 180.0
