@@ -153,21 +153,21 @@ public class Wrist extends SubsystemBase {
   public enum WristPosition {
     // Common positions
     STOP(Rotations.of(0)),
-    STOW(Rotations.of(0.0)),
-    STANDBY(Rotations.of(0)),
+    STOW(Rotations.of(0.2)),
+    STANDBY(Rotations.of(0.2)),
     CLIMB(Rotations.of(1.65)),
     CLIMB_DOWN(Rotations.of(0.9)),
 
     // Coral positions
-    CORAL_FLOOR_INTAKE(Rotations.of(1.55)),
+    CORAL_FLOOR_INTAKE(Rotations.of(1.6)),
     // CORAL_FLOOR_INTAKE(Rotations.of(0)),
 
     CORAL_STATION_INTAKE(Rotations.of(1.71)),
     CORAL_L1(Rotations.of(1.45)),
     CORAL_L1BACK(Rotations.of(0)),
-    CORAL_L2(Rotations.of(0)),
+    CORAL_L2(Rotations.of(0.8)),
     CORAL_L2BACK(Rotations.of(0.45)),
-    CORAL_L3(Rotations.of(0)),
+    CORAL_L3(Rotations.of(0.8)),
     // CORAL_L3BACK(Rotations.of(0.897)),
     CORAL_L3BACK(Rotations.of(0.76)),
     CORAL_L4(Rotations.of(0)),

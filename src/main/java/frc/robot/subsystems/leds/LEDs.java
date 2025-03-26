@@ -9,6 +9,7 @@ package frc.robot.subsystems.leds;
 
 import com.ctre.phoenix.led.CANdle;
 import com.ctre.phoenix.led.CANdle.LEDStripType;
+import com.ctre.phoenix.led.FireAnimation;
 import com.ctre.phoenix.led.SingleFadeAnimation;
 import edu.wpi.first.wpilibj2.command.SubsystemBase;
 
@@ -18,14 +19,15 @@ public class LEDs extends SubsystemBase {
 
   boolean isIntaking;
   boolean hasGamePiece;
-  int stripLength = 49;
+  boolean isAutoAligning;
+  int stripLength = 60;
   int startOffset = 0;
 
   /** Creates new LEDs. */
   public LEDs() {
     candle = new CANdle(14, "CANivore");
     candle.configLEDType(LEDStripType.RGB);
-    candle.configV5Enabled(false);
+    candle.configV5Enabled(true);
   }
 
   public void setIsIntaking(boolean isIntaking) {
@@ -34,6 +36,10 @@ public class LEDs extends SubsystemBase {
 
   public void setHasGamePiece(boolean hasGamePiece) {
     this.hasGamePiece = hasGamePiece;
+  }
+
+  public void setIsAutoAligning(boolean isAutoAligning) {
+    this.isAutoAligning = isAutoAligning;
   }
 
   @Override
@@ -55,9 +61,14 @@ public class LEDs extends SubsystemBase {
     //   return;
     // }
     if (hasGamePiece) {
-      candle.animate(new SingleFadeAnimation(0, 255, 0, 0, 1, stripLength, startOffset));
+      candle.animate(new SingleFadeAnimation(0, 0, 255, 0, 2, stripLength, startOffset));
     } else {
-      candle.animate(new SingleFadeAnimation(0, 0, 255, 0, 1, stripLength, startOffset));
+      if (isAutoAligning) {
+        candle.animate(new FireAnimation(100, 0.75, stripLength, 1.0, 0.3));
+      } else {
+        candle.animate(new SingleFadeAnimation(0, 0, 255, 0, 0, stripLength, startOffset));
+      }
+      return;
     }
   }
 }

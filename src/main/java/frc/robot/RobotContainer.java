@@ -80,7 +80,7 @@ public class RobotContainer {
   public final Intake intake;
   public final Arm arm;
   public final OnBoardButtons onBoardButtons;
-  public final LEDs leds = new LEDs();
+  private final LEDs leds;
 
   public RobotContainer() {
     // Declare component subsystems (not visible outside constructor)
@@ -210,6 +210,7 @@ public class RobotContainer {
     }
 
     arm = new Arm(shoulder, extension, wrist, intake);
+    leds = new LEDs();
 
     // Set up the named commands
     NamedCommands.registerCommand(
@@ -316,20 +317,37 @@ public class RobotContainer {
     //                 .withVelocityY(MetersPerSecond.of(1).times(-driver.customLeft().getX()))
     //                 .withRotationalRate(
     //                     Constants.MaxAngularRate.times(-driver.customRight().getX()))));
-    
+
     // Create a trigger that detects when we have a game piece while in floor intake position
     Trigger gamePickedUpInFloorIntake =
-        new Trigger(() -> intake.hasBackGamePiece() && (arm.getGoal() == Arm.Goal.CORAL_FLOOR_INTAKE));
+        new Trigger(
+            () -> intake.hasBackGamePiece() && (arm.getGoal() == Arm.Goal.CORAL_FLOOR_INTAKE));
 
-    // When this trigger becomes active, move to standby position
+    // When this trigger becomes active, move to standby position AND shuffle the coral to back
     gamePickedUpInFloorIntake.onTrue(
         Commands.sequence(
             // Log that we detected a game piece
             Commands.runOnce(
-                () ->
-                    System.out.println("Game piece detected in floor intake - moving to standby")),
-            // Move to standby position
-            new SmartArm(arm, SmartArm.Goal.STANDBY)));
+                () -> System.out.println("Game piece detected in floor intake - processing")),
+
+            // Stop the intake motors
+            intake.STOP(),
+
+            // Then move to standby position
+            Commands.runOnce(() -> System.out.println("Moving arm to standby")),
+            new SmartArm(arm, SmartArm.Goal.STANDBY),
+
+            // First shuffle the coral to the back position
+            Commands.runOnce(() -> System.out.println("Shuffling coral to back")),
+            intake.shuffleCoralToBack()));
+
+    Trigger gamePickedUpSetLeds = new Trigger(() -> intake.hasBackGamePiece());
+
+    Trigger gameScored = new Trigger(() -> !intake.hasGamePiece());
+
+    gamePickedUpSetLeds.onTrue(Commands.runOnce(() -> leds.setHasGamePiece(true)));
+
+    gameScored.onTrue(Commands.runOnce(() -> leds.setHasGamePiece(false)));
   }
 
   private void configureManualButtons() {
@@ -345,9 +363,21 @@ public class RobotContainer {
     // reset the field-centric heading on left bumper press
     driver.resetHeading().onTrue(Commands.runOnce(() -> drivetrain.resetPose(Pose2d.kZero)));
 
-    driver.leftStick().whileTrue(new ReefDrive(drivetrain, ReefDrive.Side.LEFT));
+    driver
+        .leftStick()
+        .whileTrue(
+            new ReefDrive(drivetrain, ReefDrive.Side.LEFT)
+                .alongWith(
+                    Commands.startEnd(
+                        () -> leds.setIsAutoAligning(true), () -> leds.setIsAutoAligning(false))));
 
-    driver.rightStick().whileTrue(new ReefDrive(drivetrain, ReefDrive.Side.RIGHT));
+    driver
+        .rightStick()
+        .whileTrue(
+            new ReefDrive(drivetrain, ReefDrive.Side.RIGHT)
+                .alongWith(
+                    Commands.startEnd(
+                        () -> leds.setIsAutoAligning(true), () -> leds.setIsAutoAligning(false))));
 
     // // Driver Button Bindings
     driver.intake().whileTrue(intake.intakeCoralToBack()).onFalse(intake.STOP());
