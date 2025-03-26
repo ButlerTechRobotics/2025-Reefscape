@@ -117,8 +117,56 @@ public class ReefDrive extends Command {
 
   @Override
   public boolean isFinished() {
-    // Since we're directly calling driveToPointMA in execute,
-    // we should let the command continue running until it's manually ended
-    return false;
+    if (!hasTarget) {
+      return true; // End immediately if we don't have a valid target
+    }
+
+    // Get current pose
+    Pose2d currentPose = drivetrain.getPose();
+
+    // Calculate distance to target
+    double positionError = currentPose.getTranslation().getDistance(targetPose.getTranslation());
+
+    // Calculate rotation error, accounting for 180-degree flips
+    // Get normal rotation error
+    double rotationError =
+        Math.abs(currentPose.getRotation().minus(targetPose.getRotation()).getDegrees());
+
+    // Get flipped rotation error (if robot is facing backward)
+    double flippedRotationError =
+        Math.abs(
+            currentPose
+                .getRotation()
+                .plus(new Rotation2d(Math.PI))
+                .minus(targetPose.getRotation())
+                .getDegrees());
+
+    // Use the smaller of the two errors
+    double effectiveRotationError = Math.min(rotationError, flippedRotationError);
+
+    // Log the errors
+    Logger.recordOutput("ReefDrive/PositionError", positionError);
+    Logger.recordOutput("ReefDrive/NormalRotationError", rotationError);
+    Logger.recordOutput("ReefDrive/FlippedRotationError", flippedRotationError);
+    Logger.recordOutput("ReefDrive/EffectiveRotationError", effectiveRotationError);
+
+    // Thresholds for determining if we've reached the target
+    final double POSITION_THRESHOLD = 0.005; // .5cm position tolerance
+    final double ROTATION_THRESHOLD = 3.0; // 3 degree rotation tolerance
+
+    // Check if we're within tolerance
+    boolean atPosition = positionError < POSITION_THRESHOLD;
+    boolean atRotation = effectiveRotationError < ROTATION_THRESHOLD;
+
+    // Log if we've reached target
+    Logger.recordOutput("ReefDrive/AtPosition", atPosition);
+    Logger.recordOutput("ReefDrive/AtRotation", atRotation);
+
+    if (atPosition && atRotation) {
+      System.out.println("ReefDrive: Target reached!");
+    }
+
+    // Only finish when both position and rotation are at target
+    return atPosition && atRotation;
   }
 }

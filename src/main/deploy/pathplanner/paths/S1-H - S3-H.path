@@ -1,0 +1,70 @@
+{
+  "version": "2025.0",
+  "waypoints": [
+    {
+      "anchor": {
+        "x": 7.936499999995732,
+        "y": 7.29125
+      },
+      "prevControl": null,
+      "nextControl": {
+        "x": 7.952932125744297,
+        "y": 7.041790614040314
+      },
+      "isLocked": false,
+      "linkedName": "S1-H"
+    },
+    {
+      "anchor": {
+        "x": 8.267999999999999,
+        "y": 5.516749999999999
+      },
+      "prevControl": {
+        "x": 8.397200899181945,
+        "y": 5.730775997604441
+      },
+      "nextControl": {
+        "x": 8.069734352014265,
+        "y": 5.188315729267247
+      },
+      "isLocked": false,
+      "linkedName": null
+    },
+    {
+      "anchor": {
+        "x": 7.936499999995732,
+        "y": 5.117
+      },
+      "prevControl": {
+        "x": 8.181470083162232,
+        "y": 5.401378361168697
+      },
+      "nextControl": null,
+      "isLocked": false,
+      "linkedName": "S3-H"
+    }
+  ],
+  "rotationTargets": [],
+  "constraintZones": [],
+  "pointTowardsZones": [],
+  "eventMarkers": [],
+  "globalConstraints": {
+    "maxVelocity": 10000.0,
+    "maxAcceleration": 6.0,
+    "maxAngularVelocity": 540.0,
+    "maxAngularAcceleration": 720.0,
+    "nominalVoltage": 12.0,
+    "unlimited": false
+  },
+  "goalEndState": {
+    "velocity": 0,
+    "rotation": 180.0
+  },
+  "reversed": false,
+  "folder": "HELPING TEAMATES (RP)",
+  "idealStartingState": {
+    "velocity": 0,
+    "rotation": 180.0
+  },
+  "useDefaultConstraints": true
+}

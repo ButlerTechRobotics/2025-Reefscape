@@ -1,0 +1,54 @@
+{
+  "version": "2025.0",
+  "waypoints": [
+    {
+      "anchor": {
+        "x": 7.936499999995732,
+        "y": 6.228499999996839
+      },
+      "prevControl": null,
+      "nextControl": {
+        "x": 8.5605,
+        "y": 6.62825
+      },
+      "isLocked": false,
+      "linkedName": "S2-H"
+    },
+    {
+      "anchor": {
+        "x": 7.936499999995732,
+        "y": 7.29125
+      },
+      "prevControl": {
+        "x": 8.307,
+        "y": 7.17425
+      },
+      "nextControl": null,
+      "isLocked": false,
+      "linkedName": "S1-H"
+    }
+  ],
+  "rotationTargets": [],
+  "constraintZones": [],
+  "pointTowardsZones": [],
+  "eventMarkers": [],
+  "globalConstraints": {
+    "maxVelocity": 10000.0,
+    "maxAcceleration": 6.0,
+    "maxAngularVelocity": 540.0,
+    "maxAngularAcceleration": 720.0,
+    "nominalVoltage": 12.0,
+    "unlimited": false
+  },
+  "goalEndState": {
+    "velocity": 0,
+    "rotation": 180.0
+  },
+  "reversed": false,
+  "folder": "HELPING TEAMATES (RP)",
+  "idealStartingState": {
+    "velocity": 0,
+    "rotation": 180.0
+  },
+  "useDefaultConstraints": true
+}

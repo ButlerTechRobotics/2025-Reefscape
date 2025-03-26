@@ -3,13 +3,13 @@
   "waypoints": [
     {
       "anchor": {
-        "x": 7.117,
-        "y": 0.8
+        "x": 7.089801136363636,
+        "y": 0.519985795454545
       },
       "prevControl": null,
       "nextControl": {
-        "x": 1.267500000000001,
-        "y": 2.5820000000000007
+        "x": 1.2403011363636374,
+        "y": 2.301985795454546
       },
       "isLocked": false,
       "linkedName": "S6"
@@ -59,7 +59,7 @@
   "folder": "S6",
   "idealStartingState": {
     "velocity": 0,
-    "rotation": 0.0
+    "rotation": 180.0
   },
   "useDefaultConstraints": true
 }

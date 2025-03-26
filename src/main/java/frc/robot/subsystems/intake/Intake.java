@@ -107,8 +107,8 @@ public class Intake extends SubsystemBase {
   public enum IntakeMode {
     STOP(Voltage.ofBaseUnits(0, Volts)),
     INTAKE(Voltage.ofBaseUnits(8, Volts)),
-    SHUFFLE_TO_FRONT(Voltage.ofBaseUnits(-1, Volts)),
-    SHUFFLE_TO_BACK(Voltage.ofBaseUnits(1, Volts)),
+    SHUFFLE_TO_FRONT(Voltage.ofBaseUnits(-1.5, Volts)),
+    SHUFFLE_TO_BACK(Voltage.ofBaseUnits(1.5, Volts)),
     SHOOT_FRONT(Voltage.ofBaseUnits(-5, Volts)),
     SHOOT_BACK(Voltage.ofBaseUnits(5, Volts));
 
@@ -353,6 +353,20 @@ public class Intake extends SubsystemBase {
         .withName("Score Coral From Back");
   }
 
+  public Command AUTO_SHOOT() {
+    return Commands.runOnce(() -> io.setVoltage(Volts.of(-5)))
+        .andThen(gamePieceLoaded())
+        .andThen(waitForNoGamePiece())
+        .andThen(STOP());
+  }
+
+  public Command AUTO_INTAKE() {
+    return Commands.runOnce(() -> io.setVoltage(Volts.of(4)))
+        .andThen(gamePieceUnloaded())
+        .andThen(waitForBackGamePiece())
+        .andThen(STOP());
+  }
+
   /**
    * Creates a command that pulses the intake at a specified voltage.
    *
@@ -431,5 +445,33 @@ public class Intake extends SubsystemBase {
                 () -> System.out.println("Finished shuffle to front, state: " + currentCoralState)))
         .withName("Shuffle Coral To Front")
         .withTimeout(3); // Add safety timeout
+  }
+
+  /**
+   * Creates a command to set the simulated range finder distance.
+   *
+   * @param distance The distance to simulate
+   * @return A command that sets the simulated range finder distance
+   */
+  private Command setCANrangeDistanceSim(Distance distance) {
+    return Commands.runOnce(() -> io.setCANrangeDistanceSim(distance));
+  }
+
+  /**
+   * Creates a command to simulate a game piece being loaded.
+   *
+   * @return A command that simulates a game piece being loaded
+   */
+  public Command gamePieceLoaded() {
+    return setCANrangeDistanceSim(Inches.of(0.5));
+  }
+
+  /**
+   * Creates a command to simulate a game piece being unloaded.
+   *
+   * @return A command that simulates a game piece being unloaded
+   */
+  public Command gamePieceUnloaded() {
+    return setCANrangeDistanceSim(Inches.of(1.5));
   }
 }

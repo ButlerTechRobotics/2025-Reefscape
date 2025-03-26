@@ -3,13 +3,13 @@
   "waypoints": [
     {
       "anchor": {
-        "x": 3.1287909836065575,
-        "y": 3.881147540983607
+        "x": 3.1609943181818183,
+        "y": 3.8504971590909087
       },
       "prevControl": null,
       "nextControl": {
-        "x": 3.1767418032786883,
-        "y": 5.27172131147541
+        "x": 3.208945137853949,
+        "y": 5.241070929582712
       },
       "isLocked": false,
       "linkedName": "F-R"
@@ -42,7 +42,7 @@
   },
   "goalEndState": {
     "velocity": 0,
-    "rotation": 180.0
+    "rotation": 144.5301278325999
   },
   "reversed": false,
   "folder": "F-R",

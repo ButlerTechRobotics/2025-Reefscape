@@ -175,9 +175,9 @@ public class Shoulder extends SubsystemBase {
     CORAL_L1(Rotations.of(0.17)),
     CORAL_L1BACK(Rotations.of(0)),
 
-    CORAL_L2(Rotations.of(0)),
+    CORAL_L2(Rotations.of(0.2)),
     CORAL_L2BACK(Rotations.of(0.3)),
-    CORAL_L3(Rotations.of(0)),
+    CORAL_L3(Rotations.of(0.24)),
     CORAL_L3BACK(Rotations.of(0.32)),
     CORAL_L4BACK(Rotations.of(0.29)),
 
