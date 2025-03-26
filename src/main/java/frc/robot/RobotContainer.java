@@ -316,6 +316,20 @@ public class RobotContainer {
     //                 .withVelocityY(MetersPerSecond.of(1).times(-driver.customLeft().getX()))
     //                 .withRotationalRate(
     //                     Constants.MaxAngularRate.times(-driver.customRight().getX()))));
+    
+    // Create a trigger that detects when we have a game piece while in floor intake position
+    Trigger gamePickedUpInFloorIntake =
+        new Trigger(() -> intake.hasBackGamePiece() && (arm.getGoal() == Arm.Goal.CORAL_FLOOR_INTAKE));
+
+    // When this trigger becomes active, move to standby position
+    gamePickedUpInFloorIntake.onTrue(
+        Commands.sequence(
+            // Log that we detected a game piece
+            Commands.runOnce(
+                () ->
+                    System.out.println("Game piece detected in floor intake - moving to standby")),
+            // Move to standby position
+            new SmartArm(arm, SmartArm.Goal.STANDBY)));
   }
 
   private void configureManualButtons() {
