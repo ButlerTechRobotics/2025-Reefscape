@@ -3,13 +3,13 @@
   "waypoints": [
     {
       "anchor": {
-        "x": 1.3442307692307687,
-        "y": 4.014679487179487
+        "x": 1.0470170454545455,
+        "y": 4.020014204545454
       },
       "prevControl": null,
       "nextControl": {
-        "x": 2.5311986183120787,
-        "y": 4.17022534450569
+        "x": 2.2339848945358556,
+        "y": 4.175560061871657
       },
       "isLocked": false,
       "linkedName": "D2"
@@ -31,17 +31,29 @@
   "rotationTargets": [],
   "constraintZones": [],
   "pointTowardsZones": [],
-  "eventMarkers": [],
+  "eventMarkers": [
+    {
+      "name": "Shuffle",
+      "waypointRelativePos": 0.2,
+      "endWaypointRelativePos": null,
+      "command": {
+        "type": "named",
+        "data": {
+          "name": "Shuffle"
+        }
+      }
+    }
+  ],
   "globalConstraints": {
-    "maxVelocity": 10000.0,
-    "maxAcceleration": 4.0,
+    "maxVelocity": 2.0,
+    "maxAcceleration": 2.0,
     "maxAngularVelocity": 540.0,
     "maxAngularAcceleration": 720.0,
     "nominalVoltage": 12.0,
     "unlimited": false
   },
   "goalEndState": {
-    "velocity": 0,
+    "velocity": 1.0,
     "rotation": 180.0
   },
   "reversed": false,
@@ -50,5 +62,5 @@
     "velocity": 0,
     "rotation": 180.0
   },
-  "useDefaultConstraints": true
+  "useDefaultConstraints": false
 }

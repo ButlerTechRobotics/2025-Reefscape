@@ -9,6 +9,30 @@
           "data": {
             "pathName": "S6 - F-R"
           }
+        },
+        {
+          "type": "named",
+          "data": {
+            "name": "Align_Right"
+          }
+        },
+        {
+          "type": "path",
+          "data": {
+            "pathName": "F-R - D2"
+          }
+        },
+        {
+          "type": "path",
+          "data": {
+            "pathName": "D2 - F-L"
+          }
+        },
+        {
+          "type": "named",
+          "data": {
+            "name": "Align_Left"
+          }
         }
       ]
     }

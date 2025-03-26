@@ -25,25 +25,13 @@
       },
       "nextControl": null,
       "isLocked": false,
-      "linkedName": "F-R"
+      "linkedName": "F-R Align"
     }
   ],
   "rotationTargets": [],
   "constraintZones": [],
   "pointTowardsZones": [],
-  "eventMarkers": [
-    {
-      "name": "Align_Right",
-      "waypointRelativePos": 1.0,
-      "endWaypointRelativePos": null,
-      "command": {
-        "type": "named",
-        "data": {
-          "name": "Align_Right"
-        }
-      }
-    }
-  ],
+  "eventMarkers": [],
   "globalConstraints": {
     "maxVelocity": 10000.0,
     "maxAcceleration": 4.0,

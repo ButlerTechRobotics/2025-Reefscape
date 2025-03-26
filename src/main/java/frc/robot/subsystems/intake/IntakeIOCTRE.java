@@ -27,7 +27,7 @@ import edu.wpi.first.units.measure.Distance;
 import edu.wpi.first.units.measure.Voltage;
 
 public class IntakeIOCTRE implements IntakeIO {
-  public static final Distance RANGE_FINDER_THRESHOLD = Inches.of(2.4);
+  public static final Distance RANGE_FINDER_THRESHOLD = Inches.of(4);
 
   public final TalonFX leader = new TalonFX(42, "CANivore");
 

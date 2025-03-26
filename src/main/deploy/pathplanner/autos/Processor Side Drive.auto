@@ -9,12 +9,6 @@
           "data": {
             "pathName": "Processor Side Path"
           }
-        },
-        {
-          "type": "named",
-          "data": {
-            "name": "Score"
-          }
         }
       ]
     }
