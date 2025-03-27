@@ -107,8 +107,8 @@ public class Intake extends SubsystemBase {
   public enum IntakeMode {
     STOP(Voltage.ofBaseUnits(0, Volts)),
     INTAKE(Voltage.ofBaseUnits(8, Volts)),
-    SHUFFLE_TO_FRONT(Voltage.ofBaseUnits(-1.5, Volts)),
-    SHUFFLE_TO_BACK(Voltage.ofBaseUnits(1.5, Volts)),
+    SHUFFLE_TO_FRONT(Voltage.ofBaseUnits(-1.0, Volts)),
+    SHUFFLE_TO_BACK(Voltage.ofBaseUnits(1.0, Volts)),
     SHOOT_FRONT(Voltage.ofBaseUnits(-5, Volts)),
     SHOOT_BACK(Voltage.ofBaseUnits(5, Volts));
 
@@ -405,8 +405,8 @@ public class Intake extends SubsystemBase {
                 .until(() -> !hasFrontGamePiece()),
 
             // Final pulse to position
-            // SHUFFLE_TO_FRONT(),
-            // Commands.waitSeconds(0.1),
+            SHUFFLE_TO_FRONT(),
+            Commands.waitSeconds(0.05),
             STOP(),
 
             // Log completion
