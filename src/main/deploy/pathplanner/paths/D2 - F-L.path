@@ -8,8 +8,8 @@
       },
       "prevControl": null,
       "nextControl": {
-        "x": 2.2339848945358556,
-        "y": 4.175560061871657
+        "x": 2.4413501374081026,
+        "y": 4.200259355561854
       },
       "isLocked": false,
       "linkedName": "D2"
@@ -20,8 +20,8 @@
         "y": 4.1907499999999995
       },
       "prevControl": {
-        "x": 1.7616671820281624,
-        "y": 4.090832674387763
+        "x": 1.4191819835277253,
+        "y": 4.04561513887559
       },
       "nextControl": null,
       "isLocked": false,
@@ -31,19 +31,7 @@
   "rotationTargets": [],
   "constraintZones": [],
   "pointTowardsZones": [],
-  "eventMarkers": [
-    {
-      "name": "Shuffle",
-      "waypointRelativePos": 0.2,
-      "endWaypointRelativePos": null,
-      "command": {
-        "type": "named",
-        "data": {
-          "name": "Shuffle"
-        }
-      }
-    }
-  ],
+  "eventMarkers": [],
   "globalConstraints": {
     "maxVelocity": 2.0,
     "maxAcceleration": 2.0,
