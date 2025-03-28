@@ -10,6 +10,7 @@ package frc.robot.subsystems.arm;
 import edu.wpi.first.wpilibj.DriverStation;
 import edu.wpi.first.wpilibj.Timer;
 import edu.wpi.first.wpilibj2.command.Command;
+import edu.wpi.first.wpilibj2.command.Commands;
 import edu.wpi.first.wpilibj2.command.SubsystemBase;
 import frc.robot.subsystems.arm.extension.Extension;
 import frc.robot.subsystems.arm.shoulder.Shoulder;
@@ -22,6 +23,7 @@ public class Arm extends SubsystemBase {
   public enum Goal {
     STOW,
     STANDBY,
+    CORAL_PRE_INTAKE,
     CORAL_FLOOR_INTAKE,
     CORAL_STATION_INTAKE,
     CORAL_L1,
@@ -94,6 +96,11 @@ public class Arm extends SubsystemBase {
         shoulder.standby().schedule();
         extension.standby().schedule();
         wrist.standby().schedule();
+      }
+      case CORAL_PRE_INTAKE -> {
+        shoulder.coralPreIntake().schedule();
+        wrist.coralPreIntake().schedule();
+        extension.coralPreIntake().schedule();
       }
       case CORAL_FLOOR_INTAKE -> {
         extension.coralFloorIntake().schedule();
@@ -215,6 +222,14 @@ public class Arm extends SubsystemBase {
   /** Command to set goal of arm */
   public Command setGoalAutoCommand(Goal goal) {
     return runOnce(() -> setGoal(goal)).withName("Arm " + goal);
+  }
+
+  public Command coralPreIntakeToFloorIntake() {
+    return Commands.sequence(
+            setGoalCommand(Goal.CORAL_PRE_INTAKE),
+            Commands.waitUntil(this::isAtTarget),
+            setGoalCommand(Goal.CORAL_FLOOR_INTAKE))
+        .withName("Coral Pre-Intake to Floor Intake");
   }
 
   @AutoLogOutput(key = "Arm/AtGoal")

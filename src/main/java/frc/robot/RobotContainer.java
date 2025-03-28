@@ -395,10 +395,14 @@ public class RobotContainer {
     driver.b().onTrue(intake.shuffleCoralToBack());
 
     // // Operator Button Bindings
+    // // Operator Button Bindings
     operator.coralL1().onTrue(new SmartArm(arm, SmartArm.Goal.CORAL_L1));
     operator.coralL2().onTrue(new SmartArm(arm, SmartArm.Goal.CORAL_L2BACK));
     operator.coralL3().onTrue(new SmartArm(arm, SmartArm.Goal.CORAL_L3BACK));
+    operator.coralL3().onTrue(intake.shuffleCoralToBack());
     operator.coralL4().onTrue(new SmartArm(arm, SmartArm.Goal.CORAL_L4BACK));
+    operator.coralL4().onTrue(intake.shuffleCoralToBack());
+
     operator
         .coralL2()
         .and(operator.frontModifier())
@@ -407,6 +411,7 @@ public class RobotContainer {
         .coralL3()
         .and(operator.frontModifier())
         .onTrue(new SmartArm(arm, SmartArm.Goal.CORAL_L3));
+    operator.coralL3().and(operator.frontModifier()).onTrue(intake.shuffleCoralToFront());
     operator.algaeL1().onTrue(new SmartArm(arm, SmartArm.Goal.ALGAE_L1));
     operator.algaeL2().onTrue(new SmartArm(arm, SmartArm.Goal.ALGAE_L2));
     operator.algaeScore().onTrue(new SmartArm(arm, SmartArm.Goal.ALGAE_SCORE));

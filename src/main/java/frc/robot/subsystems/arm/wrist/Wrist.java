@@ -159,9 +159,8 @@ public class Wrist extends SubsystemBase {
     CLIMB_DOWN(Rotations.of(0.9)),
 
     // Coral positions
+    CORAL_PRE_INTAKE(Rotations.of(1.6)),
     CORAL_FLOOR_INTAKE(Rotations.of(1.55)),
-    // CORAL_FLOOR_INTAKE(Rotations.of(0)),
-
     CORAL_STATION_INTAKE(Rotations.of(1.71)),
     CORAL_L1(Rotations.of(1.45)),
     CORAL_L1BACK(Rotations.of(0)),
@@ -228,6 +227,9 @@ public class Wrist extends SubsystemBase {
               Map.entry(WristPosition.CLIMB_DOWN, createPositionCommand(WristPosition.CLIMB_DOWN)),
 
               // Coral positions
+              Map.entry(
+                  WristPosition.CORAL_PRE_INTAKE,
+                  createPositionCommand(WristPosition.CORAL_PRE_INTAKE)),
               Map.entry(
                   WristPosition.CORAL_FLOOR_INTAKE,
                   createPositionCommand(WristPosition.CORAL_FLOOR_INTAKE)),
@@ -321,6 +323,13 @@ public class Wrist extends SubsystemBase {
    */
   public final Command standby() {
     return setPositionCommand(WristPosition.STANDBY);
+  }
+
+  /**
+   * @return Command to move the wrist to coral pre-intake position
+   */
+  public final Command coralPreIntake() {
+    return setPositionCommand(WristPosition.CORAL_PRE_INTAKE);
   }
 
   /**
