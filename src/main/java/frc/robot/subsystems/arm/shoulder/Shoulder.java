@@ -170,6 +170,7 @@ public class Shoulder extends SubsystemBase {
     CLIMB_DOWN(Rotations.of(-0.16)),
 
     // Coral positions
+    CORAL_PRE_INTAKE(Rotations.of(0.14)),
     CORAL_FLOOR_INTAKE(Rotations.of(0.05)),
     CORAL_STATION_INTAKE(Rotations.of(0.23)),
     CORAL_L1(Rotations.of(0.17)),
@@ -239,6 +240,9 @@ public class Shoulder extends SubsystemBase {
                   ShoulderPosition.CLIMB_DOWN, createPositionCommand(ShoulderPosition.CLIMB_DOWN)),
 
               // Coral positions
+              Map.entry(
+                  ShoulderPosition.CORAL_PRE_INTAKE,
+                  createPositionCommand(ShoulderPosition.CORAL_PRE_INTAKE)),
               Map.entry(
                   ShoulderPosition.CORAL_FLOOR_INTAKE,
                   createPositionCommand(ShoulderPosition.CORAL_FLOOR_INTAKE)),
@@ -352,6 +356,13 @@ public class Shoulder extends SubsystemBase {
    */
   public final Command standby() {
     return setPositionCommand(ShoulderPosition.STANDBY);
+  }
+
+  /**
+   * @return Command to move the shoulder to coral pre-intake position
+   */
+  public final Command coralPreIntake() {
+    return setPositionCommand(ShoulderPosition.CORAL_PRE_INTAKE);
   }
 
   /**

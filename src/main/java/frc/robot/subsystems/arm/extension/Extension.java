@@ -150,6 +150,7 @@ public class Extension extends SubsystemBase {
     CLIMB_DOWN(Inches.of(0)),
 
     // Coral positions
+    CORAL_PRE_INTAKE(Inches.of(0)),
     CORAL_FLOOR_INTAKE(Inches.of(14)),
     CORAL_STATION_INTAKE(Inches.of(30)),
     CORAL_L1(Inches.of(0)),
@@ -225,6 +226,9 @@ public class Extension extends SubsystemBase {
                   createPositionCommand(ExtensionPosition.CLIMB_DOWN)),
 
               // Coral positions
+              Map.entry(
+                  ExtensionPosition.CORAL_PRE_INTAKE,
+                  createPositionCommand(ExtensionPosition.CORAL_PRE_INTAKE)),
               Map.entry(
                   ExtensionPosition.CORAL_FLOOR_INTAKE,
                   createPositionCommand(ExtensionPosition.CORAL_FLOOR_INTAKE)),
@@ -328,6 +332,13 @@ public class Extension extends SubsystemBase {
    */
   public final Command standby() {
     return setPositionCommand(ExtensionPosition.STANDBY);
+  }
+
+  /**
+   * @return Command to move the extension to coral pre-intake position
+   */
+  public final Command coralPreIntake() {
+    return setPositionCommand(ExtensionPosition.CORAL_PRE_INTAKE);
   }
 
   /**

@@ -228,14 +228,14 @@ public class RobotContainer {
     NamedCommands.registerCommand(
         "Align_Left",
         Commands.parallel(new ReefDrive(drivetrain, ReefDrive.Side.LEFT), coralL4BackLeft)
-            .withDeadline(Commands.waitSeconds(3))
+            .withDeadline(Commands.waitSeconds(2))
             .andThen(intake.AUTO_SHOOT())
             .withTimeout(5));
 
     NamedCommands.registerCommand(
         "Align_Right",
         Commands.parallel(new ReefDrive(drivetrain, ReefDrive.Side.RIGHT), coralL4BackRight)
-            .withDeadline(Commands.waitSeconds(3))
+            .withDeadline(Commands.waitSeconds(2))
             .andThen(intake.AUTO_SHOOT())
             .withTimeout(5));
     NamedCommands.registerCommand("Standby", standby);
@@ -387,7 +387,7 @@ public class RobotContainer {
             Commands.either(
                 intake.scoreCoralFromBack(), intake.scoreCoralFromFront(), arm::isScoringFront));
     driver.povUp().onTrue(new SmartArm(arm, SmartArm.Goal.CORAL_STATION_INTAKE));
-    driver.povLeft().onTrue(new SmartArm(arm, SmartArm.Goal.STANDBY));
+    driver.povLeft().onTrue(arm.coralPreIntakeToFloorIntake());
     driver.povDown().onTrue(new SmartArm(arm, SmartArm.Goal.CORAL_FLOOR_INTAKE));
 
     driver.a().onTrue(new SmartArm(arm, SmartArm.Goal.CLIMB_DOWN));
@@ -398,7 +398,10 @@ public class RobotContainer {
     operator.coralL1().onTrue(new SmartArm(arm, SmartArm.Goal.CORAL_L1));
     operator.coralL2().onTrue(new SmartArm(arm, SmartArm.Goal.CORAL_L2BACK));
     operator.coralL3().onTrue(new SmartArm(arm, SmartArm.Goal.CORAL_L3BACK));
+    operator.coralL3().onTrue(intake.shuffleCoralToBack());
     operator.coralL4().onTrue(new SmartArm(arm, SmartArm.Goal.CORAL_L4BACK));
+    operator.coralL4().onTrue(intake.shuffleCoralToBack());
+
     operator
         .coralL2()
         .and(operator.frontModifier())
