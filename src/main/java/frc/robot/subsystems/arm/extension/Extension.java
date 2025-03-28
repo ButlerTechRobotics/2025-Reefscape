@@ -158,7 +158,7 @@ public class Extension extends SubsystemBase {
     CORAL_L2(Inches.of(0)),
     CORAL_L2BACK(Inches.of(0)),
     CORAL_L3(Inches.of(16)),
-    CORAL_L3BACK(Inches.of(7)),
+    CORAL_L3BACK(Inches.of(5)),
     CORAL_L4BACK(Inches.of(60)),
 
     // Algae positions
