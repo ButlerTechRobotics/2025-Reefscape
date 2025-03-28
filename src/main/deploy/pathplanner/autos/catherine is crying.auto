@@ -11,22 +11,9 @@
           }
         },
         {
-          "type": "race",
+          "type": "named",
           "data": {
-            "commands": [
-              {
-                "type": "named",
-                "data": {
-                  "name": "Arm-L4"
-                }
-              },
-              {
-                "type": "wait",
-                "data": {
-                  "waitTime": 1.5
-                }
-              }
-            ]
+            "name": "Align_Left"
           }
         },
         {
@@ -36,28 +23,39 @@
           }
         },
         {
-          "type": "parallel",
+          "type": "path",
           "data": {
-            "commands": [
-              {
-                "type": "wait",
-                "data": {
-                  "waitTime": 1.0
-                }
-              }
-            ]
+            "pathName": "D1 - FL-R"
+          }
+        },
+        {
+          "type": "named",
+          "data": {
+            "name": "Align_Right"
           }
         },
         {
           "type": "path",
           "data": {
-            "pathName": "D1 - FL-R"
+            "pathName": "FL-R - D2"
+          }
+        },
+        {
+          "type": "path",
+          "data": {
+            "pathName": "D2 - F-L"
+          }
+        },
+        {
+          "type": "named",
+          "data": {
+            "name": "Align_Left"
           }
         }
       ]
     }
   },
   "resetOdom": true,
-  "folder": null,
+  "folder": "DANDELION",
   "choreoAuto": false
 }

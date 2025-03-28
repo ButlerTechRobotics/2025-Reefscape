@@ -251,8 +251,6 @@ public class Arm extends SubsystemBase {
 
   @AutoLogOutput(key = "Arm/IsScoringFront")
   public boolean isScoringFront() {
-    return currentGoal == Goal.CORAL_L1
-        || currentGoal == Goal.CORAL_L2
-        || currentGoal == Goal.CORAL_L3;
+    return currentGoal == Goal.CORAL_L2 || currentGoal == Goal.CORAL_L3;
   }
 }

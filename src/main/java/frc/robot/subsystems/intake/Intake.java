@@ -106,7 +106,7 @@ public class Intake extends SubsystemBase {
   /** Enumeration of available intake positions with their corresponding target angles. */
   public enum IntakeMode {
     STOP(Voltage.ofBaseUnits(0, Volts)),
-    INTAKE(Voltage.ofBaseUnits(8, Volts)),
+    INTAKE(Voltage.ofBaseUnits(5, Volts)),
     SHUFFLE_TO_FRONT(Voltage.ofBaseUnits(-1.5, Volts)),
     SHUFFLE_TO_BACK(Voltage.ofBaseUnits(1.5, Volts)),
     SHOOT_FRONT(Voltage.ofBaseUnits(-5, Volts)),
