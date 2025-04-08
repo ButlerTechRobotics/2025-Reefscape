@@ -379,7 +379,7 @@ public class RobotContainer {
                     Commands.startEnd(
                         () -> leds.setIsAutoAligning(true), () -> leds.setIsAutoAligning(false))));
 
-    // // Driver Button Bindings
+    // Driver Button Bindings
     driver.intake().whileTrue(intake.intakeCoralToBack()).onFalse(intake.STOP());
     driver
         .shoot()
@@ -388,19 +388,24 @@ public class RobotContainer {
                 intake.scoreCoralFromBack(), intake.scoreCoralFromFront(), arm::isScoringFront));
     driver.povUp().onTrue(new SmartArm(arm, SmartArm.Goal.CORAL_STATION_INTAKE));
     driver.povLeft().onTrue(arm.coralPreIntakeToFloorIntake());
+    driver.povRight().onTrue(new SmartArm(arm, SmartArm.Goal.STANDBY));
     driver.povDown().onTrue(new SmartArm(arm, SmartArm.Goal.CORAL_FLOOR_INTAKE));
 
     driver.a().onTrue(new SmartArm(arm, SmartArm.Goal.CLIMB_DOWN));
     driver.y().onTrue(new SmartArm(arm, SmartArm.Goal.CLIMB));
     driver.b().onTrue(intake.shuffleCoralToBack());
 
-    // // Operator Button Bindings
+    // Operator Button Bindings
     operator.coralL1().onTrue(new SmartArm(arm, SmartArm.Goal.CORAL_L1));
     operator.coralL2().onTrue(new SmartArm(arm, SmartArm.Goal.CORAL_L2BACK));
-    operator.coralL3().onTrue(new SmartArm(arm, SmartArm.Goal.CORAL_L3BACK));
-    operator.coralL3().onTrue(intake.shuffleCoralToBack());
-    operator.coralL4().onTrue(new SmartArm(arm, SmartArm.Goal.CORAL_L4BACK));
-    operator.coralL4().onTrue(intake.shuffleCoralToBack());
+    operator
+        .coralL3()
+        .onTrue(new SmartArm(arm, SmartArm.Goal.CORAL_L3BACK))
+        .onTrue(intake.shuffleCoralToBack());
+    operator
+        .coralL4()
+        .onTrue(new SmartArm(arm, SmartArm.Goal.CORAL_L4BACK))
+        .onTrue(intake.shuffleCoralToBack());
 
     operator
         .coralL2()
@@ -409,8 +414,8 @@ public class RobotContainer {
     operator
         .coralL3()
         .and(operator.frontModifier())
-        .onTrue(new SmartArm(arm, SmartArm.Goal.CORAL_L3));
-    operator.coralL3().and(operator.frontModifier()).onTrue(intake.shuffleCoralToFront());
+        .onTrue(new SmartArm(arm, SmartArm.Goal.CORAL_L3))
+        .onTrue(intake.shuffleCoralToFront());
     operator.algaeL1().onTrue(new SmartArm(arm, SmartArm.Goal.ALGAE_L1));
     operator.algaeL2().onTrue(new SmartArm(arm, SmartArm.Goal.ALGAE_L2));
     operator.algaeScore().onTrue(new SmartArm(arm, SmartArm.Goal.ALGAE_SCORE));

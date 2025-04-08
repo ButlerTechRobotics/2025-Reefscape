@@ -168,7 +168,7 @@ public class Wrist extends SubsystemBase {
     CORAL_L2BACK(Rotations.of(0.45)),
     CORAL_L3(Rotations.of(0.8)),
     // CORAL_L3BACK(Rotations.of(0.897)),
-    CORAL_L3BACK(Rotations.of(0.76)),
+    CORAL_L3BACK(Rotations.of(0.75)),
     CORAL_L4(Rotations.of(0)),
     CORAL_L4BACK(Rotations.of(0.55)),
 

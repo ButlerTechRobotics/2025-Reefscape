@@ -152,7 +152,7 @@ public class ReefDrive extends Command {
 
     // Thresholds for determining if we've reached the target
     final double POSITION_THRESHOLD = 0.005; // .5cm position tolerance
-    final double ROTATION_THRESHOLD = 3.0; // 3 degree rotation tolerance
+    final double ROTATION_THRESHOLD = 0.5; // 0.5 degree rotation tolerance
 
     // Check if we're within tolerance
     boolean atPosition = positionError < POSITION_THRESHOLD;
