@@ -25,7 +25,9 @@ import edu.wpi.first.wpilibj2.command.Commands;
 import edu.wpi.first.wpilibj2.command.button.Trigger;
 import edu.wpi.first.wpilibj2.command.sysid.SysIdRoutine;
 import frc.robot.commands.DriveCommands;
+import frc.robot.commands.MagicSequencing;
 import frc.robot.commands.ReefDrive;
+import frc.robot.commands.ReefDrive.Side;
 import frc.robot.commands.SmartArm;
 import frc.robot.generated.TunerConstants;
 import frc.robot.subsystems.arm.Arm;
@@ -60,6 +62,7 @@ import frc.robot.utils.DisabledInstantCommand;
 import frc.robot.utils.DriverController;
 import frc.robot.utils.OperatorController;
 import frc.robot.utils.TunableController.TunableControllerType;
+import java.util.Set;
 import org.littletonrobotics.junction.networktables.LoggedDashboardChooser;
 
 public class RobotContainer {
@@ -320,8 +323,7 @@ public class RobotContainer {
 
     // Create a trigger that detects when we have a game piece while in floor intake position
     Trigger gamePickedUpInFloorIntake =
-        new Trigger(
-            () -> intake.hasBackGamePiece() && (arm.getGoal() == Arm.Goal.CORAL_FLOOR_INTAKE));
+        new Trigger(() -> intake.hasBackGamePiece() && (arm.getGoal() == Arm.Goal.STOW));
 
     // When this trigger becomes active, move to standby position AND shuffle the coral to back
     gamePickedUpInFloorIntake.onTrue(
@@ -363,14 +365,23 @@ public class RobotContainer {
     // reset the field-centric heading on left bumper press
     driver.resetHeading().onTrue(Commands.runOnce(() -> drivetrain.resetPose(Pose2d.kZero)));
 
+    // driver
+    //     .leftStick()
+    //     .whileTrue(
+    //         new ReefDrive(drivetrain, ReefDrive.Side.LEFT)
+    //             .alongWith(
+    //                 Commands.startEnd(
+    //                     () -> leds.setIsAutoAligning(true), () ->
+    // leds.setIsAutoAligning(false))));
+
     driver
         .leftStick()
         .whileTrue(
-            new ReefDrive(drivetrain, ReefDrive.Side.LEFT)
-                .alongWith(
-                    Commands.startEnd(
-                        () -> leds.setIsAutoAligning(true), () -> leds.setIsAutoAligning(false))));
-
+            Commands.defer(
+                () ->
+                    MagicSequencing.magicScoreScore(
+                        drivetrain, arm, intake, Side.LEFT, Arm.Goal.CORAL_L4BACK, () -> true),
+                Set.of(drivetrain, arm, intake)));
     driver
         .rightStick()
         .whileTrue(
@@ -387,9 +398,8 @@ public class RobotContainer {
             Commands.either(
                 intake.scoreCoralFromBack(), intake.scoreCoralFromFront(), arm::isScoringFront));
     driver.povUp().onTrue(new SmartArm(arm, SmartArm.Goal.CORAL_STATION_INTAKE));
-    driver.povLeft().onTrue(new SmartArm(arm, SmartArm.Goal.STANDBY));
-    driver.povDown().onTrue(new SmartArm(arm, SmartArm.Goal.CORAL_FLOOR_INTAKE));
-
+    driver.povLeft().onTrue(arm.safeGoToPreIntake());
+    driver.povDown().onTrue(arm.safeGoToFloorIntake());
     driver.a().onTrue(new SmartArm(arm, SmartArm.Goal.CLIMB_DOWN));
     driver.y().onTrue(new SmartArm(arm, SmartArm.Goal.CLIMB));
     driver.b().onTrue(intake.shuffleCoralToBack());

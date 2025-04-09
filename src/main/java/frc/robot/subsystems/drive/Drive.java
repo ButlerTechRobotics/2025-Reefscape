@@ -32,6 +32,7 @@ import edu.wpi.first.wpilibj.Alert.AlertType;
 import edu.wpi.first.wpilibj.DriverStation;
 import edu.wpi.first.wpilibj.DriverStation.Alliance;
 import edu.wpi.first.wpilibj2.command.Command;
+import edu.wpi.first.wpilibj2.command.Commands;
 import edu.wpi.first.wpilibj2.command.SubsystemBase;
 import edu.wpi.first.wpilibj2.command.button.Trigger;
 import edu.wpi.first.wpilibj2.command.sysid.SysIdRoutine;
@@ -42,7 +43,9 @@ import frc.robot.subsystems.drive.requests.SwerveSetpointGen;
 import frc.robot.subsystems.drive.requests.SysIdSwerveSteerGains_Torque;
 import frc.robot.subsystems.drive.requests.SysIdSwerveTranslation_Torque;
 import frc.robot.subsystems.vision.VisionUtil.VisionMeasurement;
+import frc.robot.utils.AllianceFlipUtil;
 import frc.robot.utils.ArrayBuilder;
+import frc.robot.utils.FieldConstants;
 import java.util.List;
 import java.util.function.Supplier;
 import org.littletonrobotics.junction.AutoLogOutput;
@@ -313,6 +316,38 @@ public class Drive extends SubsystemBase {
    */
   public Command sysIdDynamic(SysIdRoutine.Direction direction) {
     return m_sysIdRoutineToApply.dynamic(direction);
+  }
+
+  /**
+   * Checks if the robot is within the specified distance of a target reef pose.
+   *
+   * @param toleranceMeters The distance tolerance in meters
+   * @return True if the robot is within the specified distance of the target pose
+   */
+  public boolean isWithinDistanceOfReef(double toleranceMeters) {
+    // Get current robot pose
+    Pose2d currentPose = getPose();
+
+    // Calculate distance between current position and target position
+    double distance =
+        currentPose
+            .getTranslation()
+            .getDistance(AllianceFlipUtil.apply(FieldConstants.Reef.center));
+
+    // Return whether the distance is within tolerance
+    return distance <= toleranceMeters;
+  }
+
+  /**
+   * Creates a command that waits until the robot is within a certain distance of a reef pose.
+   *
+   * @param targetPose The target reef pose to measure distance to
+   * @param toleranceMeters The distance tolerance in meters
+   * @return A command that completes when the robot is within the specified distance
+   */
+  public Command waitUntilWithinReefDistance(double toleranceMeters) {
+    return Commands.waitUntil(() -> isWithinDistanceOfReef(toleranceMeters))
+        .withName("Wait For Reef Distance");
   }
 
   @Override

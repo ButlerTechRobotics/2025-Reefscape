@@ -340,7 +340,7 @@ public class Extension extends SubsystemBase {
   public final Command coralPreIntake() {
     return setPositionCommand(ExtensionPosition.CORAL_PRE_INTAKE);
   }
-  
+
   /**
    * @return Command to move the extension to coral floor intake position
    */

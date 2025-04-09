@@ -177,22 +177,22 @@ public class ShoulderIOCTRE implements ShoulderIO {
     config.Slot0.StaticFeedforwardSign = StaticFeedforwardSignValue.UseClosedLoopSign;
     config.Slot0.kP = 110; // Proportional gain
     config.Slot0.kI = 0; // Integral gain
-    config.Slot0.kD = 25; // Derivative gain
-    config.Slot0.kS = 1; // Static friction compensation
+    config.Slot0.kD = 34; // Derivative gain
+    config.Slot0.kS = 2; // Static friction compensation
     config.Slot0.kV = 0; // Velocity feedforward
     config.Slot0.kA = 0; // Acceleration feedforward
-    config.Slot0.kG = 0; // Gravity feedforward
+    config.Slot0.kG = 6; // Gravity feedforward
 
     // Configure Slot 1 (Extension out)
     config.Slot1.GravityType = GravityTypeValue.Arm_Cosine;
     config.Slot1.StaticFeedforwardSign = StaticFeedforwardSignValue.UseClosedLoopSign;
     config.Slot1.kP = 110; // Proportional gain
     config.Slot1.kI = 0; // Integral gain
-    config.Slot1.kD = 25; // Derivative gain
-    config.Slot1.kS = 1; // Static friction compensation
+    config.Slot1.kD = 34; // Derivative gain
+    config.Slot1.kS = 2; // Static friction compensation
     config.Slot1.kV = 0; // Velocity feedforward
     config.Slot1.kA = 0; // Acceleration feedforward
-    config.Slot1.kG = 0; // Gravity feedforward
+    config.Slot1.kG = 6; // Gravity feedforward
     return config;
   }
   /**
