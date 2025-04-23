@@ -5,7 +5,7 @@
 // license that can be found in the LICENSE file at
 // the root directory of this project.
 
-package frc.robot.subsystems.arm.shoulder;
+package frc.robot.subsystems.wrist;
 
 import static edu.wpi.first.units.Units.Amps;
 import static edu.wpi.first.units.Units.Rotations;
@@ -18,14 +18,11 @@ import edu.wpi.first.units.measure.Current;
 import edu.wpi.first.units.measure.Voltage;
 import org.littletonrobotics.junction.AutoLog;
 
-public interface ShoulderIO {
+public interface WristIO {
   @AutoLog
-  public static class ShoulderIOInputs {
-    // Connection status for all motors
-    public boolean brLeaderConnected = false;
-    public boolean blFollowerConnected = false;
-    public boolean frFollowerConnected = false;
-    public boolean flFollowerConnected = false;
+  public static class WristIOInputs {
+    public boolean leaderConnected = false;
+    public boolean followerConnected = false;
     public boolean encoderConnected = false;
 
     /** Current neutral mode. True = brake, False = coast */
@@ -34,46 +31,31 @@ public interface ShoulderIO {
     /** Current disable state. True = disabled, False = enabled */
     public boolean disableOverride = false;
 
-    // Position measurements
-    public Angle brLeaderPosition = Rotations.of(0);
-    public Angle brLeaderRotorPosition = Rotations.of(0);
+    public Angle leaderPosition = Rotations.of(0);
+    public Angle leaderRotorPosition = Rotations.of(0);
     public Angle encoderPosition = Rotations.of(0);
 
-    // Velocity measurements
-    public AngularVelocity brLeaderVelocity = RotationsPerSecond.of(0);
-    public AngularVelocity brLeaderRotorVelocity = RotationsPerSecond.of(0);
+    public AngularVelocity leaderVelocity = RotationsPerSecond.of(0);
+    public AngularVelocity leaderRotorVelocity = RotationsPerSecond.of(0);
     public AngularVelocity encoderVelocity = RotationsPerSecond.of(0);
 
-    // Voltage and current measurements
     public Voltage appliedVoltage = Volts.of(0.0);
+    public Current leaderStatorCurrent = Amps.of(0);
+    public Current followerStatorCurrent = Amps.of(0);
+    public Current leaderSupplyCurrent = Amps.of(0);
+    public Current followerSupplyCurrent = Amps.of(0);
 
-    // Stator currents for all motors
-    public Current brLeaderStatorCurrent = Amps.of(0);
-    public Current blFollowerStatorCurrent = Amps.of(0);
-    public Current frFollowerStatorCurrent = Amps.of(0);
-    public Current flFollowerStatorCurrent = Amps.of(0);
-
-    // Supply currents for all motors
-    public Current brLeaderSupplyCurrent = Amps.of(0);
-    public Current blFollowerSupplyCurrent = Amps.of(0);
-    public Current frFollowerSupplyCurrent = Amps.of(0);
-    public Current flFollowerSupplyCurrent = Amps.of(0);
-
-    // Derived angle measurement
-    public Angle shoulderAngle = Rotations.of(0);
+    public Angle wristAngle = Rotations.of(0);
 
     /** Current control slot being used (0 or 1) */
     public int activeControlSlot = 0;
   }
 
   /** Updates the set of loggable inputs. */
-  public default void updateInputs(ShoulderIOInputs inputs) {}
+  public default void updateInputs(WristIOInputs inputs) {}
 
-  /** Run closed loop at the specified position. */
+  /** Run closed loop at the specified velocity. */
   public default void setPosition(Angle angle) {}
-
-  /** Run open loop at the specified voltage. */
-  default void runVolts(double volts) {}
 
   /** Run open loop at the specified voltage. */
   public default void setVoltage(Voltage voltage) {}
