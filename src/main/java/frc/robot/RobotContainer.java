@@ -22,13 +22,14 @@ import edu.wpi.first.units.measure.LinearVelocity;
 import edu.wpi.first.wpilibj.DriverStation;
 import edu.wpi.first.wpilibj2.command.Command;
 import edu.wpi.first.wpilibj2.command.Commands;
+import edu.wpi.first.wpilibj2.command.InstantCommand;
 import edu.wpi.first.wpilibj2.command.button.Trigger;
 import edu.wpi.first.wpilibj2.command.sysid.SysIdRoutine;
 import frc.robot.commands.DriveCommands;
 import frc.robot.commands.ReefDrive;
-import frc.robot.commands.SmartArm;
+import frc.robot.config.PortConfiguration;
 import frc.robot.generated.TunerConstants;
-import frc.robot.subsystems.arm.Arm;
+import frc.robot.subsystems.Superstructure;
 import frc.robot.subsystems.drive.Drive;
 import frc.robot.subsystems.drive.DriveIO;
 import frc.robot.subsystems.drive.DriveIOCTRE;
@@ -41,13 +42,9 @@ import frc.robot.subsystems.intake.IntakeIO;
 import frc.robot.subsystems.intake.IntakeIOCTRE;
 import frc.robot.subsystems.intake.IntakeIOSIM;
 import frc.robot.subsystems.leds.LEDs;
-import frc.robot.subsystems.onboardbuttons.OnBoardButtons;
-import frc.robot.subsystems.onboardbuttons.OnBoardButtonsIO;
-import frc.robot.subsystems.onboardbuttons.OnBoardButtonsIOReal;
 import frc.robot.subsystems.shoulder.Shoulder;
 import frc.robot.subsystems.shoulder.ShoulderIO;
 import frc.robot.subsystems.shoulder.ShoulderIOCTRE;
-import frc.robot.subsystems.shoulder.ShoulderIOSIM;
 import frc.robot.subsystems.vision.Vision;
 import frc.robot.subsystems.vision.VisionIO;
 import frc.robot.subsystems.vision.VisionIOPhotonVision;
@@ -64,29 +61,28 @@ import org.littletonrobotics.junction.networktables.LoggedDashboardChooser;
 
 public class RobotContainer {
   private LinearVelocity MaxSpeed = TunerConstants.kSpeedAt12Volts;
-  private final DriverController driver = new DriverController(0, TunableControllerType.LINEAR);
-  private final OperatorController operator =
-      new OperatorController(1, TunableControllerType.LINEAR);
+  
 
-  private final LoggedDashboardChooser<Command> autoChooser;
+  private LoggedDashboardChooser<Command> autoChooser;
 
-  public final Drive drivetrain;
+  private Drive drivetrain;
   // CTRE Default Drive Request
   private final SwerveRequest.FieldCentric drive =
       new SwerveRequest.FieldCentric()
           .withDeadband(MaxSpeed.times(0.15))
           .withRotationalDeadband(Constants.MaxAngularRate.times(0.15)) // Add a 10% deadband
           .withDriveRequestType(DriveRequestType.OpenLoopVoltage);
-  public final Intake intake;
-  public final Arm arm;
-  public final OnBoardButtons onBoardButtons;
+  private Intake intake;
+  private Shoulder shoulder;
+  private final DriverController driver = new DriverController(0, TunableControllerType.LINEAR);
+  private final OperatorController operator =
+      new OperatorController(1, TunableControllerType.LINEAR);
+
+  private final Superstructure superstructure;
   private final LEDs leds;
 
   public RobotContainer() {
-    // Declare component subsystems (not visible outside constructor)
-    Extension extension = null;
-    Shoulder shoulder = null;
-    Wrist wrist = null;
+    PortConfiguration portConfiguration;
 
     DriveIOCTRE currentDriveTrain = TunerConstants.createDrivetrain();
     switch (Constants.currentMode) {
@@ -134,10 +130,7 @@ public class RobotContainer {
                 drivetrain::getVisionParameters));
 
         intake = new Intake(new IntakeIOCTRE());
-        extension = new Extension(new ExtensionIOCTRE());
-        shoulder = new Shoulder(new ShoulderIOCTRE());
-        wrist = new Wrist(new WristIOCTRE());
-        onBoardButtons = new OnBoardButtons(new OnBoardButtonsIOReal(3, 4));
+        shoulder = new Shoulder(new ShoulderIOCTRE(portConfiguration));
         break;
 
       case SIM:
@@ -184,10 +177,7 @@ public class RobotContainer {
                 drivetrain::getVisionParameters));
 
         intake = new Intake(new IntakeIOSIM());
-        extension = new Extension(new ExtensionIOSIM());
-        shoulder = new Shoulder(new ShoulderIOSIM());
-        wrist = new Wrist(new WristIOSIM());
-        onBoardButtons = new OnBoardButtons(new OnBoardButtonsIO() {});
+        shoulder = new Shoulder(new ShoulderIO() {});
         break;
 
       default:
@@ -202,14 +192,10 @@ public class RobotContainer {
             new VisionIO() {});
 
         intake = new Intake(new IntakeIO() {});
-        extension = new Extension(new ExtensionIO() {});
         shoulder = new Shoulder(new ShoulderIO() {});
-        wrist = new Wrist(new WristIO() {});
-        onBoardButtons = new OnBoardButtons(new OnBoardButtonsIO() {});
         break;
     }
-
-    arm = new Arm(shoulder, extension, wrist, intake);
+    superstructure = new Superstructure(shoulder);
     leds = new LEDs();
 
     // Set up the named commands
@@ -389,7 +375,9 @@ public class RobotContainer {
     driver.povUp().onTrue(new SmartArm(arm, SmartArm.Goal.CORAL_STATION_INTAKE));
     driver.povLeft().onTrue(arm.coralPreIntakeToFloorIntake());
     driver.povRight().onTrue(new SmartArm(arm, SmartArm.Goal.STANDBY));
-    driver.povDown().onTrue(new SmartArm(arm, SmartArm.Goal.CORAL_FLOOR_INTAKE));
+    // driver.povDown().onTrue(new SmartArm(arm, SmartArm.Goal.CORAL_FLOOR_INTAKE));
+    new Trigger(driver.povDown())
+    .onTrue(superstructure.setWantedSuperStateCommand(Superstructure.WantedSuperState.INTAKE_READY));
 
     driver.a().onTrue(new SmartArm(arm, SmartArm.Goal.CLIMB_DOWN));
     driver.y().onTrue(new SmartArm(arm, SmartArm.Goal.CLIMB));

@@ -1,10 +1,3 @@
-// Copyright (c) 2025 FRC 325/144 & 5712
-// https://hemlock5712.github.io/Swerve-Setup/home.html
-//
-// Use of this source code is governed by an MIT-style
-// license that can be found in the LICENSE file at
-// the root directory of this project.
-
 package frc.robot.subsystems.shoulder;
 
 import static edu.wpi.first.units.Units.*;
@@ -17,9 +10,11 @@ import edu.wpi.first.wpilibj.DriverStation;
 import edu.wpi.first.wpilibj.Timer;
 import edu.wpi.first.wpilibj2.command.Command;
 import edu.wpi.first.wpilibj2.command.SubsystemBase;
-import frc.robot.RobotContainer;
 import frc.robot.subsystems.arm.shoulder.ShoulderIOInputsAutoLogged;
+import frc.robot.utils.SignalProcessor;
 import org.littletonrobotics.junction.Logger;
+
+import java.util.concurrent.Future;
 
 /**
  * The Shoulder subsystem controls a quad-motor shoulder mechanism for game piece manipulation. It
@@ -39,6 +34,16 @@ public class Shoulder extends SubsystemBase {
   private static final double SHOULDER_HOMING_PITCH = -1.9;
   private static final double ACCEPTABLE_PITCH_ERROR_DEGREES = 1.0;
   private double setpointDegrees = 0.0;
+
+  // Filter parameters for signal processing
+  private static final double SHOULDER_POSITION_FILTER_ALPHA = 0.8;
+  private static final double SHOULDER_VELOCITY_FILTER_ALPHA = 0.7;
+  private double filteredPosition = 0.0;
+  private double filteredVelocity = 0.0;
+  
+  // Future objects for async processing results
+  private Future<?> positionProcessingFuture;
+  private Future<?> velocityProcessingFuture;
 
   private boolean isInitialized = false;
 
@@ -78,6 +83,7 @@ public class Shoulder extends SubsystemBase {
   private Alert brMotorDisconnected =
       new Alert("BR Shoulder motor disconnected!", Alert.AlertType.kWarning);
   private Alert encoderDisconnected = new Alert("Shoulder encoder disconnected!", AlertType.kError);
+  
   /**
    * Creates a new Shoulder subsystem with the specified hardware interface.
    *
@@ -93,6 +99,9 @@ public class Shoulder extends SubsystemBase {
     // Update and log inputs from hardware
     io.updateInputs(inputs);
     Logger.processInputs("Shoulder", inputs);
+
+    // Process position and velocity data asynchronously with filtering
+    processSignals();
 
     SystemState newState = handleStateTransitions();
     if (newState != systemState) {
@@ -144,9 +153,11 @@ public class Shoulder extends SubsystemBase {
     }
 
     // Write outputs
-    Logger.recordOutput("Shoulder/WantedState", wantedState);
+    Logger.recordOutput("Shoulder/WantedState", wantedState.toString());
     Logger.recordOutput("Shoulder/PitchSetpointDegrees", setpointDegrees);
     Logger.recordOutput("Shoulder/IsZeroed", isZeroed);
+    Logger.recordOutput("Shoulder/FilteredPosition", filteredPosition);
+    Logger.recordOutput("Shoulder/FilteredVelocity", filteredVelocity);
 
     // Alerts
     flMotorDisconnected.set(!inputs.flConnected);
@@ -156,13 +167,41 @@ public class Shoulder extends SubsystemBase {
     encoderDisconnected.set(!inputs.encoderConnected);
   }
 
+  /**
+   * Process position and velocity signals asynchronously with filtering.
+   */
+  private void processSignals() {
+    // Process position data asynchronously
+    positionProcessingFuture = SignalProcessor.processAsync(
+        () -> inputs.shoulderPositionDegrees,
+        rawPosition -> {
+            filteredPosition = SignalProcessor.lowPassFilter(
+                rawPosition, 
+                filteredPosition, 
+                SHOULDER_POSITION_FILTER_ALPHA);
+            Logger.recordOutput("Shoulder/FilteredPosition", filteredPosition);
+        },
+        "Shoulder/Position");
+    
+    // Process velocity data asynchronously
+    velocityProcessingFuture = SignalProcessor.processAsync(
+        () -> inputs.shoulderVelocityDegrees,
+        rawVelocity -> {
+            filteredVelocity = SignalProcessor.lowPassFilter(
+                rawVelocity, 
+                filteredVelocity, 
+                SHOULDER_VELOCITY_FILTER_ALPHA);
+            Logger.recordOutput("Shoulder/FilteredVelocity", filteredVelocity);
+        },
+        "Shoulder/Velocity");
+  }
+
   private SystemState handleStateTransitions() {
     switch (wantedState) {
       case HOME:
         zeroCompleted = false;
         if (!DriverStation.isDisabled()) {
-          if (Math.abs(io.shoulderVelocityDegrees)
-              < SHOULDER_ZERO_VELOCITY_THRESHOLD_DEGREES_PER_SECOND) {
+          if (filteredVelocity < SHOULDER_ZERO_VELOCITY_THRESHOLD_DEGREES_PER_SECOND) {
             if (!Double.isFinite(zeroTimeStamp)) {
               zeroTimeStamp = Timer.getFPGATimestamp();
               return SystemState.HOMING;
@@ -242,7 +281,7 @@ public class Shoulder extends SubsystemBase {
 
   public boolean shoulderAtSetpoint() {
     return MathUtil.isNear(
-        setpointDegrees, inputs.shoulderPositionDegrees, ACCEPTABLE_PITCH_ERROR_DEGREES);
+        setpointDegrees, filteredPosition, ACCEPTABLE_PITCH_ERROR_DEGREES);
   }
 
   public void setAngle(Angle angleDegrees) {
@@ -255,6 +294,19 @@ public class Shoulder extends SubsystemBase {
   }
 
   public double getCurrentPosition() {
-    return inputs.shoulderPositionDegrees;
+    return filteredPosition;
+  }
+  
+  /**
+   * Cancels any ongoing signal processing operations.
+   * Call this when the robot is disabled or the subsystem is no longer needed.
+   */
+  public void cancelProcessing() {
+    if (positionProcessingFuture != null && !positionProcessingFuture.isDone()) {
+      positionProcessingFuture.cancel(true);
+    }
+    if (velocityProcessingFuture != null && !velocityProcessingFuture.isDone()) {
+      velocityProcessingFuture.cancel(true);
+    }
   }
 }
