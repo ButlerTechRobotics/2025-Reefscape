@@ -35,7 +35,7 @@ import org.littletonrobotics.junction.Logger;
 
 public class DriveCommands extends Command {
 
-  private static PIDController translationController = new PIDController(5.0, 0, 0);
+  private static PIDController translationController = new PIDController(3.0, 0, 0);
   private static PIDController rotationController = new PIDController(8, 0, 0);
 
   static {
