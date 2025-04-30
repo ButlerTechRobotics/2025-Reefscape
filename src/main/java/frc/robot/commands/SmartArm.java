@@ -18,6 +18,7 @@ public class SmartArm extends Command {
   public enum Goal {
     STOW,
     STANDBY,
+    CORAL_PRE_INTAKE,
     CORAL_FLOOR_INTAKE,
     CORAL_STATION_INTAKE,
     CORAL_L1,
@@ -60,6 +61,9 @@ public class SmartArm extends Command {
         break;
       case STANDBY:
         arm.setGoalCommand(Arm.Goal.STANDBY).schedule();
+        break;
+      case CORAL_PRE_INTAKE:
+        arm.setGoalCommand(Arm.Goal.CORAL_PRE_INTAKE).schedule();
         break;
       case CORAL_FLOOR_INTAKE:
         arm.setGoalCommand(Arm.Goal.CORAL_FLOOR_INTAKE).schedule();

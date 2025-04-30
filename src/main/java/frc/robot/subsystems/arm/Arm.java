@@ -94,8 +94,10 @@ public class Arm extends SubsystemBase {
       }
       case STANDBY -> {
         shoulder.standby().schedule();
-        extension.standby().schedule();
-        wrist.standby().schedule();
+        if (shoulder.isAtTarget()) {
+          extension.standby().schedule();
+          wrist.standby().schedule();
+        }
       }
       case CORAL_PRE_INTAKE -> {
         shoulder.coralPreIntake().schedule();
@@ -216,7 +218,7 @@ public class Arm extends SubsystemBase {
 
   /** Command to set goal of arm */
   public Command setGoalCommand(Goal goal) {
-    return startEnd(() -> setGoal(goal), () -> setGoal(Goal.STOW)).withName("Arm " + goal);
+    return startEnd(() -> setGoal(goal), () -> setGoal(Goal.STANDBY)).withName("Arm " + goal);
   }
 
   /** Command to set goal of arm */
@@ -224,12 +226,64 @@ public class Arm extends SubsystemBase {
     return runOnce(() -> setGoal(goal)).withName("Arm " + goal);
   }
 
-  public Command coralPreIntakeToFloorIntake() {
-    return Commands.sequence(
-            setGoalCommand(Goal.CORAL_PRE_INTAKE),
-            Commands.waitUntil(this::isAtTarget),
-            setGoalCommand(Goal.CORAL_FLOOR_INTAKE))
-        .withName("Coral Pre-Intake to Floor Intake");
+  /**
+   * Safely go to CORAL_PRE_INTAKE based on current position. Only routes through STANDBY if
+   * currently in CORAL_L4BACK position.
+   *
+   * @return A command sequence that takes the safest path to pre-intake
+   */
+  public Command safeGoToPreIntake() {
+    return Commands.either(
+            // If in L4BACK, go through STANDBY first
+            Commands.sequence(
+                // First go to STANDBY position
+                setGoalAutoCommand(Goal.STANDBY),
+                // Wait until arm is at STANDBY position
+                Commands.waitUntil(this::isAtTarget),
+                // Then go to PRE_INTAKE position
+                setGoalAutoCommand(Goal.CORAL_PRE_INTAKE)),
+            // Else, skip STANDBY and go through PRE_INTAKE only
+            Commands.sequence(
+                // Go to PRE_INTAKE position
+                setGoalAutoCommand(Goal.CORAL_PRE_INTAKE),
+                // Wait until arm is at PRE_INTAKE position
+                Commands.waitUntil(this::isAtTarget)),
+            // Condition: if currentGoal is CORAL_L4BACK
+            () -> currentGoal == Goal.CORAL_L4BACK)
+        .withName("Safe Pre-Intake");
+  }
+
+  /**
+   * Safely go to CORAL_FLOOR_INTAKE based on current position. Routes through STANDBY only if
+   * currently in CORAL_L4BACK position.
+   *
+   * @return A command sequence that takes the safest path to floor intake
+   */
+  public Command safeGoToFloorIntake() {
+    return Commands.either(
+            // If in L4BACK, go through STANDBY first
+            Commands.sequence(
+                // First go to STANDBY position
+                setGoalAutoCommand(Goal.STANDBY),
+                // Wait until arm is at STANDBY position
+                Commands.waitUntil(this::isAtTarget),
+                // Then go to PRE_INTAKE position
+                setGoalAutoCommand(Goal.CORAL_PRE_INTAKE),
+                // Wait until arm is at PRE_INTAKE position
+                Commands.waitUntil(this::isAtTarget),
+                // Finally go to FLOOR_INTAKE position
+                setGoalAutoCommand(Goal.CORAL_FLOOR_INTAKE)),
+            // Else, skip STANDBY and go through PRE_INTAKE only
+            Commands.sequence(
+                // Go to PRE_INTAKE position
+                setGoalAutoCommand(Goal.CORAL_PRE_INTAKE),
+                // Wait until arm is at PRE_INTAKE position
+                Commands.waitUntil(this::isAtTarget),
+                // Then go to FLOOR_INTAKE position
+                setGoalAutoCommand(Goal.CORAL_FLOOR_INTAKE)),
+            // Condition: if currentGoal is CORAL_L4BACK
+            () -> currentGoal == Goal.CORAL_L4BACK)
+        .withName("Safe Floor Intake");
   }
 
   @AutoLogOutput(key = "Arm/AtGoal")

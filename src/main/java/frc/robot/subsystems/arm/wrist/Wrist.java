@@ -154,13 +154,13 @@ public class Wrist extends SubsystemBase {
     // Common positions
     STOP(Rotations.of(0)),
     STOW(Rotations.of(0.2)),
-    STANDBY(Rotations.of(0.2)),
+    STANDBY(Rotations.of(0.8)),
     CLIMB(Rotations.of(1.65)),
     CLIMB_DOWN(Rotations.of(0.9)),
 
     // Coral positions
     CORAL_PRE_INTAKE(Rotations.of(1.6)),
-    CORAL_FLOOR_INTAKE(Rotations.of(1.55)),
+    CORAL_FLOOR_INTAKE(Rotations.of(1.60)),
     CORAL_STATION_INTAKE(Rotations.of(1.71)),
     CORAL_L1(Rotations.of(1.45)),
     CORAL_L1BACK(Rotations.of(0)),
@@ -187,7 +187,7 @@ public class Wrist extends SubsystemBase {
     }
 
     WristPosition(Angle targetAngle) {
-      this(targetAngle, Rotations.of(2)); // 2 degree default tolerance
+      this(targetAngle, Rotations.of(0.1)); // 2 degree default tolerance
     }
   }
 
