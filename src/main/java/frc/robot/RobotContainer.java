@@ -22,7 +22,6 @@ import edu.wpi.first.units.measure.LinearVelocity;
 import edu.wpi.first.wpilibj.DriverStation;
 import edu.wpi.first.wpilibj2.command.Command;
 import edu.wpi.first.wpilibj2.command.Commands;
-import edu.wpi.first.wpilibj2.command.InstantCommand;
 import edu.wpi.first.wpilibj2.command.button.Trigger;
 import edu.wpi.first.wpilibj2.command.sysid.SysIdRoutine;
 import frc.robot.commands.DriveCommands;
@@ -33,10 +32,6 @@ import frc.robot.subsystems.Superstructure;
 import frc.robot.subsystems.drive.Drive;
 import frc.robot.subsystems.drive.DriveIO;
 import frc.robot.subsystems.drive.DriveIOCTRE;
-import frc.robot.subsystems.extension.Extension;
-import frc.robot.subsystems.extension.ExtensionIO;
-import frc.robot.subsystems.extension.ExtensionIOCTRE;
-import frc.robot.subsystems.extension.ExtensionIOSIM;
 import frc.robot.subsystems.intake.Intake;
 import frc.robot.subsystems.intake.IntakeIO;
 import frc.robot.subsystems.intake.IntakeIOCTRE;
@@ -49,10 +44,6 @@ import frc.robot.subsystems.vision.Vision;
 import frc.robot.subsystems.vision.VisionIO;
 import frc.robot.subsystems.vision.VisionIOPhotonVision;
 import frc.robot.subsystems.vision.VisionIOPhotonVisionSIM;
-import frc.robot.subsystems.wrist.Wrist;
-import frc.robot.subsystems.wrist.WristIO;
-import frc.robot.subsystems.wrist.WristIOCTRE;
-import frc.robot.subsystems.wrist.WristIOSIM;
 import frc.robot.utils.DisabledInstantCommand;
 import frc.robot.utils.DriverController;
 import frc.robot.utils.OperatorController;
@@ -61,7 +52,6 @@ import org.littletonrobotics.junction.networktables.LoggedDashboardChooser;
 
 public class RobotContainer {
   private LinearVelocity MaxSpeed = TunerConstants.kSpeedAt12Volts;
-  
 
   private LoggedDashboardChooser<Command> autoChooser;
 
@@ -377,7 +367,9 @@ public class RobotContainer {
     driver.povRight().onTrue(new SmartArm(arm, SmartArm.Goal.STANDBY));
     // driver.povDown().onTrue(new SmartArm(arm, SmartArm.Goal.CORAL_FLOOR_INTAKE));
     new Trigger(driver.povDown())
-    .onTrue(superstructure.setWantedSuperStateCommand(Superstructure.WantedSuperState.INTAKE_READY));
+        .onTrue(
+            superstructure.setWantedSuperStateCommand(
+                Superstructure.WantedSuperState.INTAKE_READY));
 
     driver.a().onTrue(new SmartArm(arm, SmartArm.Goal.CLIMB_DOWN));
     driver.y().onTrue(new SmartArm(arm, SmartArm.Goal.CLIMB));

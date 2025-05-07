@@ -1,3 +1,10 @@
+// Copyright (c) 2025 FRC 325/144 & 5712
+// https://hemlock5712.github.io/Swerve-Setup/home.html
+//
+// Use of this source code is governed by an MIT-style
+// license that can be found in the LICENSE file at
+// the root directory of this project.
+
 package frc.robot.subsystems.shoulder;
 
 import static edu.wpi.first.units.Units.*;
@@ -10,11 +17,9 @@ import edu.wpi.first.wpilibj.DriverStation;
 import edu.wpi.first.wpilibj.Timer;
 import edu.wpi.first.wpilibj2.command.Command;
 import edu.wpi.first.wpilibj2.command.SubsystemBase;
-import frc.robot.subsystems.arm.shoulder.ShoulderIOInputsAutoLogged;
 import frc.robot.utils.SignalProcessor;
-import org.littletonrobotics.junction.Logger;
-
 import java.util.concurrent.Future;
+import org.littletonrobotics.junction.Logger;
 
 /**
  * The Shoulder subsystem controls a quad-motor shoulder mechanism for game piece manipulation. It
@@ -40,7 +45,7 @@ public class Shoulder extends SubsystemBase {
   private static final double SHOULDER_VELOCITY_FILTER_ALPHA = 0.7;
   private double filteredPosition = 0.0;
   private double filteredVelocity = 0.0;
-  
+
   // Future objects for async processing results
   private Future<?> positionProcessingFuture;
   private Future<?> velocityProcessingFuture;
@@ -83,7 +88,7 @@ public class Shoulder extends SubsystemBase {
   private Alert brMotorDisconnected =
       new Alert("BR Shoulder motor disconnected!", Alert.AlertType.kWarning);
   private Alert encoderDisconnected = new Alert("Shoulder encoder disconnected!", AlertType.kError);
-  
+
   /**
    * Creates a new Shoulder subsystem with the specified hardware interface.
    *
@@ -167,33 +172,31 @@ public class Shoulder extends SubsystemBase {
     encoderDisconnected.set(!inputs.encoderConnected);
   }
 
-  /**
-   * Process position and velocity signals asynchronously with filtering.
-   */
+  /** Process position and velocity signals asynchronously with filtering. */
   private void processSignals() {
     // Process position data asynchronously
-    positionProcessingFuture = SignalProcessor.processAsync(
-        () -> inputs.shoulderPositionDegrees,
-        rawPosition -> {
-            filteredPosition = SignalProcessor.lowPassFilter(
-                rawPosition, 
-                filteredPosition, 
-                SHOULDER_POSITION_FILTER_ALPHA);
-            Logger.recordOutput("Shoulder/FilteredPosition", filteredPosition);
-        },
-        "Shoulder/Position");
-    
+    positionProcessingFuture =
+        SignalProcessor.processAsync(
+            () -> inputs.shoulderPositionDegrees,
+            rawPosition -> {
+              filteredPosition =
+                  SignalProcessor.lowPassFilter(
+                      rawPosition, filteredPosition, SHOULDER_POSITION_FILTER_ALPHA);
+              Logger.recordOutput("Shoulder/FilteredPosition", filteredPosition);
+            },
+            "Shoulder/Position");
+
     // Process velocity data asynchronously
-    velocityProcessingFuture = SignalProcessor.processAsync(
-        () -> inputs.shoulderVelocityDegrees,
-        rawVelocity -> {
-            filteredVelocity = SignalProcessor.lowPassFilter(
-                rawVelocity, 
-                filteredVelocity, 
-                SHOULDER_VELOCITY_FILTER_ALPHA);
-            Logger.recordOutput("Shoulder/FilteredVelocity", filteredVelocity);
-        },
-        "Shoulder/Velocity");
+    velocityProcessingFuture =
+        SignalProcessor.processAsync(
+            () -> inputs.shoulderVelocityDegrees,
+            rawVelocity -> {
+              filteredVelocity =
+                  SignalProcessor.lowPassFilter(
+                      rawVelocity, filteredVelocity, SHOULDER_VELOCITY_FILTER_ALPHA);
+              Logger.recordOutput("Shoulder/FilteredVelocity", filteredVelocity);
+            },
+            "Shoulder/Velocity");
   }
 
   private SystemState handleStateTransitions() {
@@ -267,7 +270,8 @@ public class Shoulder extends SubsystemBase {
 
   public void setTargetPitchDegrees(Angle angleDegrees) {
     double clampedDegrees =
-        MathUtil.clamp(angleDegrees.abs(Degrees), REVERSE_SOFT_LIMIT_DEGREES, FORWARD_SOFT_LIMIT_DEGREES);
+        MathUtil.clamp(
+            angleDegrees.abs(Degrees), REVERSE_SOFT_LIMIT_DEGREES, FORWARD_SOFT_LIMIT_DEGREES);
     setpointDegrees = clampedDegrees;
   }
 
@@ -280,8 +284,7 @@ public class Shoulder extends SubsystemBase {
   }
 
   public boolean shoulderAtSetpoint() {
-    return MathUtil.isNear(
-        setpointDegrees, filteredPosition, ACCEPTABLE_PITCH_ERROR_DEGREES);
+    return MathUtil.isNear(setpointDegrees, filteredPosition, ACCEPTABLE_PITCH_ERROR_DEGREES);
   }
 
   public void setAngle(Angle angleDegrees) {
@@ -296,10 +299,10 @@ public class Shoulder extends SubsystemBase {
   public double getCurrentPosition() {
     return filteredPosition;
   }
-  
+
   /**
-   * Cancels any ongoing signal processing operations.
-   * Call this when the robot is disabled or the subsystem is no longer needed.
+   * Cancels any ongoing signal processing operations. Call this when the robot is disabled or the
+   * subsystem is no longer needed.
    */
   public void cancelProcessing() {
     if (positionProcessingFuture != null && !positionProcessingFuture.isDone()) {

@@ -1,3 +1,10 @@
+// Copyright (c) 2025 FRC 325/144 & 5712
+// https://hemlock5712.github.io/Swerve-Setup/home.html
+//
+// Use of this source code is governed by an MIT-style
+// license that can be found in the LICENSE file at
+// the root directory of this project.
+
 package frc.robot.subsystems.shoulder;
 
 import static frc.robot.subsystems.shoulder.Shoulder.FORWARD_SOFT_LIMIT_DEGREES;
@@ -38,10 +45,10 @@ public class ShoulderIOCTRE implements ShoulderIO {
   private final Debouncer blFollowerDebounce = new Debouncer(0.5);
   private final Debouncer brFollowerDebounce = new Debouncer(0.5);
   private final Debouncer encoderDebounce = new Debouncer(0.5);
-  
+
   // Lock for thread-safe access to sensor data
   private final ReentrantReadWriteLock sensorLock = new ReentrantReadWriteLock();
-  
+
   // Cached sensor values for thread-safe access
   private double cachedShoulderPosition = 0.0;
   private double cachedShoulderVelocity = 0.0;
@@ -105,7 +112,7 @@ public class ShoulderIOCTRE implements ShoulderIO {
   public void setHomingPosition(double position) {
     flLeaderMotor.setPosition(degreesToMotorRotations(position));
   }
-  
+
   @Override
   public void disableSoftLimits() {
     TalonFXConfiguration config = new TalonFXConfiguration();
@@ -114,7 +121,7 @@ public class ShoulderIOCTRE implements ShoulderIO {
     config.SoftwareLimitSwitch.ReverseSoftLimitEnable = false;
     flLeaderMotor.getConfigurator().apply(config);
   }
-  
+
   @Override
   public void enableSoftLimits() {
     TalonFXConfiguration config = new TalonFXConfiguration();
@@ -147,7 +154,8 @@ public class ShoulderIOCTRE implements ShoulderIO {
         BaseStatusSignal.refreshAll(
             brFollowerMotor.getStatorCurrent(), brFollowerMotor.getSupplyCurrent());
 
-    StatusCode encoderStatus = BaseStatusSignal.refreshAll(encoder.getAbsolutePosition(), encoder.getVelocity());
+    StatusCode encoderStatus =
+        BaseStatusSignal.refreshAll(encoder.getAbsolutePosition(), encoder.getVelocity());
 
     inputs.flConnected = flLeaderDebounce.calculate(flLeaderStatus.isOK());
     inputs.frConnected = frFollowerDebounce.calculate(frFollowerStatus.isOK());
@@ -158,15 +166,17 @@ public class ShoulderIOCTRE implements ShoulderIO {
     // Update cached values with thread safety
     try {
       sensorLock.writeLock().lock();
-      
+
       cachedShoulderVoltage = flLeaderMotor.getMotorVoltage().getValueAsDouble();
       cachedShoulderCurrent = flLeaderMotor.getSupplyCurrent().getValueAsDouble();
       cachedShoulderTemperature = flLeaderMotor.getDeviceTemp().getValueAsDouble();
-      cachedShoulderPosition = flLeaderMotor.getPosition().getValueAsDouble() * DEGREES_PER_ROTATION;
-      cachedShoulderVelocity = flLeaderMotor.getVelocity().getValueAsDouble() * DEGREES_PER_ROTATION;
+      cachedShoulderPosition =
+          flLeaderMotor.getPosition().getValueAsDouble() * DEGREES_PER_ROTATION;
+      cachedShoulderVelocity =
+          flLeaderMotor.getVelocity().getValueAsDouble() * DEGREES_PER_ROTATION;
       cachedEncoderPosition = encoder.getAbsolutePosition().getValueAsDouble();
       cachedEncoderVelocity = encoder.getVelocity().getValueAsDouble();
-      
+
       // Update inputs with the same values
       inputs.shoulderVoltage = cachedShoulderVoltage;
       inputs.shoulderCurrent = cachedShoulderCurrent;
@@ -184,7 +194,7 @@ public class ShoulderIOCTRE implements ShoulderIO {
   public void setPercentage(double percentage) {
     flLeaderMotor.set(percentage);
   }
-  
+
   @Override
   public Supplier<Double> getSignalSupplier(SignalType signalType) {
     return () -> {

@@ -1,5 +1,5 @@
-// Copyright (c) 2023 FRC 254
-// https://github.com/Team254/FRC-2023-Public
+// Copyright (c) 2025 FRC 325/144 & 5712
+// https://hemlock5712.github.io/Swerve-Setup/home.html
 //
 // Use of this source code is governed by an MIT-style
 // license that can be found in the LICENSE file at
@@ -8,34 +8,34 @@
 package frc.robot.utils.drivers;
 
 public class CanDeviceId {
-    private final int deviceNumber;
-    private final String bus;
+  private final int deviceNumber;
+  private final String bus;
 
-    public CanDeviceId(int deviceNumber, String bus) {
-        this.deviceNumber = deviceNumber;
-        this.bus = bus;
-    }
+  public CanDeviceId(int deviceNumber, String bus) {
+    this.deviceNumber = deviceNumber;
+    this.bus = bus;
+  }
 
-    // Use the default bus name "rio".
-    public CanDeviceId(int deviceNumber) {
-        this(deviceNumber, "rio");
-    }
+  // Use the default bus name "rio".
+  public CanDeviceId(int deviceNumber) {
+    this(deviceNumber, "rio");
+  }
 
-    public int getDeviceNumber() {
-        return deviceNumber;
-    }
+  public int getDeviceNumber() {
+    return deviceNumber;
+  }
 
-    public String getBus() {
-        return bus;
-    }
+  public String getBus() {
+    return bus;
+  }
 
-    @SuppressWarnings("NonOverridingEquals")
-    public boolean equals(CanDeviceId other) {
-        return other.deviceNumber == deviceNumber && other.bus.equals(bus);
-    }
+  @SuppressWarnings("NonOverridingEquals")
+  public boolean equals(CanDeviceId other) {
+    return other.deviceNumber == deviceNumber && other.bus.equals(bus);
+  }
 
-    @Override
-    public String toString() {
-        return "CanDeviceId(" + deviceNumber + ", " + bus + ")";
-    }
+  @Override
+  public String toString() {
+    return "CanDeviceId(" + deviceNumber + ", " + bus + ")";
+  }
 }
